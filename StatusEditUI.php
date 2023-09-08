@@ -320,6 +320,10 @@ echo esc_attr($edit_status_link); ?>">
                 //$omit_types = apply_filters('presspermit_unfiltered_post_types', ['wp_block']);
                 $omit_types = ['nav_menu', 'attachment', 'revision', 'wp_navigation', 'wp_block']; // @todo: review block, navigation filtering
 
+                $custom_status_post_types = \PublishPress_Statuses::instance()->options->post_types;
+                $custom_status_post_types = array_filter($custom_status_post_types);
+                $types = array_intersect_key($types, $custom_status_post_types);
+
                 $types = array_diff_key($types, array_fill_keys((array)$omit_types, true));
 
                 $enabled_types = (!empty($status_obj->post_type)) ? $status_obj->post_type : [];
