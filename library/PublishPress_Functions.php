@@ -1,0 +1,509 @@
+<?php
+/*
+if (!defined('PUBLISHPRESS_FUNCTIONS_VERSION')) {
+    define('PUBLISHPRESS_FUNCTIONS_VERSION', '0.9-beta');
+
+    define('PUBLISHPRESS_FUNCTIONS_URL', trailingslashit(plugins_url('', __FILE__)));
+    define('PUBLISHPRESS_FUNCTIONS_DIR', __DIR__);
+}
+*/
+
+if (!class_exists('PublishPress_Functions')) {
+
+/**
+ * PublishPress_Functions
+ */
+class PublishPress_Functions 
+{
+
+    /**
+     * Based on Edit Flow's \Block_Editor_Compatible::should_apply_compat method.
+     *
+     * @return bool
+     */
+    public static function isBlockEditorActive()
+    {
+        // Check if Revisionary lower than v1.3 is installed. It disables Gutenberg.
+        if (self::isPluginActive('revisionary/revisionary.php')
+            && defined('RVY_VERSION')
+            && version_compare(RVY_VERSION, '1.3', '<')) {
+            return false;
+        }
+
+        $pluginsState = [
+            'classic-editor' => self::isPluginActive('classic-editor/classic-editor.php'),
+            'gutenberg' => self::isPluginActive('gutenberg/gutenberg.php'),
+            'gutenberg-ramp' => self::isPluginActive('gutenberg-ramp/gutenberg-ramp.php'),
+        ];
+
+
+        if (function_exists('get_post_type')) {
+            $postType = get_post_type();
+        }
+
+        if (! isset($postType) || empty($postType)) {
+            $postType = 'post';
+        }
+
+        /**
+         * If show_in_rest is not true for the post type, the block editor is not available.
+         */
+        if (
+            ($postTypeObject = get_post_type_object($postType))
+            && empty($postTypeObject->show_in_rest)
+        ) {
+            return false;
+        }
+
+        $conditions = [];
+
+        /**
+         * 5.0:
+         *
+         * Classic editor either disabled or enabled (either via an option or with GET argument).
+         * It's a hairy conditional :(
+         */
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.NoNonceVerification
+        $conditions[] = self::isWp5()
+            && ! $pluginsState['classic-editor']
+            && ! $pluginsState['gutenberg-ramp']
+            && apply_filters('use_block_editor_for_post_type', true, $postType, PHP_INT_MAX);
+
+        $conditions[] = self::isWp5()
+            && $pluginsState['classic-editor']
+            && (get_option('classic-editor-replace') === 'block'
+                && ! isset($_GET['classic-editor__forget']));
+
+        $conditions[] = self::isWp5()
+            && $pluginsState['classic-editor']
+            && (get_option('classic-editor-replace') === 'classic'
+                && isset($_GET['classic-editor__forget']));
+
+        /**
+         * < 5.0 but Gutenberg plugin is active.
+         */
+        $conditions[] = ! self::isWp5() && ($pluginsState['gutenberg'] || $pluginsState['gutenberg-ramp']);
+
+        // Returns true if at least one condition is true.
+        return count(
+                array_filter(
+                    $conditions,
+                    function ($c) {
+                        return (bool)$c;
+                    }
+                )
+            ) > 0;
+    }
+
+    public static function isWp5()
+    {
+        global $wp_version;
+
+        return version_compare($wp_version, '5.0', '>=') || substr($wp_version, 0, 2) === '5.';
+    }
+
+    public static function findPostType($post_id = 0, $return_default = true)
+    {
+        global $typenow, $post;
+
+        if (!$post_id && defined('REST_REQUEST') && REST_REQUEST) {
+            if ($_post_type = apply_filters('presspermit_rest_post_type', '')) {
+                return $_post_type;
+            }
+        }
+
+        if (!$post_id && !empty($typenow)) {
+            return $typenow;
+        }
+
+        if (is_object($post_id)) {
+            $post_id = $post_id->ID;
+        }
+
+        if ($post_id && !empty($post) && ($post->ID == $post_id)) {
+            return $post->post_type;
+        }
+
+        if (defined('DOING_AJAX') && DOING_AJAX) { // todo: separate static function to eliminate redundancy with PostFilters::fltPostsClauses()
+            $ajax_post_types = apply_filters('pp_ajax_post_types', ['ai1ec_doing_ajax' => 'ai1ec_event']);
+
+            foreach (array_keys($ajax_post_types) as $arg) {
+                if (!self::empty_REQUEST($arg) || self::is_REQUEST('action', $arg)) {
+                    return $ajax_post_types[$arg];
+                }
+            }
+        }
+
+        if ($post_id) { // note: calling static function already compared post_id to global $post
+            if ($_post = get_post($post_id)) {
+                $_type = $_post->post_type;
+            }
+
+            if (!empty($_type)) {
+                return $_type;
+            }
+        }
+
+        // no post id was passed in, or we couldn't retrieve it for some reason, so check $_REQUEST args
+        global $pagenow, $wp_query;
+
+        if (!empty($wp_query->queried_object)) {
+            if (isset($wp_query->queried_object->post_type)) {
+                $object_type = $wp_query->queried_object->post_type;
+
+            } elseif (isset($wp_query->queried_object->name)) {
+                if (post_type_exists($wp_query->queried_object->name)) {  // bbPress forums list
+                    $object_type = $wp_query->queried_object->name;
+                }
+            }
+        } elseif (in_array($pagenow, ['post-new.php', 'edit.php'])) {
+            $object_type = self::is_GET('post_type') ? self::GET_key('post_type') : 'post';
+
+        } elseif (in_array($pagenow, ['edit-tags.php'])) {
+            $object_type = !self::empty_REQUEST('taxonomy') ? self::REQUEST_key('taxonomy') : 'category';
+
+        } elseif (in_array($pagenow, ['admin-ajax.php']) && !self::empty_REQUEST('taxonomy')) {
+            $object_type = self::REQUEST_key('taxonomy');
+
+        } elseif ($_post_id = self::POST_int('post_ID')) {
+            if ($_post = get_post($_post_id)) {
+                $object_type = $_post->post_type;
+            }
+        } elseif ($id = self::GET_int('post')) {  // post.php
+            if ($_post = get_post($id)) {
+                $object_type = $_post->post_type;
+            }
+        }
+
+        if (empty($object_type)) {
+            if ($return_default) { // default to post type
+                return 'post';
+            }
+        } elseif ('any' != $object_type) {
+            return $object_type;
+        }
+    }
+
+    public static function getPostID()
+    {
+        global $post, $wp_query;
+
+        if (defined('REST_REQUEST') && REST_REQUEST) {
+            if ($_post_id = apply_filters('presspermit_rest_post_id', 0)) {
+                return $_post_id;
+            }
+        }
+
+        if (!empty($post) && is_object($post)) {
+            if ('auto-draft' == $post->post_status)
+                return 0;
+            else
+                return $post->ID;
+
+        } elseif (!is_admin() && !empty($wp_query) && is_singular()) {
+            if (!empty($wp_query)) {
+                if (!empty($wp_query->query_vars) && !empty($wp_query->query_vars['p'])) {
+                    return (int) $wp_query->query_vars['p'];
+                } elseif (!empty($wp_query->query['post_type']) && !empty($wp_query->query['name'])) {
+                    global $wpdb;
+                    return $wpdb->get_var(
+                        $wpdb->prepare(
+                            "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND post_name = %s LIMIT 1",
+                            $wp_query->query['post_type'],
+                            $wp_query->query['name']
+                        )
+                    );
+                }
+            }
+        } elseif (self::is_REQUEST('post')) {
+            return self::REQUEST_int('post');
+
+        } elseif (self::is_REQUEST('post_ID')) {
+            return self::REQUEST_int('post_ID');
+
+        } elseif (self::is_REQUEST('post_id')) {
+            return self::REQUEST_int('post_id');
+
+        } elseif (defined('WOOCOMMERCE_VERSION') && !self::empty_REQUEST('product_id')) {
+            return self::REQUEST_int('product_id');
+        }
+    }
+
+    public static function isPluginActive($plugin) {
+        return in_array( $plugin, (array) get_option( 'active_plugins', array() ), true ) || self::is_plugin_active_for_network( $plugin );
+    }
+
+    private static function is_plugin_active_for_network( $plugin ) {
+        if ( ! is_multisite() ) {
+            return false;
+        }
+    
+        $plugins = get_site_option( 'active_sitewide_plugins' );
+        if ( isset( $plugins[ $plugin ] ) ) {
+            return true;
+        }
+    
+        return false;
+    }
+
+    public static function orderTypes($types, $args = [])
+    {
+        $defaults = ['order_property' => '', 'item_type' => '', 'labels_property' => ''];
+        $args = array_merge($defaults, $args);
+        foreach (array_keys($defaults) as $var) {
+            $$var = $args[$var];
+        }
+
+        if ('post' == $item_type) {
+            $post_types = get_post_types([], 'object');
+        } elseif ('taxonomy' == $item_type) {
+            $taxonomies = get_taxonomies([], 'object');
+        }
+
+        $ordered_types = [];
+        foreach (array_keys($types) as $name) {
+            if ('post' == $item_type) {
+                $ordered_types[$name] = (isset($post_types[$name]->labels->singular_name))
+                    ? $post_types[$name]->labels->singular_name
+                    : '';
+            } elseif ('taxonomy' == $item_type) {
+                $ordered_types[$name] = (isset($taxonomies[$name]->labels->singular_name))
+                    ? $taxonomies[$name]->labels->singular_name
+                    : '';
+            } else {
+                if (!is_object($types[$name])) {
+                    return $types;
+                }
+
+                if ($order_property) {
+                    $ordered_types[$name] = (isset($types[$name]->$order_property))
+                        ? $types[$name]->$order_property
+                        : '';
+                } else {
+                    $ordered_types[$name] = (isset($types[$name]->labels->$labels_property))
+                        ? $types[$name]->labels->$labels_property
+                        : '';
+                }
+            }
+        }
+
+        asort($ordered_types);
+
+        foreach (array_keys($ordered_types) as $name) {
+            $ordered_types[$name] = $types[$name];
+        }
+
+        return $ordered_types;
+    }
+
+    public static function publishpressFooter() {
+    ?>
+        <footer>
+
+        <div class="pp-rating">
+        <a href="https://wordpress.org/support/plugin/press-permit-core/reviews/#new-post" target="_blank" rel="noopener noreferrer">
+        <?php printf( 
+            esc_html__('If you like %s, please leave us a %s rating. Thank you!', 'press-permit-core'),
+            '<strong>PublishPress Permissions</strong>',
+            '<span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span>'
+            );
+        ?>
+        </a>
+        </div>
+
+        <hr>
+        <nav>
+        <ul>
+        <li><a href="https://publishpress.com/permissions" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('About PublishPress Permissions', 'press-permit-core');?>"><?php esc_html_e('About', 'press-permit-core');?>
+        </a></li>
+        <li><a href="https://publishpress.com/documentation/permissions-start/" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Permissions Documentation', 'press-permit-core');?>"><?php esc_html_e('Documentation', 'press-permit-core');?>
+        </a></li>
+        <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'press-permit-core');?>"><?php esc_html_e('Contact', 'press-permit-core');?>
+        </a></li>
+        <li><a href="https://twitter.com/publishpresscom" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-twitter"></span>
+        </a></li>
+        <li><a href="https://facebook.com/publishpress" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-facebook"></span>
+        </a></li>
+        </ul>
+        </nav>
+
+        <div class="pp-pressshack-logo">
+        <a href="//publishpress.com" target="_blank" rel="noopener noreferrer">
+        <img src="<?php echo esc_url(PUBLISHPRESS_STATUSES_URL . '/common/assets/publishpress-logo.png');?>" />
+        </a>
+        </div>
+
+        </footer>
+    <?php
+    }
+
+    /**
+     * Take a status and a message, JSON encode and print
+     *
+     * @param string $status Whether it was a 'success' or an 'error'
+     * @param string $message
+     * @param array $data
+     *
+     * @since 0.7
+     *
+     */
+    public static function printAjaxResponse($status, $message = '', $data = null)
+    {
+        header('Content-type: application/json;');
+
+        $result = [
+            'status'  => $status,
+            'message' => $message,
+        ];
+
+        if (!is_null($data)) {
+            $result['data'] = $data;
+        }
+
+        echo json_encode($result);
+
+        exit;
+    }
+
+    public static function getRoles($translate = false) {
+        $wp_roles_obj = wp_roles();
+    
+        $roles = $wp_roles_obj->get_names();
+        if ( $translate ) {
+            foreach ($roles as $k => $r) {
+                $roles[$k] = _x($r, 'User role');
+            }
+            asort($roles);
+            return $roles;
+        } else {
+            $roles = array_keys($roles);
+            asort($roles);
+            return $roles;
+        }
+    }
+
+    public static function isEditableRole($role_name, $args = []) {
+        static $editable_roles;
+    
+        if (!function_exists('wp_roles')) {
+            return false;
+        }
+    
+        if (!isset($editable_roles) || !empty($args['force_refresh'])) {
+            $all_roles = wp_roles()->roles;
+            $editable_roles = apply_filters('editable_roles', $all_roles, $args);
+        }
+    
+        return apply_filters('publishpress_statuses_editable_role', isset($editable_roles[$role_name]), $role_name);
+    }
+
+    public static function empty_REQUEST($var = false) {
+        if (false === $var) {
+            return empty($_REQUEST);
+        } else {
+            return empty($_REQUEST[$var]);
+        }
+    }
+    
+    public static function is_REQUEST($var, $match = false) {
+        if (false === $match) {
+            return isset($_REQUEST[$var]);
+            
+        } elseif (is_array($match)) {
+            return (isset($_REQUEST[$var]) && in_array($_REQUEST[$var], $match));
+        } else {
+            return (isset($_REQUEST[$var]) && ($_REQUEST[$var] == $match));
+        }
+    }
+    
+    public static function REQUEST_key($var) {
+        if (empty($_REQUEST[$var])) {
+            return '';
+        }
+    
+        return (is_array($_REQUEST[$var])) ? array_map('sanitize_key', $_REQUEST[$var]) : sanitize_key($_REQUEST[$var]);
+    }
+    
+    public static function REQUEST_int($var) {
+        return (!empty($_REQUEST[$var])) ? intval($_REQUEST[$var]) : 0;
+    }
+    
+    public static function REQUEST_var($var) {
+        return (!empty($_REQUEST) && !empty($_REQUEST[$var])) ? $_REQUEST[$var] : '';
+    }
+    
+    public static function empty_POST($var = false) {
+        if (false === $var) {
+            return empty($_POST);
+        } else {
+            return empty($_POST[$var]);
+        }
+    }
+    
+    public static function is_POST($var, $match = false) {
+        if (empty($_POST)) {
+            return false;
+        }
+        
+        if (false == $match) {
+            return (isset($_POST[$var]));
+        
+        } elseif (is_array($match)) {
+            return (isset($_POST[$var]) && in_array($_POST[$var], $match));
+        } else {
+            return (isset($_POST[$var]) && ($_POST[$var] == $match));
+        }
+    }
+    
+    public static function POST_key($var) {
+        if (empty($_POST) || empty($_POST[$var])) {
+            return '';
+        }
+    
+        return (is_array($_POST[$var])) ? array_map('sanitize_key', $_POST[$var]) : sanitize_key($_POST[$var]);
+    }
+    
+    public static function POST_int($var) {
+        return (!empty($_POST) && !empty($_POST[$var])) ? intval($_POST[$var]) : 0;
+    }
+    
+    public static function POST_var($var) {
+        return (!empty($_POST) && !empty($_POST[$var])) ? $_POST[$var] : '';
+    }
+    
+    public static function empty_GET($var = false) {
+        if (false === $var) {
+            return empty($_GET);
+        } else {
+            return empty($_GET[$var]);
+        }
+    }
+    
+    public static function is_GET($var, $match = false) {
+        if (false === $match) {
+            return isset($_GET[$var]);
+    
+        } elseif (is_array($match)) {
+            return (isset($_GET[$var]) && in_array($_GET[$var], $match));
+        } else {
+            return (!empty($_GET[$var]) && ($_GET[$var] == $match));
+        }
+    }
+    
+    public static function GET_key($var) {
+        if (empty($_GET[$var])) {
+            return '';
+        }
+    
+        return (is_array($_GET[$var])) ? array_map('sanitize_key', $_GET[$var]) : sanitize_key($_GET[$var]);
+    }
+    
+    public static function GET_int($var) {
+        return (!empty($_GET[$var])) ? intval($_GET[$var]) : 0;
+    }
+    
+    public static function GET_var($var) {
+        return (!empty($_GET[$var])) ? $_GET[$var] : '';
+    }
+}
+}
