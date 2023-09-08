@@ -1,0 +1,20 @@
+.publishpress-extended-post-status {
+  flex-flow: row wrap;
+}
+.publishpress-extended-post-status > * {
+  flex-basis: 45% !important;
+}
+.publishpress-extended-post-status .publishpress-extended-post-status-note {
+  flex-basis: 100%;
+}
+
+.publishpress-extended-post-status h4 {
+  font-size: inherit!important;
+  font-weight: normal;
+}
+
+div.publishpress-extended-post-status select {
+width: auto !important;
+}
+
+/*# sourceMappingURL=custom-status-block-editor.css.map */
