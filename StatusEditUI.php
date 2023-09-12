@@ -236,11 +236,11 @@ echo esc_attr($edit_status_link); ?>">
                                 echo esc_attr($icon);
                             } ?>"/>
 
-                    <div id="icon_picker_wrap" data-target='#status_icon'
-                            data-preview="#icon_picker_preview" class="button dashicons-picker">
-                        <div id="icon_picker_preview" class="dashicons <?php
+                    <div id="publishpress_icon_pick_wrap" data-target='#status_icon'
+                            data-preview="#publishpress_icon_pick_preview" class="button dashicons-picker">
+                        <div id="publishpress_icon_pick_preview" class="dashicons <?php
                         echo isset($icon) ? esc_attr($icon) : ''; ?>"></div>
-                        <div class="icon_picker_button_label"><?php
+                        <div class="publishpress_icon_pick_button_label"><?php
                             echo __('Select Icon', 'publishpress'); ?></div>
                     </div>
 

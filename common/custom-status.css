@@ -361,18 +361,20 @@ line-height: 1.3;
 font-weight: 600;
 }
 
-#icon_picker_wrap {
+#publishpress_icon_pick_wrap {
 padding-top: 1px;
+padding-bottom: 5px;
 }
 
-body.publishpress-hub_page_publishpress-statuses div.icon_picker_button_label {
+body.publishpress-hub_page_publishpress-statuses div.publishpress_icon_pick_button_label {
 float: right;
-padding-top: 13px;
+padding-top: 1px;
 padding-left: 5px;
+line-height: 2em !important;
 }
 
 /*
-#addstatus #icon_picker_wrap {
+#addstatus #publishpress_icon_pick_wrap {
 padding-top: 15px;
 }
 */
@@ -388,7 +390,7 @@ padding-top: 5px;
 padding-bottom: 5px;
 }
 
-div.publishpress-admin #icon_picker_preview {
+div.publishpress-admin #publishpress_icon_pick_preview {
 padding-top: 5px;
 }
 
