@@ -347,7 +347,7 @@ echo esc_attr($edit_status_link); ?>">
                             <input name="<?php echo 'pp_status_all_types'; ?>" type="checkbox"
                                     id="<?php echo 'pp_status_all_types'; ?>"
                                     value="1" <?php checked('1', $all_enabled);?> <?php echo esc_attr($disabled); ?> />
-                            <?php esc_html_e('(All Types)', 'presspermit-pro'); ?>
+                            <?php esc_html_e('All Post Types', 'presspermit-pro'); ?>
                         </label>
                     </div>
                     <?php
