@@ -276,7 +276,12 @@ echo esc_attr($edit_status_link); ?>">
                 $roles = \PublishPress_Functions::getRoles(true);
                 ?>
                 <tr class="form-field">
-                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'presspermit-pro') ?></label></th>
+                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'presspermit-pro') ?></label>
+                    <br /><br />
+                    <span class="pp-statuses-field-descript" style="font-weight: normal">
+                    <?php esc_html_e('Choose which user roles can assign this status to a post.', 'presspermit-pro');?>
+                    </span>
+                    </th>
 
                     <td class="set-status-roles">
                         <?php foreach($roles as $role_name => $role_label):
