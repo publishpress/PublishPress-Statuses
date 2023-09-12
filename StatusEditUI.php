@@ -122,10 +122,6 @@ echo esc_attr($edit_status_link); ?>">
         <?php endif;
 
         submit_button(__('Update Status', 'publishpress'), 'primary pp-statuses', 'submit', false); ?>
-        <a class="cancel-settings-link"
-            href="<?php
-            echo esc_url(\PublishPress_Statuses::getLink()); ?>"><?php
-            _e('Cancel', 'publishpress'); ?></a>
     </p>
 </form>
 
