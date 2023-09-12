@@ -167,6 +167,12 @@ class PostEditGutenberg
             }
         }
 
+        foreach ($ordered_statuses as $k => $status_obj) {
+            if ('future' == $status_obj->name) {
+                unset($ordered_statuses[$k]);
+            }
+        }
+
         return $ordered_statuses;
     }
 }
