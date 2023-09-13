@@ -177,8 +177,16 @@ jQuery(document).ready(function ($) {
 
     // Initialization operations to perform once React loads the relevant elements
     var PP_InitializeBlockEditorModifications = function (forceRefresh) {
-        if ((typeof forceRefresh != "undefined" && forceRefresh) || (($('button.editor-post-publish-button').length || $('button.editor-post-publish-panel__toggle').length) 
-        && ($('button.editor-post-save-draft').length || ($('div.publishpress-extended-post-status select option[value="_pending"]').length && ('pending' == $('div.publishpress-extended-post-status select').val() || '_pending' == $('div.publishpress-extended-post-status select').val())))
+        if ((typeof forceRefresh != "undefined" && forceRefresh) 
+        || (
+            ($('button.editor-post-publish-button').length || $('button.editor-post-publish-panel__toggle').length) 
+            && (
+                $('button.editor-post-save-draft').length 
+                || $('button.editor-post-saved-state').length 
+                || ($('div.publishpress-extended-post-status select option[value="_pending"]').length 
+                    && ('pending' == $('div.publishpress-extended-post-status select').val() || '_pending' == $('div.publishpress-extended-post-status select').val())
+                    )
+            )
         )) {
             clearInterval(initInterval);
             initInterval = null;

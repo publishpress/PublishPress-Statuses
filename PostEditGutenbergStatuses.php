@@ -103,7 +103,7 @@ class PostEditGutenbergStatuses
         }
 
         if ((!empty($next_status_obj->moderation) || (!$is_administrator && !$can_publish)) && !defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
-            $args['prePublish'] = apply_filters('presspermit_workflow_button_label', __('Workflow&hellip;', 'presspermit-pro'), $post_id);
+            $args['prePublish'] = apply_filters('presspermit_workflow_button_label', __('Workflow', 'presspermit-pro'), $post_id);
         }
 
         $args['saveDraftCaption'] = esc_html__('Save Draft'); // this is used for reference in js
