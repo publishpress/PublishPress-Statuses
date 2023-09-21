@@ -15,7 +15,7 @@ float: right;
 width: 60%;
 }
 
-body.publishpress-hub_page_publishpress-statuses h3.nav-tab-wrapper {
+body.toplevel_page_publishpress-statuses h3.nav-tab-wrapper {
 padding-top: 0;
 }
 
@@ -364,9 +364,10 @@ font-weight: 600;
 #publishpress_icon_pick_wrap {
 padding-top: 1px;
 padding-bottom: 5px;
+margin-bottom: 20px;
 }
 
-body.publishpress-hub_page_publishpress-statuses div.publishpress_icon_pick_button_label {
+body.toplevel_page_publishpress-statuses div.publishpress_icon_pick_button_label {
 float: right;
 padding-top: 1px;
 padding-left: 5px;
@@ -441,7 +442,7 @@ table.pp-statuses-options table.cme-typecaps td.status-caps-delete_others
 padding-top: 30px;
 }
 
-body.publishpress-hub_page_publishpress-statuses p.submit {
+body.toplevel_page_publishpress-statuses p.submit {
 margin-top: 10px;
 }
 /* =========================================== */
