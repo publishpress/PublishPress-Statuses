@@ -58,6 +58,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public $messages = [];
 
     public $module;
+    public $doing_rest = false;
 
     private static $instance = null;
 
@@ -68,6 +69,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         return self::$instance;
+    }
+
+    public static function doingREST()
+    {
+        return self::instance()->doing_rest;
     }
 
     public function clearStatusCache() {
@@ -110,6 +116,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
 
             add_action('wp_ajax_pp_get_selectable_statuses', [$this, 'get_ajax_selectable_statuses']);
+            add_action('wp_ajax_pp_set_workflow_action', [$this, 'set_workflow_action']);
+            /*
+            add_action('wp_ajax_pp_advance_post_status', [$this, 'advance_post_status']);
+            add_action('wp_ajax_pp_set_max_post_status', [$this, 'set_max_post_status']);
+            */
+
             add_action('wp_ajax_pp_update_status_positions', [$this, 'handle_ajax_update_status_positions']);
             add_action('wp_ajax_pp_statuses_toggle_section', [$this, 'handle_ajax_pp_statuses_toggle_section']);
             add_action('wp_ajax_pp_delete_custom_status', [$this, 'handle_ajax_delete_custom_status']);
@@ -126,6 +138,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }, 999);
         }
+
+        add_filter('rest_pre_dispatch', [$this, 'fltRestPreDispatch'], 10, 3);
+        add_action('rest_api_init', [$this, 'actRestInit'], 1);
+        add_filter('pre_post_status', [$this, 'fltPostStatus'], 20);
 
         // Register the module with PublishPress
         
@@ -418,6 +434,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public function get_ajax_selectable_statuses()
     {
         if (!empty($_REQUEST['post_id'])) {
+            if (!wp_verify_nonce($_POST['pp_nonce'],'pp-custom-statuses-nonce')) {
+                exit;
+            }
+
             if (!current_user_can('edit_post', intval($_REQUEST['post_id']))) {
                 exit;
             }
@@ -426,20 +446,152 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             require_once(__DIR__ . '/PostEdit.php');
 
             $args = [];
+            $params = [];
+
             if (!empty($_REQUEST['selected_status'])) {
                 $args['post_status'] = sanitize_key($_REQUEST['selected_status']);
+
+                // @todo: separate ajax call for setting status
+                if ($status_obj = get_post_status_object($args['post_status'])) {
+                    if ($_post = get_post($post_id)) {
+                        if (\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $status_obj->name)) {
+                            wp_update_post(['ID' => $post_id, 'post_status' => $status_obj->name]);
+                        }
+
+                        $next_status_obj = \PublishPress_Statuses::getNextStatusObject(0, ['default_by_sequence' => true, 'post_type' => $_post->post_type, 'post_status' => $status_obj->name]);
+                        $max_status_obj = \PublishPress_Statuses::getNextStatusObject($post_id, ['default_by_sequence' => false, 'post_type' => $_post->post_type, 'post_status' => $status_obj->name]);
+
+                        if ($next_status_obj) {
+                            $params = [
+                                'nextStatus' => $next_status_obj->name
+                            ];
+                        } else {
+                            $params = [
+                                'nextStatus' => $status_obj->name
+                            ];
+                        }
+
+                        if ($max_status_obj) {
+                            $params['maxStatus'] =  $max_status_obj->name;
+                        }
+                    }
+                }
             }
 
             $statuses = array_keys(\PublishPress_Statuses\Admin::get_selectable_statuses($post_id, $args));
-            \PublishPress_Functions::printAjaxResponse('success', '', $statuses);
+            \PublishPress_Functions::printAjaxResponse('success', '', $statuses, $params);
             //wp_send_json($statuses);
         } else {
-            \PublishPress_Functions::printAjaxResponse('success', '', []);
+            \PublishPress_Functions::printAjaxResponse('success', '', [], []);
             //wp_send_json([]);
         }
 
         exit;
     }
+
+    public function set_workflow_action($action) {
+        global $current_user;
+
+        if (!empty($_REQUEST['post_id']) && !empty($_REQUEST['workflow_action'])) {
+            if (!wp_verify_nonce($_POST['pp_nonce'],'pp-custom-statuses-nonce')) {
+                exit;
+            }
+
+            if (!current_user_can('edit_post', intval($_REQUEST['post_id']))) {
+                exit;
+            }
+
+            update_user_meta($current_user->ID, "_pp_statuses_workflow_action_" . intval($_REQUEST['post_id']), sanitize_key($_REQUEST['workflow_action']));
+
+            \PublishPress_Functions::printAjaxResponse('success', '', [], []);
+        }
+    }
+
+    /*
+    public function advance_post_status()
+    {
+        if (!empty($_REQUEST['post_id'])) {
+            $post_id = (int) $_REQUEST['post_id'];
+
+            if (!wp_verify_nonce($_POST['pp_nonce'],'pp-custom-statuses-nonce')) {
+                exit;
+            }
+
+            if (!current_user_can('edit_post', $post_id)) {
+                exit;
+            }
+
+            require_once(__DIR__ . '/PostEdit.php'); // @todo: needed?
+
+            if ($_post = get_post($post_id)) {
+                $next_status_obj = \PublishPress_Statuses::getNextStatusObject(
+                    $post_id, 
+                    ['default_by_sequence' => true, 'post_status' => $_post->post_status]
+                );
+
+                if ($next_status_obj->name != $_post->post_status ) {
+                    if ($status_obj = get_post_status_object($next_status_obj->name)) {
+                        if ($_post = get_post($post_id)) {
+
+                            // @todo: is this redundant?
+                            if (\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $status_obj->name)) {
+                                wp_update_post(['ID' => $post_id, 'post_status' => $status_obj->name]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            \PublishPress_Functions::printAjaxResponse('success', '', []);
+        } else {
+            \PublishPress_Functions::printAjaxResponse('success', '', []);
+        }
+
+        exit;
+    }
+
+    public function set_max_post_status()   // @todo: merged function with advance_post_status()
+    {
+        if (!empty($_REQUEST['post_id'])) {
+            $post_id = (int) $_REQUEST['post_id'];
+            
+            if (!wp_verify_nonce($_POST['pp_nonce'],'pp-custom-statuses-nonce')) {
+                exit;
+            }
+
+            if (!current_user_can('edit_post', $post_id)) {
+                exit;
+            }
+
+            require_once(__DIR__ . '/PostEdit.php'); // @todo: needed?
+
+            if ($_post = get_post($post_id)) {
+                $next_status_obj = \PublishPress_Statuses::getNextStatusObject(
+                    $post_id, 
+                    ['default_by_sequence' => false, 'post_status' => $_post->post_status]
+                );
+
+                if ($next_status_obj->name != $_post->post_status ) {
+                    if ($status_obj = get_post_status_object($next_status_obj->name)) {
+                        if ($_post = get_post($post_id)) {
+
+                            // @todo: is this redundant?
+                            if (\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $status_obj->name)) {
+                                wp_update_post(['ID' => $post_id, 'post_status' => $status_obj->name]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            \PublishPress_Functions::printAjaxResponse('success', '', []);
+        } else {
+            \PublishPress_Functions::printAjaxResponse('success', '', []);
+        }
+
+        exit;
+    }
+    */
 
     public static function isStatusManagement() {
         return
@@ -1928,12 +2080,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         global $wp_post_statuses;
 
-        $defaults = ['moderation_statuses' => [], 'can_set_status' => [], 'force_main_channel' => false, 'post_type' => '', 'post_status' => '', 'default_by_sequence' => null, 'skip_current_status_check' => false];
+        $defaults = ['moderation_statuses' => [], 'can_set_status' => [], 'force_main_channel' => false, 'post_type' => '', 'post_status' => '', 'default_by_sequence' => null, 'skip_post_id_check' => false, 'skip_current_status_check' => false];
 
         $args = array_merge($defaults, $args);
         foreach (array_keys($defaults) as $var) {
             $$var = $args[$var];
         }
+
+        //error_log($args['post_status']);
 
         $post_type = sanitize_key($post_type);
 
@@ -1941,7 +2095,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $post = $post_id;
             $post_id = $post->ID;
         } else {
-            if (!$post_id) {
+            if (!$post_id && !$skip_post_id_check) {
                 $post_id = \PublishPress_Functions::getPostID();
             }
 
@@ -1954,7 +2108,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         if (empty($post)) {
             $post_status = 'draft';
-            $post_type = \PublishPress_Functions::findPostType();
+            $post_type = (!empty($args['post_type'])) ? $args['post_type'] : \PublishPress_Functions::findPostType();
         } else {
             $post_type = $post->post_type;
             $post_status = $post->post_status;
@@ -1967,6 +2121,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if (!$post_status_obj = get_post_status_object($post_status)) {
             $post_status_obj = get_post_status_object('draft');
         }
+
+        //error_log("type {$post_type}, status {$post_status}");
 
         $is_administrator = self::isContentAdministrator();
         if (!$type_obj = get_post_type_object($post_type)) {
@@ -2040,10 +2196,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     $_args['status_parent'] = $post_status_obj->status_parent;
 
                 } elseif ($status_children = self::getStatusChildren($post_status_obj->name, $moderation_statuses)) {
-                    // If current status is a Workflow branch parent, only offer other statuses in that branch
-                    $_args['status_parent'] = $post_status_obj->name;
-                    unset($_args['min_order']);
-                    $moderation_statuses = $status_children;
+                    if ($default_by_sequence) {
+                        // If current status is a Workflow branch parent, only offer other statuses in that branch
+                        $_args['status_parent'] = $post_status_obj->name;
+                        unset($_args['min_order']);
+                        $moderation_statuses = $status_children;
+                    } else {
+                        $_args['status_parent'] = '';
+                    }
                 } else {
                     $_args['status_parent'] = '';  // don't default from a main channel into a branch status
                 }
@@ -2051,20 +2211,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             $_post = (!empty($post)) ? $post : get_post($post_id);
 
-            /*
             if (!$_moderation_statuses = self::orderStatuses($moderation_statuses, $_args)) {
                 // If there are no more statuses in a branch, return next status outside branch
                 unset($_args['status_parent']);
                 $_moderation_statuses = self::orderStatuses($moderation_statuses, $_args);
-
-                //var_dump($post_status_obj);
             }
-            */
 
             $moderation_statuses = apply_filters(
                 'presspermit_editpost_next_status_priority_order', 
                 //$_moderation_statuses, 
-                $moderation_statuses, 
+                $_moderation_statuses, 
                 ['post' => $_post]
             );
 
@@ -2106,7 +2262,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             );
 
             if (($override_status != $post_status_obj->name) 
-            && (!defined('PRESSPERMIT_STATUSES_VERSION') || $can_set_status[$override_status])
+            && $can_set_status[$override_status]
             ) {
                 $post_status_obj = get_post_status_object($override_status);
             }
@@ -2314,6 +2470,314 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         update_option('publishpress_statuses_num_roles', $status_num_roles);
 
         return (isset($status_num_roles[$check_status_name])) ? $status_num_roles[$check_status_name] : 0;
+    }
+
+    public function fltPostStatus($post_status)
+    {
+        global $current_user;
+
+        $post_id = \PublishPress_Functions::getPostID();
+
+        if ($_post = get_post($post_id)) {
+            $type_obj = get_post_type_object($_post->post_type);
+        }
+
+        if ('_pending' == $post_status) {
+            $save_as_pending = true;
+            $post_status = 'pending';
+            
+        } elseif (('pending' == $post_status) && !empty($type_obj) && current_user_can($type_obj->cap->publish_posts)) {
+            $save_as_pending = true;
+        }
+
+        $status_obj = get_post_status_object($post_status);
+
+        /*
+        if (defined('PUBLISHPRESS_REVISIONS_VERSION') && in_array($post_status, rvy_revision_base_statuses())) {
+            if ($mime_type = get_post_field('post_mime_type', $post_id)) {
+                if (in_array($mime_type, rvy_revision_statuses())) {
+                    return $post_status;
+                }
+            }
+        }
+        */
+
+        $is_administrator = \PublishPress_Statuses::isContentAdministrator();
+
+        if ($stored_status = get_post_field('post_status', $post_id)) {
+            $stored_status_obj = get_post_status_object($stored_status);
+        }
+
+        $_post_status = (!empty($_POST) && !empty($_POST['post_status'])) ? $_POST['post_status'] : '';
+
+        $selected_status = ($_post_status && ('publish' != $_post_status)) ? $_post_status : $post_status;
+
+        if ('public' == $selected_status) {
+            $selected_status = 'publish';
+        }
+
+        if (!$post_status_obj = get_post_status_object($selected_status)) {
+            return $post_status;
+        }
+
+        // Important: if other plugin code inserts additional posts in response, don't filter those
+        static $done;
+        if (!empty($done)) return $post_status;  
+        $done = true;
+
+        $post_status = $selected_status;
+
+        $_post = get_post($post_id);
+
+        // Scheduled Post handling (Classic Editor)  @todo: Gutenberg
+        /*
+        if (!defined('REST_REQUEST')) {
+            if (!empty($post_status_obj->private)) {
+                $_POST['post_password'] = '';
+
+                if (presspermit_is_POST('sticky')) {
+                    unset($_POST['sticky']);
+                }
+            }
+
+            if ($post_status_obj->public || $post_status_obj->private) {
+                if ($post_date_gmt = presspermit_POST_var('post_date_gmt')) {
+                    $post_date_gmt = pp_permissions_sanitize_entry($post_date_gmt);  // local variable is only used for comparison to current time
+                } elseif (!presspermit_empty_POST('aa')) {
+                    foreach (['aa' => 'Y', 'mm' => 'n', 'jj' => 'j', 'hh' => '', 'mn' => '', 'ss' => ''] as $var => $format) {
+                        $$var = presspermit_POST_var($var);
+                        $$var = (!$format || $$var > 0) ? pp_permissions_sanitize_entry($$var) : date($format);
+                    }
+                    $post_date = sprintf("%04d-%02d-%02d %02d:%02d:%02d", $aa, $mm, min($jj, 31), min($hh, 23), min($mn, 59), 0);
+                    $post_date_gmt = get_gmt_from_date($post_date);
+                }
+
+                // set status to future if a future date was selected with a private status
+                $now = gmdate('Y-m-d H:i:59');
+                if (!empty($post_date_gmt) && mysql2date('U', $post_date_gmt, false) > mysql2date('U', $now, false)) {
+                    update_post_meta($post_id, '_scheduled_status', $post_status);
+                    $post_status = 'future';
+                } else {
+                    // if a post is being transitioned from scheduled to published/private, apply scheduled status
+                    if ($_post) {
+	                    if ('future' == $_post->post_status) {  // stored status is future
+	                        if ($_status = get_post_meta($post_id, '_scheduled_status', true)) {
+	                            $post_status = $_status;
+	                            $post_status_obj = get_post_status_object($post_status);
+	                        }
+	
+	                        delete_post_meta($post_id, '_scheduled_status');
+	                    }
+	                }
+	            }
+            }
+        }
+        */
+
+        if (empty($_post)) {
+            return $post_status;
+        }
+
+        $doing_rest = defined('REST_REQUEST') && (!empty($_REQUEST['meta-box-loader']) || $this->doing_rest);
+
+        // Allow Publish / Submit button to trigger our desired workflow progression instead of Publish / Pending status.
+        // Apply this change only if stored post is not already published or scheduled.
+        // Also skip retain normal WP editor behavior if the newly posted status is privately published or future.
+        if (
+            (in_array($selected_status, ['publish', 'pending', 'future']) && !in_array($stored_status, ['publish', 'private', 'future']) 
+            && empty($stored_status_obj->public) && empty($stored_status_obj->private))
+            //(!$doing_rest && ('publish' == $selected_status))
+        ) {
+            // Gutenberg REST gives no way to distinguish between Publish and Save request. Treat as Publish (next workflow progression) if any of the following:
+            //  * user cannot set pending status
+            //  * already set to pending status
+
+            if (
+                empty($save_as_pending) /* Pending status was not explicitly selected by dropdown / checkbox */
+                || ! defined('REST_REQUEST')
+                || ! $doing_rest
+                || (('publish' == $selected_status) && !\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, 'pending')) 
+            ) {
+                // Users who have publish capability do not need defaultStatusProgression() functionality, so do not get the status="_pending" dropdown option to indicate an explicit Save as Pending request
+                if ('pending' == $selected_status) {
+                    $type_obj = get_post_type_object($_post->post_type);
+                    $can_publish = ($type_obj) ? !empty($current_user->allcaps[$type_obj->cap->publish_posts]) : false;
+                }
+
+                require_once(__DIR__ . '/REST.php');
+                $rest = \PublishPress_Statuses\REST::instance();
+                $workflow_action = isset($rest->params['pp_workflow_action']) ? $rest->params['pp_workflow_action'] : false;
+
+                $selected_status_dropdown = isset($rest->params['pp_status_selection']) ? $rest->params['pp_status_selection'] : $selected_status;
+
+                $post_type = ($post_id) ? '' : \PublishPress_Functions::findPostType();
+
+                switch ($workflow_action) {
+                    case 'specified':
+                        $post_status = $selected_status_dropdown;
+                        break;
+
+                    case 'current':
+                        $post_status = $stored_status;
+                        break;
+
+                    case 'next':
+                        $post_status = \PublishPress_Statuses::defaultStatusProgression($post_id, ['default_by_sequence' => true, 'return' => 'name', 'post_type' => $post_type]);
+                        break;
+
+                    case 'max':
+                        $post_status = \PublishPress_Statuses::defaultStatusProgression($post_id, ['default_by_sequence' => false, 'return' => 'name', 'post_type' => $post_type]);
+                        break;
+
+                    default:
+                        if (empty($save_as_pending) && ($doing_rest && ($selected_status != $stored_status || (('pending' == $selected_status) && !$can_publish))) || (!empty($_POST) && !empty($_POST['publish']))) { //} && ! empty( $_POST['pp_submission_status'] ) ) { 
+                            // Submission status inferred using same logic as UI generation (including permission check)
+                            $post_status = \PublishPress_Statuses::defaultStatusProgression($post_id, ['return' => 'name', 'post_type' => $post_type]);
+                        }
+                }
+
+                $filtered_status = apply_filters('presspermit_selected_moderation_status', $post_status, $post_id);
+
+                if (($filtered_status != $post_status) 
+                && \PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $filtered_status)
+                ) {
+                    $post_status = $filtered_status;
+                }
+            }
+
+            // Final permission check to cover all other custom statuses (draft, publish and private status capabilities are already checked by WP)
+        } elseif (!empty($_post) && !$is_administrator && ($post_status != $stored_status) 
+        && !in_array($post_status, ['draft', 'publish', 'private']) 
+        && !\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $post_status)
+        ) {
+            
+            $post_status = ($stored_status) ? $stored_status : 'draft';
+        }
+
+        return $post_status;
+    }
+
+    // log request and handler parameters for possible reference by subsequent PP filters; block unpermitted create/edit/delete requests 
+    function fltRestPreDispatch($rest_response, $rest_server, $request)
+    {
+        $this->doing_rest = true;
+
+        require_once(__DIR__ . '/REST.php');
+        return \PublishPress_Statuses\REST::instance()->pre_dispatch($rest_response, $rest_server, $request);
+    }
+
+    function actRestInit()
+    {
+        register_post_status(
+            '_pending', 
+            [
+                'label'                     => esc_html__('Pending'),
+                'label_count'               => false,
+                'exclude_from_search'       => true,
+                'public'                    => false,
+                'internal'                  => false,
+                'protected'                 => true,
+                'private'                   => false,
+                'publicly_queryable'        => false,
+                'show_in_admin_status_list' => false,
+                'show_in_admin_all_list'    => false,
+            ]
+        );
+
+        foreach(get_post_types(['public' => true, 'show_ui' => true], 'names', 'or') as $post_type) {
+            register_rest_field( $post_type, 'pp_workflow_action', array(
+                'get_callback' => [__CLASS__, 'getWorkflowAction'],
+                'update_callback' => [__CLASS__, 'updateWorkflowAction'],
+                'schema' => [
+                    'description'   => 'Workflow Action',
+                    'type'          => 'string',
+                    'context'       =>  ['view','edit']
+                    ]
+                )
+            );
+
+            register_rest_field( $post_type, 'pp_status_selection', array(
+                'get_callback' => [__CLASS__, 'getStatusSelection'],
+                'update_callback' => [__CLASS__, 'updateStatusSelection'],
+                'schema' => [
+                    'description'   => 'StatusSelection',
+                    'type'          => 'string',
+                    'context'       =>  ['view','edit']
+                    ]
+                )
+            );
+        }
+    }
+
+    public static function getWorkflowAction( $object ) {
+        $default_action = '';
+        $post_status = '';
+
+        if ($post_id = \PublishPress_Functions::getPostID()) {
+            if ($post_status = get_post_field('post_status', $post_id)) {
+                if ($status_obj = get_post_status_object($post_status)) {
+                    if (in_array($post_status, ['publish', 'private', 'future']) || !empty($stored_status_obj->public) || !empty($stored_status_obj->private)) {
+                        $default_action = 'current';
+                    }
+                }
+            }
+
+            $post_type = get_post_field('post_type', $post_id);
+        } else {
+            $post_type = \PublishPress_Functions::findPostType();
+        }
+
+        if (!$default_action) {
+            $default_status = \PublishPress_Statuses::defaultStatusProgression($post_id, ['return' => 'name', 'post_type' => $post_type]);
+
+            if ($default_status != $post_status) {
+                if (\PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) {
+                    $default_action = 'next';
+                } else {
+                    $default_action = 'max';
+                }
+            }
+        }
+        
+        return $default_action;
+    }
+
+    public static function updateWorkflowAction( $value, $object ) {
+        /*
+        $id = (is_object($object)) ? $object->ID : $object['id'];
+        
+        if (!empty($id)) {
+            error_log("Update workflow action: $id, $value");
+        }
+        */
+
+        return false;
+    }
+
+    public static function getStatusSelection( $object ) {
+        $status_selection = '';
+
+        if ($post_id = \PublishPress_Functions::getPostID()) {
+            if ($post_status = get_post_field('post_status', $post_id)) {
+                if (get_post_status_object($post_status)) {
+                    $status_selection = $post_status;
+                }
+            }
+        }
+
+        return $status_selection;
+    }
+
+    public static function updateStatusSelection( $value, $object ) {
+        /*
+        $id = (is_object($object)) ? $object->ID : $object['id'];
+        
+        if (!empty($id)) {
+            error_log("Update status selection: $id, $value");
+        }
+        */
+
+        return false;
     }
 }
 }

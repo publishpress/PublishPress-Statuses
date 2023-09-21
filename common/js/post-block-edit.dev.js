@@ -6,92 +6,75 @@
  * Copyright 2023, PublishPress
  */
 jQuery(document).ready(function ($) {
-    /***** Redirect back to edit.php if user won't be able to futher edit after changing post status *******/
-    $(document).on('click', 'button.editor-post-publish-button,button.editor-post-save-draft', function () {
-        var redirectCheckSaveInterval = setInterval(function () {
-            let saving = wp.data.select('core/editor').isSavingPost();
 
-            if (saving) {
-                clearInterval(redirectCheckSaveInterval);
+    var __ = wp.i18n.__;
+    var ppCurrentStatus = '';
+    var ppLastStatus = false;
 
-                var redirectCheckSaveDoneInterval = setInterval(function () {
-                    let saving = wp.data.select('core/editor').isSavingPost();
-
-                    if (!saving) {
-                        //let goodsave = wp.data.select('core/editor').didPostSaveRequestSucceed();
-                        let status = wp.data.select('core/editor').getEditedPostAttribute('status');
-
-                        var redirectProp = 'redirectURL' + status;
-                        if (typeof ppObjEdit[redirectProp] != undefined) {
-                            $(location).attr("href", ppObjEdit[redirectProp]);
-                        }
-
-                        clearInterval(redirectCheckSaveDoneInterval);
-                    }
-                }, 50);
-            }
-        }, 10);
-    });
-
-    /*******************************************************************************************************/
+    ppObjEdit.publishCaptionCurrent = ppObjEdit.publish;
 
 
-    /******************** JQUERY SUPPORT FOR RECAPTIONING PUBLISH AND PRE-PUBLISH BUTTONS **************************/
-
-    $(document).on('click', 'span.presspermit-editor-button button', function() {
-        $(this).parent().prev('button').trigger('click').hide();
-    });
+    /******************** FUNCTIONS FOR RECAPTIONING PUBLISH AND PRE-PUBLISH BUTTONS **************************/
 
     /*
      * The goal is to allow recaptioning "Publish..." to "Workflow...",  "Submit for Review" to "Submit as Pitch" etc.
      */
     function PP_RecaptionButton(btnName, btnSelector, btnCaption) {
-        if (ppObjEdit.disableRecaption) {
+        if (ppObjEdit.disableRecaption || wp.data.select('core/editor').isSavingPost()) {
             return;
         }
 
-        $('span.presspermit-editor-button').remove();
-
         var node = $(btnSelector);
 
-        // WP may implicitly suppress Pre-pub following status save
-        if (!$(btnSelector).length && ('button.editor-post-publish-button' == btnSelector) && ppObjEdit.prePublish) {
-            btnSelector = 'button.editor-post-publish-panel__toggle';
-            btnCaption = ppObjEdit.prePublish;
-            node = $(btnSelector);
-            $(btnSelector).show();
+        var ppClass;
+
+        if ('button.editor-post-publish-button' == btnSelector) {
+            ppClass = 'presspermit-editor-button';
+        } else {
+            ppClass = 'presspermit-editor-toggle';
         }
 
-        if ($(btnSelector).length && btnCaption && (btnCaption != $(btnSelector).html() || !$('span.presspermit-editor-button:visible').length)) {
+        if ($(btnSelector).length && btnCaption && (btnCaption != $('span.' + ppClass + ' button').html() || !$('span.' + ppClass + ':visible').length)) {
             if ($(btnSelector).html() == ppObjEdit.submitRevisionCaption) {
                 return;
             }
 
-            $('.presspermit-editor-hidden').not($(btnSelector)).show();
+            $('span.presspermit-editor-toggle').remove();
 
-            node.addClass('presspermit-editor-hidden').hide().css('z-index', -999);
+            if (!$('div.editor-post-publish-panel__prepublish').length) {
+                $('span.presspermit-editor-button').remove();
+            }
 
-            node.after('<span class="presspermit-editor-button">' + node.clone().css('z-index', 0).removeClass('presspermit-editor-hidden').removeAttr('aria-disabled').css('position', 'relative').css('background-color', 'var(--wp-admin-theme-color)').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
+            if ((ppClass == 'presspermit-editor-button') && $('div.editor-post-publish-panel__prepublish').length && $('span.' + ppClass + ' button').length) {
+                $('span.' + ppClass + ' button').html(btnCaption).show();
+            } else {
+                $('.presspermit-editor-hidden').not($(btnSelector)).show();
+
+                var hideClass;
+
+                if ('button.editor-post-publish-button' == btnSelector) {
+                    hideClass = 'presspermit-editor-hidden presspermit-editor-button-hidden';
+                } else {
+                    hideClass = 'presspermit-editor-hidden presspermit-editor-toggle-hidden';
+                }
+
+                // Hide the stock button
+                node.addClass(hideClass).hide().css('z-index', -999);
+
+                // Clone the stock button
+                node.after('<span class="' + ppClass + '">' + node.clone().css('z-index', 0).removeClass(hideClass).removeAttr('aria-disabled').css('position', 'relative').css('background-color', 'var(--wp-admin-theme-color)').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
         
-            node.not('.editor-post-publish-panel__toggle').addClass('presspermit-editor-hidden').css('background-color', 'inherit').css('position', 'fixed').attr('aria-disabled', true);
+                // If the stock button is not the pre-publish toggle, really hide it (re-add hide class; set background color, position and aria-disabled properties)
+                node.not('.editor-post-publish-panel__toggle').addClass(hideClass).css('background-color', 'inherit').css('position', 'fixed').attr('aria-disabled', true);
+            }
         }
 
         PP_InitializeStatuses();
     }
 
-    setInterval(function() {
-        if ($('span.presspermit-editor-button button.is-busy').length) {
-            let saving = wp.data.select('core/editor').isSavingPost();
-
-            if (!saving) {
-                $('span.presspermit-editor-button button.is-busy').removeClass('is-busy');
-            }
-        }
-    }, 200);
-
     // Update main publish ("Publish" / "Submit Pending") button width and span caption
     function PP_SetPublishButtonCaption(caption, waitForSaveDraftButton) {
-        if (ppObjEdit.publishCaptionCurrent == ppObjEdit.saveDraftCaption) {
+        if ((ppObjEdit.publishCaptionCurrent == ppObjEdit.saveDraftCaption) || wp.data.select('core/editor').isSavingPost()) {
             return;
         }
 
@@ -119,80 +102,34 @@ jQuery(document).ready(function ($) {
 
             function WaitForRecaption() {
                 if (!waitForSaveDraftButton || $('button.editor-post-save-draft').filter(':visible').length || !$('.is-saving').length) { // indicates save operation (or return from Pre-Publish) is done
-                    //if ($('button.editor-post-publish-button').length) {			  // indicates Pre-Publish is disabled
-                        clearInterval(RecaptionInterval);
-                        clearTimeout(RecaptionTimeout);
+                    clearInterval(RecaptionInterval);
+                    clearTimeout(RecaptionTimeout);
 
-                        // will set Pre-pub button instead when applicable
-                        PP_RecaptionButton('publish', 'button.editor-post-publish-button', caption);
+                    // will set Pre-pub button instead when applicable
+                    PP_RecaptionButton('publish', 'button.editor-post-publish-button', caption);
 
-                        $('.publishpress-extended-post-status-note').hide();
-                    //} else {
-                    //    if (waitForSaveDraftButton) {  // case of execution following publish click with Pre-Publish active
-                    //        clearInterval(RecaptionInterval);
-                    //        clearTimeout(RecaptionTimeout);
-                    //    }
-                    //}
+                    $('.publishpress-extended-post-status-note').hide();
 
                     $('span.presspermit-editor-button button').removeAttr('aria-disabled');
                 }
             }
         }
     }
-
-    var __ = wp.i18n.__;
-
-    // Force button copies to be refreshed following modal settings window access
-    var DetectPublishOptionsDivClosureInterval = '';
-    var DetectPublishOptionsDiv = function () {
-        if ($('div.components-modal__header').length) {
-            clearInterval(DetectPublishOptionsDivInterval);
-
-            var DetectPublishOptionsClosure = function () {
-                if (!$('div.components-modal__header').length) {
-                    clearInterval(DetectPublishOptionsDivClosureInterval);
-
-                    $('span.presspermit-editor-button').remove();
-                    $('.presspermit-editor-hidden').show();
-
-                    initInterval = setInterval(PP_InitializeBlockEditorModifications, 50);
-                    DetectPublishOptionsDivInterval = setInterval(DetectPublishOptionsDiv, 1000);
-                }
-            }
-            DetectPublishOptionsDivClosureInterval = setInterval(DetectPublishOptionsClosure, 200);
-        }
-    }
-    var DetectPublishOptionsDivInterval = setInterval(DetectPublishOptionsDiv, 1000);
     /*****************************************************************************************************************/
 
+
     /************* RECAPTION PRE-PUBLISH AND PUBLISH BUTTONS ****************/
-    ppObjEdit.publishCaptionCurrent = ppObjEdit.publish;
-
-    $(document).on('click', 'div.editor-post-publish-panel__header-cancel-button button', function() {
-        setTimeout(function () {
-            $('button.editor-post-publish-panel__toggle').removeClass('presspermit-editor-hidden').css('z-index', 1);
-            PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
-        }, 100);
-    });
-
+    
     // Initialization operations to perform once React loads the relevant elements
     var PP_InitializeBlockEditorModifications = function (forceRefresh) {
-        if ((typeof forceRefresh != "undefined" && forceRefresh) 
-        || (
-            ($('button.editor-post-publish-button').length || $('button.editor-post-publish-panel__toggle').length) 
-            && (
-                $('button.editor-post-save-draft').length 
-                || $('button.editor-post-saved-state').length 
-                || ($('div.publishpress-extended-post-status select option[value="_pending"]').length 
-                    && ('pending' == $('div.publishpress-extended-post-status select').val() || '_pending' == $('div.publishpress-extended-post-status select').val())
-                    )
-            )
+        if ((typeof forceRefresh != "undefined" && forceRefresh) || (($('button.editor-post-publish-button').length || $('button.editor-post-publish-panel__toggle').length) 
+        && ($('button.editor-post-save-draft').length || ($('div.publishpress-extended-post-status select option[value="_pending"]').length && ('pending' == $('div.publishpress-extended-post-status select').val() || '_pending' == $('div.publishpress-extended-post-status select').val())))
         )) {
             clearInterval(initInterval);
             initInterval = null;
 
             if ($('button.editor-post-publish-panel__toggle').length) {
-                if (typeof ppObjEdit.prePublish != 'undefined' && ppObjEdit.prePublish && ($('button.editor-post-publish-panel__toggle').html() != __('Schedule…'))) {
+                if (typeof ppObjEdit.prePublish != 'undefined' && ppObjEdit.prePublish) { // && ($('button.editor-post-publish-panel__toggle').html() != __('Schedule…'))) {
                     PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
                 }
 
@@ -203,13 +140,21 @@ jQuery(document).ready(function ($) {
             } else {
                 PP_SetPublishButtonCaption(ppObjEdit.publish, false);
             }
-
-            //PublishPressQueueCorrectDefaultSaveAsCaption();
         }
     }
     var initInterval = setInterval(PP_InitializeBlockEditorModifications, 50);
 
-    var rvyLastStatus = false;
+    setInterval(function() {
+        if ($('span.presspermit-editor-button button.is-busy').length) {
+            let saving = wp.data.select('core/editor').isSavingPost();
+
+            if (!saving) {
+                $('span.presspermit-editor-button button.is-busy').removeClass('is-busy');
+            }
+        }
+    }, 200);
+
+    var ppLastPublishCaption = '';
 
     setInterval(
         function() {
@@ -220,45 +165,51 @@ jQuery(document).ready(function ($) {
             if (ppObjEdit.workflowSequence && !wp.data.select('core/editor').isSavingPost()) {
                 let status = wp.data.select('core/editor').getEditedPostAttribute('status');
 
-                if (status != rvyLastStatus) {
-                    if (ppObjEdit.advanceStatus != '') {
-                        if (status == ppObjEdit.maxStatus) {
-                            ppObjEdit.publish = ppObjEdit.update;
-                            ppObjEdit.saveAs = ppObjEdit.update;
+                if (ppObjEdit.publish != ppLastPublishCaption) {
+                    //if (ppObjEdit.advanceStatus != '') {
+                        if (-1 !== PPCustomStatuses.publishedStatuses.indexOf(status)) {
+                            ppObjEdit.publish = 'Update';
+                            ppObjEdit.saveAs = '';
                         } else {
-                            ppObjEdit.publish = ppObjEdit.advanceStatus;
-                            //ppObjEdit.prePublish = ppObjEdit.advanceStatus;
-                            ppObjEdit.publishCaptionCurrent = ppObjEdit.advanceStatus;
-                            ppObjEdit.saveAs = ppObjEdit.advanceStatus;
-
-                            if ($('button.editor-post-publish-panel__toggle').length) {
-                                if (typeof ppObjEdit.prePublish != 'undefined' && ppObjEdit.prePublish && ($('button.editor-post-publish-panel__toggle').html() != __('Schedule…'))) {
-                                    PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
-                                }
+                            if (status == ppObjEdit.maxStatus) {
+                                ppObjEdit.publish = ppObjEdit.update;
+                                ppObjEdit.saveAs = ppObjEdit.update;
                             } else {
-                                PP_SetPublishButtonCaption(ppObjEdit.publish, false);
+                                if ($('button.editor-post-publish-panel__toggle').length) {
+                                    if (typeof ppObjEdit.prePublish != 'undefined' && ppObjEdit.prePublish && ($('button.editor-post-publish-panel__toggle').html() != __('Schedule…'))) {
+                                        
+                                        var pendingStatusArr = new Array('pending', '_pending');
+                                        
+                                        if (pendingStatusArr.indexOf(status) != -1) {
+                                            PP_SetPublishButtonCaption(ppObjEdit.publish, false);
+                                        } else {
+                                            PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
+                                        }
+                                    }
+                                } else {
+                                    PP_SetPublishButtonCaption(ppObjEdit.publish, false);
+                                }
                             }
                         }
-                    }
+
+                        ppLastStatus = status;
+                        ppLastPublishCaption = ppObjEdit.publish;
+                    //}
 
                     if (ppObjEdit.publishCaptionCurrent != ppObjEdit.publish) {
                         setTimeout(function () {
-                            PP_InitializeBlockEditorModifications();
+                            PP_InitializeBlockEditorModifications(true);
                         }, 100);
-
-                        // Keep refreshing the button caption for 10 seconds  // @todo where/why is previous caption re-applied after initial change?
-                        var intRvyRefreshPublishCaption = setInterval(function() {PP_InitializeBlockEditorModifications(true);}, 1000);
-                        setTimeout(function() {clearInterval(intRvyRefreshPublishCaption)}, 10000);
                     }
 
                     ppObjEdit.publishCaptionCurrent = ppObjEdit.publish;
-
-                    rvyLastStatus = status;
                 }
             }
         },
         500
     );
+
+    
 
     var PP_InitializeStatuses = function () {
         if ($('div.publishpress-extended-post-status select').length) {
@@ -278,16 +229,11 @@ jQuery(document).ready(function ($) {
                     $('div.publishpress-extended-post-status select').val('_pending');
                 });
             }
+
+            ppCurrentStatus = $('div.publishpress-extended-post-status select').val();
         }
     }
     var initStatusInterval = setInterval(PP_InitializeStatuses, 50);
-
-    // Fallback safeguard against redundant visible Pending options
-    $(document).on('click', 'div.publishpress-extended-post-status select', function() {
-        if ($('div.publishpress-extended-post-status select option[value="_pending"]').length && $('div.publishpress-extended-post-status select option[value="pending"]').length) {
-            $('div.publishpress-extended-post-status select option[value="pending"]').hide();
-        }
-    });
 
     setInterval(function() {
         // Pending Review checkbox selects "pending" option
@@ -296,11 +242,119 @@ jQuery(document).ready(function ($) {
         }
     }, 200);
 
-    $(document).on('click', 'div.editor-post-publish-panel__header button.components-icon-button', function() {
-        setTimeout(function () {
-            PP_InitializeBlockEditorModifications();
-        }, 100);
+    // If the status dropdown is changed, current post status will potentially be different from [user's next/max workflow status progression]
+    // So make any subsequent "Save As" link click cause the Submit button to be recaptioned to "Submit as %s" (instead of "Save As %s")
+    // to show that a progression is offered.
+    $(document).on('click', 'div.publishpress-extended-post-status select', function () {
+        $(document).on('click', 'button.editor-post-save-draft', function () {
+            ppObjEdit.publishCaptionCurrent = ppObjEdit.publish;
+        });
     });
+
+    $(document).on('change', 'div.publishpress-extended-post-status select', function () {
+        // Reduce visible re-sizing of new label. It will be re-shown after width property is updated.
+        $('#ppcs_save_draft_label').hide();
+    });
+
+    // Fallback safeguard against redundant visible Pending options
+    $(document).on('click', 'div.publishpress-extended-post-status select', function() {
+        if ($('div.publishpress-extended-post-status select option[value="_pending"]').length && $('div.publishpress-extended-post-status select option[value="pending"]').length) {
+            $('div.publishpress-extended-post-status select option[value="pending"]').hide();
+        }
+    });
+
+    $(document).on('click', 'span.presspermit-editor-button button', function() {
+        if (!wp.data.select('core/editor').isSavingPost() && !$('span.presspermit-editor-button button').attr('aria-disabled')) {
+            $(this).parent().prev('button.editor-post-publish-button').trigger('click').hide();
+        }
+    });
+
+    $(document).on('click', 'span.presspermit-editor-toggle button', function() {
+        if (!wp.data.select('core/editor').isSavingPost() && !$('span.presspermit-editor-toggle button').attr('aria-disabled')) {
+            $(this).parent().prev('button.editor-post-publish-panel__toggle').trigger('click').hide();
+        }
+    });
+
+    let ppPostSavingDone = function() {
+        $('div.publishpress-extended-post-status select').removeAttr('locked');
+
+        ppcsEnablePostUpdate();
+
+        let status = wp.data.select('core/editor').getCurrentPostAttribute('status');
+
+        var redirectProp = 'redirectURL' + status;
+        if (typeof ppObjEdit[redirectProp] != undefined) {
+            $(location).attr("href", ppObjEdit[redirectProp]);
+        } else {
+            ppCurrentStatus = status;
+        }
+
+        ppLastStatus = false;
+
+        setTimeout(function() {
+            ppLastStatus = false;
+            PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
+            PP_SetPublishButtonCaption(ppObjEdit.publish, false);
+            ppEnablePostUpdate();
+        }, 500);
+
+        querySelectableStatuses(status);
+
+        ppLoggedPostSave = false;
+    }
+
+    var ppDisablePostUpdate = function ppDisablePostUpdate() {
+        $('span.presspermit-editor-button button').attr('aria-disabled', true);
+        $('div.publishpress-extended-post-status select').attr('disabled', true);
+    }
+
+    var ppEnablePostUpdate = function ppEnablePostUpdate() {
+        $('div.publishpress-extended-post-status select').removeAttr('disabled');
+    }
+
+    var ppLoggedPostSave = false;
+
+    let ppPostSaveCheck = function() {
+        let saving = wp.data.select('core/editor').isSavingPost();
+
+        if (saving) {
+            if (wp.data.select('core/editor').isAutosavingPost()) {
+                return;
+            }
+
+            if (!ppLoggedPostSave) {
+                ppLoggedPostSave = true;
+
+                var redirectCheckSaveDoneInterval = setInterval(function () {
+                    let saving = wp.data.select('core/editor').isSavingPost();
+
+                    if (!saving) {
+                        clearInterval(redirectCheckSaveDoneInterval);
+                        ppPostSavingDone();
+                    }
+                }, 50);
+
+                ppCurrentStatus = wp.data.select('core/editor').getEditedPostAttribute('status');
+
+                //$('div.publishpress-extended-post-status select').parent().hide();
+                $('div.publishpress-extended-post-status select').attr('locked', true);
+
+                ppDisablePostUpdate();
+                $('span.presspermit-editor-toggle button').attr('aria-disabled', true);
+            }
+        } else {
+            ppLoggedPostSave = false;
+        }
+    }
+
+    /***** Redirect back to edit.php if user won't be able to futher edit after changing post status *******/
+    $(document).on('click', 'button.editor-post-publish-button:not(.presspermit-editor-hidden),button.editor-post-save-draft', function () {
+        ppPostSaveCheck();
+    });
+
+    var redirectCheckSaveInterval = setInterval(function () {
+        ppPostSaveCheck();
+    }, 100);
 
     // If Publish button is clicked, current post status will be set to [user's next/max status progression]
     // So set Publish button caption to "Save As %s" to show that no further progression is needed / offered.
@@ -315,7 +369,7 @@ jQuery(document).ready(function ($) {
                     PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
                 } else {
                     if ($('button.editor-post-publish-panel__toggle').length) {
-                        if (!$('span.presspermit-editor-button').length) {
+                        if (!$('span.presspermit-editor-toggle').length) {
                             PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
                         }
                     } else {
@@ -338,6 +392,13 @@ jQuery(document).ready(function ($) {
         }, 100);
     });
 
+    $(document).on('click', 'div.editor-post-publish-panel__header-cancel-button button', function() {
+        setTimeout(function () {
+            $('button.editor-post-publish-panel__toggle').removeClass('presspermit-editor-hidden').css('z-index', 1);
+            PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
+        }, 100);
+    });
+
     $(document).on('click', 'button.editor-post-save-draft', function () {
         $('span.presspermit-editor-button button').attr('aria-disabled', 'true');
 
@@ -348,12 +409,36 @@ jQuery(document).ready(function ($) {
         }, 50);
     });
 
-    // If the status dropdown is changed, current post status will potentially be different from [user's next/max workflow status progression]
-    // So make any subsequent "Save As" link click cause the Submit button to be recaptioned to "Submit as %s" (instead of "Save As %s")
-    // to show that a progression is offered.
-    $(document).on('click', 'div.publishpress-extended-post-status select', function () {
-        $(document).on('click', 'button.editor-post-save-draft', function () {
-            ppObjEdit.publishCaptionCurrent = ppObjEdit.publish;
-        });
+
+
+    $(document).on('click', 'div.editor-post-publish-panel__header button.components-icon-button', function() {
+        setTimeout(function () {
+            PP_InitializeBlockEditorModifications();
+        }, 100);
     });
+
+    // Force button copies to be refreshed following modal settings window access
+    var DetectPublishOptionsDivClosureInterval = '';
+    var DetectPublishOptionsDiv = function () {
+        if ($('div.components-modal__header').length) {
+            clearInterval(DetectPublishOptionsDivInterval);
+
+            var DetectPublishOptionsClosure = function () {
+                if (!$('div.components-modal__header').length) {
+                    clearInterval(DetectPublishOptionsDivClosureInterval);
+
+                    $('span.presspermit-editor-button').remove();
+                    $('span.presspermit-editor-toggle').remove();
+                    $('.presspermit-editor-hidden').show();
+                    PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
+                    PP_SetPublishButtonCaption(ppObjEdit.publish, true);
+
+                    initInterval = setInterval(PP_InitializeBlockEditorModifications, 50);
+                    DetectPublishOptionsDivInterval = setInterval(DetectPublishOptionsDiv, 1000);
+                }
+            }
+            DetectPublishOptionsDivClosureInterval = setInterval(DetectPublishOptionsClosure, 200);
+        }
+    }
+    var DetectPublishOptionsDivInterval = setInterval(DetectPublishOptionsDiv, 1000);
 });
