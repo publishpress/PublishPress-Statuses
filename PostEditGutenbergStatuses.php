@@ -34,9 +34,10 @@ class PostEditGutenbergStatuses
         }
 
         if ($args['workflowSequence'] = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) {
+            $default_by_sequence = true;
             $max_status_obj = \PublishPress_Statuses::defaultStatusProgression(0, ['default_by_sequence' => false, 'skip_current_status_check' => true]);
             $args['advanceStatus'] = esc_html__('Advance Status', 'presspermit-pro');
-            $next_status_obj = $max_status_obj;
+            //$next_status_obj = $max_status_obj;
         } else {
             $max_status_obj = $next_status_obj;
             $args['advanceStatus'] = '';
@@ -64,13 +65,13 @@ class PostEditGutenbergStatuses
 
         if (!isset($save_as_label)) {
             if ((!empty($next_status_obj->labels->publish))) {
-                $save_as_label = (\PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) ? esc_html__('Advance Status', 'presspermit-pro') : $next_status_obj->labels->publish;
+                $save_as_label = (!empty($default_by_sequence)) ? esc_html__('Advance Status', 'presspermit-pro') : $next_status_obj->labels->publish;
             } else {
                 $save_as_label = $args['update'];
             }
         }
 
-        $args = array_merge($args, ['publish' => $publish_label, 'saveAs' => $save_as_label, 'maxStatus' => $max_status_obj->name]);
+        $args = array_merge($args, ['publish' => $publish_label, 'saveAs' => $save_as_label, 'nextStatus' => $next_status_obj->name, 'maxStatus' => $max_status_obj->name, 'defaultBySequence' => !empty($default_by_sequence)]);
 
         if (!$is_administrator = \PublishPress_Statuses::isContentAdministrator()) {
             $post_type = \PublishPress_Functions::findPostType();
@@ -102,7 +103,8 @@ class PostEditGutenbergStatuses
             }
         }
 
-        if ((!empty($next_status_obj->moderation) || (!$is_administrator && !$can_publish)) && !defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
+        //if ((!empty($next_status_obj->moderation) || (!$is_administrator && !$can_publish)) && !defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
+        if (!defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
             $args['prePublish'] = apply_filters('presspermit_workflow_button_label', __('Workflow', 'presspermit-pro'), $post_id);
         }
 

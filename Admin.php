@@ -481,8 +481,18 @@ class Admin
                 $status->labels->publish = esc_html__('Assign', 'presspermit-pro');
             } elseif ('in-progress' == $status->name) {
                 $status->labels->publish = esc_html__('Mark In Progress', 'presspermit-pro');
+            } elseif ('publish' == $status->name) {
+                $status->labels->publish = esc_html__('Publish', 'presspermit-pro');
+            } elseif ('future' == $status->name) {
+                $status->labels->publish = esc_html__('Schedule', 'presspermit-pro');
             } else {
-                $status->labels->publish = esc_attr(sprintf(__('Submit as %s', 'presspermit-pro'), $status->label));
+                if (strlen($status->label) > 16) {
+                    $status->labels->publish = __('Submit', 'presspermit-pro');
+                } elseif (strlen($status->label) > 13) {
+                    $status->labels->publish = esc_attr(sprintf(__('Set to %s', 'presspermit-pro'), $status->label));
+                } else {
+                    $status->labels->publish = esc_attr(sprintf(__('Submit as %s', 'presspermit-pro'), $status->label));
+                }
             }
         }
 

@@ -83,24 +83,23 @@ class PostEditClassic
         ];
 
         if (!empty($post)) {
-            if (\PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) {
-                $next_status_obj = \PublishPress_Statuses::getNextStatusObject(
-                    $post->ID, 
-                    ['default_by_sequence' => true, 'post_status' => $post->post_status]
-                );
+            $default_by_sequence = !empty(\PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence);
 
-                if ($next_status_obj && !in_array($next_status_obj->name, ['publish', 'private'])) {
-                    if (!empty($next_status_obj->labels->publish)) {
-                        $args['publish'] = $next_status_obj->labels->publish;
-                    } elseif (!empty($next_status_obj->labels->save_as)) {
-                        $args['publish'] = $next_status_obj->labels->save_as;
-                    } else {
-                        $args['publish'] = sprintf(__('Submit as %s', 'publishpress-statuses'), $next_status_obj->label);
-                    }
+            $next_status_obj = \PublishPress_Statuses::getNextStatusObject(
+                $post->ID, 
+                ['default_by_sequence' => $default_by_sequence, 'post_status' => $post->post_status]
+            );
+
+            if ($next_status_obj && !in_array($next_status_obj->name, ['publish', 'private'])) {
+                if (!empty($next_status_obj->labels->publish)) {
+                    $args['publish'] = $next_status_obj->labels->publish;
+                } elseif (!empty($next_status_obj->labels->save_as)) {
+                    $args['publish'] = $next_status_obj->labels->save_as;
+                } else {
+                    $args['publish'] = sprintf(__('Submit as %s', 'publishpress-statuses'), $next_status_obj->label);
                 }
             }
         }
-
 
         wp_localize_script('publishpress-statuses-object-edit', 'ppObjEdit', $args);
 

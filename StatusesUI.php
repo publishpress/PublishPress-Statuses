@@ -53,24 +53,22 @@ class StatusesUI {
                 $group_name . '_general'
             );
 
-            if (function_exists('presspermit') && defined('PRESSPERMIT_COLLAB_VERSION')) {
+            add_settings_field(
+                'moderation_statuses_default_by_sequence',
+                __('Status order:', 'publishpress'),
+                [$this, 'settings_moderation_statuses_default_by_sequence_option'],
+                $group_name,
+                $group_name . '_general'
+            );
+
+            if (function_exists('presspermit') && defined('PRESSPERMIT_COLLAB_VERSION') && defined('PRESSPERMIT_STATUSES_VERSION')) {
                 add_settings_field(
-                    'moderation_statuses_default_by_sequence',
-                    __('Status order:', 'publishpress'),
-                    [$this, 'settings_moderation_statuses_default_by_sequence_option'],
+                    'supplemental_cap_moderate_any',
+                    __('Editor capabilities:', 'publishpress'),
+                    [$this, 'settings_supplemental_cap_moderate_any_option'],
                     $group_name,
                     $group_name . '_general'
                 );
-
-                if (defined('PRESSPERMIT_STATUSES_VERSION')) {
-                    add_settings_field(
-                        'supplemental_cap_moderate_any',
-                        __('Editor capabilities:', 'publishpress'),
-                        [$this, 'settings_supplemental_cap_moderate_any_option'],
-                        $group_name,
-                        $group_name . '_general'
-                    );
-                }
             }
         }
 
