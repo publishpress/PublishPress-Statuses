@@ -347,7 +347,7 @@ class PublishPress_Functions
      * @since 0.7
      *
      */
-    public static function printAjaxResponse($status, $message = '', $data = null)
+    public static function printAjaxResponse($status, $message = '', $data = null, $params = null)
     {
         header('Content-type: application/json;');
 
@@ -358,6 +358,10 @@ class PublishPress_Functions
 
         if (!is_null($data)) {
             $result['data'] = $data;
+        }
+
+        if (!is_null($params)) {
+            $result['params'] = $params;
         }
 
         echo json_encode($result);

@@ -334,7 +334,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
             $this->display_section_row('_pre-publish-alternate', 
             [
                 'label' => sprintf(
-                    __('Alternate Pre-Publication Workflows %s(drag to reorder / nest / move to main workflow)%s:', 'publishpress-statuses'),
+                    __('Alternate Pre-Publication Workflow(s) %s(drag to reorder / nest / move to main workflow)%s:', 'publishpress-statuses'),
                     '<span class="pp-status-ordering-note">',
                     '</span>'
                 ),

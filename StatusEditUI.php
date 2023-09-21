@@ -122,10 +122,6 @@ echo esc_attr($edit_status_link); ?>">
         <?php endif;
 
         submit_button(__('Update Status', 'publishpress'), 'primary pp-statuses', 'submit', false); ?>
-        <a class="cancel-settings-link"
-            href="<?php
-            echo esc_url(\PublishPress_Statuses::getLink()); ?>"><?php
-            _e('Cancel', 'publishpress'); ?></a>
     </p>
 </form>
 
@@ -240,11 +236,11 @@ echo esc_attr($edit_status_link); ?>">
                                 echo esc_attr($icon);
                             } ?>"/>
 
-                    <div id="icon_picker_wrap" data-target='#status_icon'
-                            data-preview="#icon_picker_preview" class="button dashicons-picker">
-                        <div id="icon_picker_preview" class="dashicons <?php
+                    <div id="publishpress_icon_pick_wrap" data-target='#status_icon'
+                            data-preview="#publishpress_icon_pick_preview" class="button dashicons-picker">
+                        <div id="publishpress_icon_pick_preview" class="dashicons <?php
                         echo isset($icon) ? esc_attr($icon) : ''; ?>"></div>
-                        <div class="icon_picker_button_label"><?php
+                        <div class="publishpress_icon_pick_button_label"><?php
                             echo __('Select Icon', 'publishpress'); ?></div>
                     </div>
 
@@ -280,7 +276,12 @@ echo esc_attr($edit_status_link); ?>">
                 $roles = \PublishPress_Functions::getRoles(true);
                 ?>
                 <tr class="form-field">
-                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'presspermit-pro') ?></label></th>
+                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'presspermit-pro') ?></label>
+                    <br /><br />
+                    <span class="pp-statuses-field-descript" style="font-weight: normal">
+                    <?php esc_html_e('Choose which user roles can assign this status to a post.', 'presspermit-pro');?>
+                    </span>
+                    </th>
 
                     <td class="set-status-roles">
                         <?php foreach($roles as $role_name => $role_label):
@@ -320,6 +321,10 @@ echo esc_attr($edit_status_link); ?>">
                 //$omit_types = apply_filters('presspermit_unfiltered_post_types', ['wp_block']);
                 $omit_types = ['nav_menu', 'attachment', 'revision', 'wp_navigation', 'wp_block']; // @todo: review block, navigation filtering
 
+                $custom_status_post_types = \PublishPress_Statuses::instance()->options->post_types;
+                $custom_status_post_types = array_filter($custom_status_post_types);
+                $types = array_intersect_key($types, $custom_status_post_types);
+
                 $types = array_diff_key($types, array_fill_keys((array)$omit_types, true));
 
                 $enabled_types = (!empty($status_obj->post_type)) ? $status_obj->post_type : [];
@@ -343,7 +348,7 @@ echo esc_attr($edit_status_link); ?>">
                             <input name="<?php echo 'pp_status_all_types'; ?>" type="checkbox"
                                     id="<?php echo 'pp_status_all_types'; ?>"
                                     value="1" <?php checked('1', $all_enabled);?> <?php echo esc_attr($disabled); ?> />
-                            <?php esc_html_e('(All Types)', 'presspermit-pro'); ?>
+                            <?php esc_html_e('All Post Types', 'presspermit-pro'); ?>
                         </label>
                     </div>
                     <?php

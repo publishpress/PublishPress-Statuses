@@ -1,4 +1,4 @@
-div#icon_picker_wrap {
+div#publishpress_icon_pick_wrap {
     display: inline-block;
     cursor: pointer;
     height: 36px;
@@ -8,7 +8,7 @@ div#icon_picker_wrap {
     user-select: none;
 }
 
-div#icon_picker_wrap span.dashicons {
+div#publishpress_icon_pick_wrap span.dashicons {
     margin-right: 4px;
     line-height: 0.1;
 }

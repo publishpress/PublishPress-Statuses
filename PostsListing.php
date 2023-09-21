@@ -72,17 +72,10 @@ class PostsListing
         if ($column_name == 'status') {
             global $post;
 
-            $builtin_stati = [
-                'publish' => esc_html__('Published'),
-                'draft' => esc_html__('Draft'),
-                'future' => esc_html__('Scheduled'),
-                'private' => esc_html__('Private'),
-                'pending' => esc_html__('Pending Review'),
-                'trash' => esc_html__('Trash'),
-            ];
-
-            if (array_key_exists($post->post_status, $builtin_stati)) {
-                echo esc_html($builtin_stati[$post->post_status]) . ' ';  // If an invalid second 'publish' status is stored to PublishPress configuration, ensure at least a space between.
+            if ($status_obj = get_post_status_object($post->post_status)) {
+                if (!empty($status_obj->label)) {
+                    echo $status_obj->label;
+                }
             }
         }
     }

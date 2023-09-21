@@ -74,12 +74,19 @@ class PostEditGutenberg
         );
 
         $custom_privacy_statuses = apply_filters('presspermit_block_editor_privacy_statuses', []);
-        $published_statuses = array_merge($custom_privacy_statuses, ['publish', 'private']);
+        $published_statuses = array_merge($custom_privacy_statuses, ['publish', 'private', 'future']);
+
+        $published_status_objects = array_values(
+            array_merge(
+                get_post_stati(['public' => true, 'private' => 'true'], 'object', 'or'),
+                [get_post_status_object('future')]
+            )
+        );
 
         wp_localize_script(
             'publishpress-custom-status-block',
             'PPCustomStatuses',
-            ['statuses' => $statuses, 'publishedStatuses' => $published_statuses, 'ajaxurl' => admin_url('admin-ajax.php')]
+            ['statuses' => $statuses, 'publishedStatuses' => $published_statuses, 'publishedStatusObjects' => $published_status_objects, 'ajaxurl' => admin_url('admin-ajax.php'), 'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')]
         );
     }
 
@@ -164,6 +171,15 @@ class PostEditGutenberg
                 $ordered_statuses[$key]->description = '-';
                 $ordered_statuses[$key]->color = '';
                 $ordered_statuses[$key]->icon = '';
+            }
+
+            $ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : __('Save', 'publishpress-statuses');
+            $ordered_statuses[$key]->submit = (!empty($status_obj->labels->publish)) ? $status_obj->labels->publish : __('Advance Status', 'publishpress-statuses');
+        }
+
+        foreach ($ordered_statuses as $k => $status_obj) {
+            if ('future' == $status_obj->name) {
+                unset($ordered_statuses[$k]);
             }
         }
 
