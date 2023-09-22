@@ -1,9 +1,13 @@
 
-#ppcs_save_draft_label {
+#ppcs_save_draft_label,
+button.editor-post-save-draft, button.editor-post-switch-to-draft {
 white-space: nowrap;
 }
 
 
+#ppcs_save_draft_label {
+padding-right: 80px;
+}
 
 div.pp-statuses-workflow {
 border-top: none;
@@ -44,5 +48,11 @@ display: inherit;
 div.publishpress-extended-post-status div.components-base-control {
 width: 100%;
 }
+
+div.div.pp-statuses-workflow div.pp-editor-workflow-caption {
+padding-left: 25px;
+padding-top: 5px;
+}
+
 
 /*# sourceMappingURL=custom-status-block-editor.css.map */
