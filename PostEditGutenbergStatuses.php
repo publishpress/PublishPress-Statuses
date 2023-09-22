@@ -37,7 +37,6 @@ class PostEditGutenbergStatuses
             $default_by_sequence = true;
             $max_status_obj = \PublishPress_Statuses::defaultStatusProgression(0, ['default_by_sequence' => false, 'skip_current_status_check' => true]);
             $args['advanceStatus'] = esc_html__('Advance Status', 'publishpress-statuses');
-            //$next_status_obj = $max_status_obj;
         } else {
             $max_status_obj = $next_status_obj;
             $args['advanceStatus'] = '';
@@ -103,7 +102,6 @@ class PostEditGutenbergStatuses
             }
         }
 
-        //if ((!empty($next_status_obj->moderation) || (!$is_administrator && !$can_publish)) && !defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
         if (!defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
             $args['prePublish'] = apply_filters('presspermit_workflow_button_label', __('Workflow', 'publishpress-statuses'), $post_id);
         }

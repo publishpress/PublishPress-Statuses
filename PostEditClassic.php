@@ -13,8 +13,6 @@ class PostEditClassic
         add_action('add_meta_boxes', [$this, 'act_replace_publish_metabox'], 10, 2);
 
         add_action('admin_head', [$this, 'act_object_edit_scripts'], 99);  // needs to load after post.js to unbind handlers
-        
-        //add_action('admin_print_footer_scripts', [$this, 'act_supplement_js_captions'], 99);
     }
 
     public function post_submit_meta_box($post, $args = [])

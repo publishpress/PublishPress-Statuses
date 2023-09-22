@@ -166,35 +166,33 @@ jQuery(document).ready(function ($) {
                 let status = wp.data.select('core/editor').getEditedPostAttribute('status');
 
                 if (ppObjEdit.publish != ppLastPublishCaption) {
-                    //if (ppObjEdit.advanceStatus != '') {
-                        if (-1 !== PPCustomStatuses.publishedStatuses.indexOf(status)) {
-                            ppObjEdit.publish = 'Update';
-                            ppObjEdit.saveAs = '';
+                    if (-1 !== PPCustomStatuses.publishedStatuses.indexOf(status)) {
+                        ppObjEdit.publish = 'Update';
+                        ppObjEdit.saveAs = '';
+                    } else {
+                        if (status == ppObjEdit.maxStatus) {
+                            ppObjEdit.publish = ppObjEdit.update;
+                            ppObjEdit.saveAs = ppObjEdit.update;
                         } else {
-                            if (status == ppObjEdit.maxStatus) {
-                                ppObjEdit.publish = ppObjEdit.update;
-                                ppObjEdit.saveAs = ppObjEdit.update;
-                            } else {
-                                if ($('button.editor-post-publish-panel__toggle').length) {
-                                    if (typeof ppObjEdit.prePublish != 'undefined' && ppObjEdit.prePublish && ($('button.editor-post-publish-panel__toggle').html() != __('Schedule…'))) {
-                                        
-                                        var pendingStatusArr = new Array('pending', '_pending');
-                                        
-                                        if (pendingStatusArr.indexOf(status) != -1) {
-                                            PP_SetPublishButtonCaption(ppObjEdit.publish, false);
-                                        } else {
-                                            PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
-                                        }
+                            if ($('button.editor-post-publish-panel__toggle').length) {
+                                if (typeof ppObjEdit.prePublish != 'undefined' && ppObjEdit.prePublish && ($('button.editor-post-publish-panel__toggle').html() != __('Schedule…'))) {
+                                    
+                                    var pendingStatusArr = new Array('pending', '_pending');
+                                    
+                                    if (pendingStatusArr.indexOf(status) != -1) {
+                                        PP_SetPublishButtonCaption(ppObjEdit.publish, false);
+                                    } else {
+                                        PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
                                     }
-                                } else {
-                                    PP_SetPublishButtonCaption(ppObjEdit.publish, false);
                                 }
+                            } else {
+                                PP_SetPublishButtonCaption(ppObjEdit.publish, false);
                             }
                         }
+                    }
 
-                        ppLastStatus = status;
-                        ppLastPublishCaption = ppObjEdit.publish;
-                    //}
+                    ppLastStatus = status;
+                    ppLastPublishCaption = ppObjEdit.publish;
 
                     if (ppObjEdit.publishCaptionCurrent != ppObjEdit.publish) {
                         setTimeout(function () {

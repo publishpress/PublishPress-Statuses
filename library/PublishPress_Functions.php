@@ -1,13 +1,4 @@
 <?php
-/*
-if (!defined('PUBLISHPRESS_FUNCTIONS_VERSION')) {
-    define('PUBLISHPRESS_FUNCTIONS_VERSION', '0.9-beta');
-
-    define('PUBLISHPRESS_FUNCTIONS_URL', trailingslashit(plugins_url('', __FILE__)));
-    define('PUBLISHPRESS_FUNCTIONS_DIR', __DIR__);
-}
-*/
-
 if (!class_exists('PublishPress_Functions')) {
 
 /**

@@ -135,16 +135,6 @@ class StatusListTable extends \WP_List_Table
             'description' => __('Description', 'publishpress-statuses'),
         ];
 
-        /*
-        $post_types = get_post_types('', 'objects');
-        $supported_post_types = \PublishPress_Statuses::getEnabledPostTypes();
-        foreach ($post_types as $post_type) {
-            if (in_array($post_type->name, $supported_post_types)) {
-                $columns[$post_type->name] = $post_type->label;
-            }
-        }
-        */
-
         return apply_filters('publishpress_statuses_admin_columns', $columns);
     }
 
@@ -175,8 +165,6 @@ class StatusListTable extends \WP_List_Table
                 <tr>
 
                 <?php
-                //$cols = $this->get_columns();
-
                 list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
 
                 foreach ($columns as $column_name => $column_display_name) {
@@ -528,15 +516,13 @@ do_action('publishpress_statuses_admin_row', $key, []);
                 if (in_array($item->name, ['draft', 'future', 'publish', 'private'])) {
                     esc_html_e('(Standard)', 'publishpress-statuses');
                 } else {
-                    $status_obj = $item; // get_post_status_object($item->name);
-
-                    $is_publishpress = false;  // @todo
+                    $status_obj = $item;
 
                     if (!empty($disabled_conditions[$item->name])) {
                         $caption = esc_html('Disabled', 'publishpress-statuses');
                 
-                    } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) { // || $is_publishpress) {
-                        //if (!\PublishPress\Permissions\Statuses::postStatusHasCustomCaps($item->name)) {  // @todo
+                    } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) {
+                        //if (!\PublishPress\Permissions\Statuses::postStatusHasCustomCaps($item->name)) {
                         if (empty($status_obj->capability_status)) {
                             $caption = esc_html('(Standard)', 'publishpress-statuses');
                         } else {
@@ -668,7 +654,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
            // $item_edit_link = '';
         //}
         
-        $status_obj = $item; // get_post_status_object($item->name);
+        $status_obj = $item;
 
         $handle_class = (!empty($status_obj) && empty($status_obj->public) && !in_array($status_obj->name, ['draft', 'future', 'private']))
         ? 'handle '
@@ -709,7 +695,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
         $actions = [];
         //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress-statuses') . "</a>";
 
-        $status_obj = $item; // get_post_status_object($item->slug);
+        $status_obj = $item;
 
         if (empty($status_obj) || (empty($status_obj->_builtin))) {
             $actions['disable'] = '<a href="#">' . __('Disable', 'publishpress-statuses') . '</a>';

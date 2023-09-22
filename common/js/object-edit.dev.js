@@ -143,14 +143,10 @@ jQuery(document).ready(function ($) {
     else
         var pvt_stati = [];
 
-    // to retain last OK'd selection:
-    //var selected_vis = $('#hidden-post-visibility').val(), selected_password = $('#hidden_post_password').val(), selected_sticky = $('#hidden-post-sticky').is(':checked');
-
     $('.save-post-status', '#post-status-select').on('click', function (e) {
         updateStatusCaptions();
         $('#post-status-select').siblings('a.edit-post-status').show();
         e.preventDefault();
-        //return false;
     });
 
     function ppUpdateText() {

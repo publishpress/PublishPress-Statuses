@@ -5,11 +5,6 @@ namespace PublishPress_Statuses;
 class Admin
 {
     function __construct() {
-        /*
-        add_action('publishpress_admin_menu_page', [$this, 'action_admin_menu_page']);
-        add_action('publishpress_admin_submenu', [$this, 'action_admin_submenu']);
-        */
-
         //add_action('presspermit_permissions_menu', [$this, 'act_permissions_menu'], 10, 2);
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 
@@ -18,24 +13,7 @@ class Admin
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
         add_action('admin_notices', [$this, 'no_js_notice']);
         add_action('admin_print_scripts', [$this, 'post_admin_header']);
-
-        //add_action('wp_loaded', [$this, 'act_late_registrations']);
     }
-
-    // late registration of statuses for PublishPress compat (PublishPress hooks to 'init' action at priority 1000)
-    /*
-    function act_late_registrations()
-    {
-        global $pagenow;
-
-        if (in_array($pagenow, ['edit.php', 'post.php', 'post-new.php'])
-            || (is_admin() && \PublishPress_Statuses::isAjax('inline-save'))
-            || (in_array(presspermitPluginPage(), ['presspermit-status-edit', 'presspermit-status-new'], true))) {
-
-            //self::set_status_labels();
-        }
-    }
-    */
 
     function add_admin_styles() {
         global $pagenow;
@@ -72,8 +50,6 @@ class Admin
         if (!empty($pagenow) && ('admin.php' == $pagenow) 
         && (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']))
         ) {
-            //wp_enqueue_script('jquery-ui-sortable');
-
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-sortable');
             wp_enqueue_script('jquery-ui-datepicker');
@@ -93,7 +69,6 @@ class Admin
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
-        //if (isset($_GET['page']) && $_GET['page'] === 'pp-modules-settings') {
             wp_enqueue_script(
                 'publishpress-custom-status-configure',
                 PUBLISHPRESS_STATUSES_URL . 'common/custom-status-configure.js',
@@ -139,16 +114,6 @@ class Admin
 
         // Custom javascript to modify the post status dropdown where it shows up
         if ($this->is_whitelisted_page()) {
-            /*
-            wp_enqueue_script(
-                'publishpress-custom_status',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status.js',
-                ['jquery'],
-                PUBLISHPRESS_STATUSES_VERSION,
-                true
-            );
-            */
-
             if (class_exists('PublishPress_Functions')) { // @todo: refine library dependency handling
                 if (\PublishPress_Functions::isBlockEditorActive()) {
                     wp_enqueue_style(
@@ -183,48 +148,45 @@ class Admin
         $ui->render_admin_page($this);
     }
 
-    //function act_permissions_menu($options_menu, $handler)
     function act_admin_menu()
     {
-        //if (defined('PRESSPERMIT_COLLAB_VERSION')) {
-            //$this->menu_slug = 'publishpress-hub';
-            $this->menu_slug = 'publishpress-statuses';
+        //$this->menu_slug = 'publishpress-hub';
+        $this->menu_slug = 'publishpress-statuses';
 
-            $this->using_permissions_menu = true;
+        $this->using_permissions_menu = true;
 
-            /*
-            add_menu_page(
-                esc_html__('PublishPress Hub', 'publishpress-statuses'),
-                esc_html__('PublishPress Hub', 'publishpress-statuses'),
-                'read',
-                'publishpress-hub',
-                [$this, 'render_dashboard_page'],
-                'dashicons-format-status',
-                70
-            );
+        /*
+        add_menu_page(
+            esc_html__('PublishPress Hub', 'publishpress-statuses'),
+            esc_html__('PublishPress Hub', 'publishpress-statuses'),
+            'read',
+            'publishpress-hub',
+            [$this, 'render_dashboard_page'],
+            'dashicons-format-status',
+            70
+        );
 
-            // If we are disabling native custom statuses in favor of PublishPress, 
-            // but PP Collaborative Editing is not active, hide this menu item.
-            add_submenu_page(
-                'publishpress-hub',
-                esc_html__('Post Statuses', 'publishpress-statuses'), 
-                esc_html__('Post Statuses', 'publishpress-statuses'), 
-                'manage_options',   // @todo: custom capability
-                'publishpress-statuses', 
-                [$this, 'render_admin_page']
-            );
-            */
+        // If we are disabling native custom statuses in favor of PublishPress, 
+        // but PP Collaborative Editing is not active, hide this menu item.
+        add_submenu_page(
+            'publishpress-hub',
+            esc_html__('Post Statuses', 'publishpress-statuses'), 
+            esc_html__('Post Statuses', 'publishpress-statuses'), 
+            'manage_options',   // @todo: custom capability
+            'publishpress-statuses', 
+            [$this, 'render_admin_page']
+        );
+        */
 
-            add_menu_page(
-                esc_html__('Statuses', 'publishpress-statuses'),
-                esc_html__('Statuses', 'publishpress-statuses'),
-                'read',
-                'publishpress-statuses',
-                [$this, 'render_admin_page'],
-                'dashicons-format-status',
-                70
-            );
-        //}
+        add_menu_page(
+            esc_html__('Statuses', 'publishpress-statuses'),
+            esc_html__('Statuses', 'publishpress-statuses'),
+            'read',
+            'publishpress-statuses',
+            [$this, 'render_admin_page'],
+            'dashicons-format-status',
+            70
+        );
     }
 
     function render_dashboard_page() {
@@ -232,64 +194,6 @@ class Admin
         $ui = new \PublishPress_Statuses\StatusesUI();
         $ui->render_dashboard_page($this);
     }
-
-    /**
-     * Creates the admin menu if there is no menu set.
-     */
-
-    /*
-    public function action_admin_menu_page()
-    {
-        global $publishpress;
-
-        if (empty($publishpress) || defined('PRESSPERMIT_PRO_VERSION') || defined('PRESSPERMIT_VERSION')) {
-            return;
-        }
-
-        if ($publishpress->get_menu_slug() !== self::MENU_SLUG) {
-            return;
-        }
-
-        $publishpress->add_menu_page(
-            esc_html__('Statuses', 'publishpress-statuses'),
-            'read',
-            self::MENU_SLUG,
-            [$this, 'render_admin_page']
-        );
-    }
-    */
-
-    /**
-     * Add necessary things to the admin menu
-     */
-
-    /*
-    public function action_admin_submenu()
-    {
-        global $publishpress;
-        
-        //$submenu_slug = (defined('PRESSPERMIT_PRO_VERSION') || defined('PRESSPERMIT_VERSION')) 
-        //? 'publishpress-statuses-shortcut'
-        //: self::MENU_SLUG;
-
-        if ((!function_exists('presspermit') || version_compare(PRESSPERMIT_VERSION, '3.9-beta', '<'))
-        && !empty($publishpress)
-        ) {
-            $this->menu_slug = $publishpress->get_menu_slug();
-
-            // Main Menu
-            add_submenu_page(
-                $this->menu_slug,
-                esc_html__('Statuses', 'publishpress-statuses'),
-                esc_html__('Statuses', 'publishpress-statuses'),
-                'read',
-                self::MENU_SLUG,
-                [$this, 'render_admin_page'],
-                5
-            );
-        }
-    }
-    */
 
     /**
      * Check whether custom status stuff should be loaded on this page
@@ -330,18 +234,6 @@ class Admin
     {
         if ($this->is_whitelisted_page()) :
             ?>
-            <style type="text/css">
-                /* Hide post status dropdown by default in case of JS issues **/
-
-                /*
-                label[for=post_status],
-                #post-status-display,
-                #post-status-select,
-                #publish {
-                    display: none;
-                }
-                */
-            </style>
             <div class="update-nag hide-if-js">
                 <?php
                 _e(
@@ -446,13 +338,6 @@ class Admin
 
     public static function set_status_labels($status)
     {
-        /*
-            if (!empty($status_args['moderation'])) {
-                if (defined('PP_NO_MODERATION'))
-                    return $status;
-            }
-        */
-
         foreach (['icon', 'color'] as $prop) {
             if (empty($status->$prop)) {
                 $status->$prop = '';
@@ -599,23 +484,6 @@ class Admin
                 }
             }
         }
-
-        /*
-        if (!empty($post_status_obj->status_parent)) {
-            if ($default_by_sequence) {
-                // If current status is a workflow branch child, only offer other statuses in that branch
-                $_args['status_parent'] = $post_status_obj->status_parent;
-            }
-        } elseif ($status_children = \PublishPress_Statuses::getStatusChildren($post_status_obj->name, $moderation_statuses)) {
-            if ($default_by_sequence) {
-                // If current status is a workflow branch parent, only offer other statuses in that branch
-                $moderation_statuses = array_merge([$post_status_obj->name => $post_status_obj], $status_children);
-            }
-        } else {
-            // If current status is in main workflow with no branch children, only display other main workflow statuses 
-            $_args['status_parent'] = '';
-        }
-        */
 
         $moderation_statuses = \PublishPress_Statuses::orderStatuses($moderation_statuses, $_args);
 

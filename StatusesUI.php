@@ -8,7 +8,6 @@ class StatusesUI {
 
         // Register our settings
         add_action('admin_init', [$this, 'register_settings']);
-        //$this->register_settings();
 
         $this->loadAdminMessages();
 
@@ -71,23 +70,6 @@ class StatusesUI {
                 );
             }
         }
-
-        /*
-        //if ($this->using_permissions_menu) {
-            $module = \PublishPress_Statuses::instance();
-
-            $module->options = get_option(
-                $group_name,
-                new \stdClass()
-            );
-
-            foreach ($module->default_options as $default_key => $default_value) {
-                if (! isset($module->options->$default_key)) {
-                    $module->options->$default_key = $default_value;
-                }
-            }
-        //}
-        */
     }
 
     public function settings_supplemental_cap_moderate_any_option() {
@@ -159,10 +141,6 @@ class StatusesUI {
         if (isset($_REQUEST['page'])) {
             $page = sanitize_text_field($_REQUEST['page']);
         }
-
-        /*
-        \PublishPress_Functions::publishpressFooter();
-        */
     }
 
     /**

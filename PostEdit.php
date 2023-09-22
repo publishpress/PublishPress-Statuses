@@ -7,10 +7,6 @@ namespace PublishPress_Statuses;
 class PostEdit
 {
     function __construct() {
-        //add_action('admin_print_styles', [$this, 'add_admin_styles']);
-
-        //add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
-
         // NOTE: 'pp_custom_status_list' filter is applied by PublishPress (if active) or by class PostEditStatus
         add_filter('pp_custom_status_list', [$this, 'flt_publishpress_status_list'], 50, 2);
 
@@ -61,28 +57,6 @@ class PostEdit
         if (\PublishPress_Statuses::DisabledForPostType()) {
             return;
         }
-
-        // Load Javascript we need to use on the configuration views (jQuery Sortable)
-        /*
-        if (!empty($pagenow) && ('admin.php' == $pagenow) 
-        && (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']))
-        ) {
-            wp_enqueue_script('jquery-ui-core');
-            wp_enqueue_script('jquery-ui-sortable');
-            wp_enqueue_script('jquery-ui-datepicker');
-        }
-        */
-
-        // Custom javascript to modify the post status dropdown where it shows up
-        /*
-        wp_enqueue_script(
-            'publishpress-custom_status',
-            PUBLISHPRESS_STATUSES_URL . 'common/custom-status.js',
-            ['jquery'],
-            PUBLISHPRESS_STATUSES_VERSION,
-            true
-        );
-        */
 
         if (class_exists('PublishPress_Functions')) { // @todo: refine library dependency handling
             if (\PublishPress_Functions::isBlockEditorActive()) {
@@ -225,7 +199,6 @@ class PostEdit
             if (!$found && is_object($status_obj)) {
                 // don't insert statues which PublilshPress excluded if status has default capabilities
                 if (!empty($status_obj->capability_status)) {
-                    //$return[]= (object)['slug' => $status_obj->name, 'name' => $status_obj->label];
                     $return[]= (object)['slug' => $status_obj->name, 'name' => $status_obj->name, 'label' => $status_obj->label];
                 }
             }

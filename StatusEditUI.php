@@ -101,9 +101,6 @@ echo esc_attr($edit_status_link); ?>">
         $default_tab
     );
 
-    //require_once(PRESSPERMIT_STATUSES_CLASSPATH . '/UI/StatusAdmin.php');
-    //new \PublishPress\Permissions\Statuses\UI\StatusAdmin();
-
     //$default_tab = apply_filters('presspermit_edit_status_default_tab', 'name');
 
     self::tabContent('labels', $status, $default_tab);
@@ -261,14 +258,13 @@ echo esc_attr($edit_status_link); ?>">
         // @todo
         $table_class = 'form-table pp-statuses-options';
         
-        //$status = $status->slug;
-        $status_obj = $status; // get_post_status_object($status);
+        $status_obj = $status;
         $status_types = (!empty($status_obj) && !empty($status_obj->post_type)) ? $status_obj->post_type : [];
 
         $label_disabled = ('future' == $status) ? ' disabled ' : '';
 
         echo "<div id='pp-" . esc_attr($tab) . "' style='clear:both;margin:0;style='" . esc_attr($display) . "' class='pp-options'>";
-        //do_action("presspermit_" . esc_attr($tab) . "_options_pre_ui");
+
         echo "<table class='" . esc_attr($table_class) . "' id='pp-" . esc_attr($tab) . "_table' style='" . esc_attr($display) . "'>";
 
         switch ($tab) {
@@ -357,17 +353,6 @@ echo esc_attr($edit_status_link); ?>">
 
                     if (!$locked_status) {
                         $disabled = ($all_enabled) ? ' disabled ' : '';
-
-                        // @todo: migrate PublishPress setting to enable / disable all custom statuses per-type ?
-                        /*
-                        if ((defined('PUBLISHPRESS_VERSION') && class_exists('PP_Custom_Status')) && defined('PRESSPERMIT_COLLAB_VERSION') && !empty($status_obj->pp_custom)) {
-                            if (!empty($publishpress->modules->custom_status->options->post_types)) {
-                                $types = array_intersect_key($types, array_intersect($publishpress->modules->custom_status->options->post_types, ['on']));
-
-                                $display_hint = true;
-                            }
-                        }
-                        */
 
                         foreach ($types as $key => $obj) {
                             $id = $option_name . '-' . $key;
