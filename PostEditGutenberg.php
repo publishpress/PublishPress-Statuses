@@ -83,10 +83,31 @@ class PostEditGutenberg
             )
         );
 
+        $captions = (object) [
+            'publicationWorkflow' => __('Publication Workflow', 'publishpress-statuses'),
+            'publish' => __('Publish', 'publishpress-statuses'),
+            'schedule' => __('Schedule', 'publishpress-statuses'),
+            'advance' => __('Advance Status', 'publishpress-statuses'),
+            'saveAs' => __('Save as %s', 'publishpress-statuses'),
+            'setSelected' => __('Set Selected Status', 'publishpress-statuses'),
+            'keepCurrent'=> __('Keep Current Status', 'publishpress-statuses'),
+            'advanceNext' => __('Advance to Next Status', 'publishpress-statuses'),
+            'advanceMax' => __('Advance to Max Status', 'publishpress-statuses'),
+            'currentlyPublished' => __('This post is currently published', 'publishpress-statuses'),
+            'currentlyScheduled' => __('This post is currently scheduled', 'publishpress-statuses')
+        ];
+
         wp_localize_script(
             'publishpress-custom-status-block',
             'PPCustomStatuses',
-            ['statuses' => $statuses, 'publishedStatuses' => $published_statuses, 'publishedStatusObjects' => $published_status_objects, 'ajaxurl' => admin_url('admin-ajax.php'), 'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')]
+            [
+                'statuses' => $statuses, 
+                'publishedStatuses' => $published_statuses, 
+                'publishedStatusObjects' => $published_status_objects, 
+                'captions' => $captions,
+                'ajaxurl' => admin_url('admin-ajax.php'), 
+                'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')
+            ]
         );
     }
 

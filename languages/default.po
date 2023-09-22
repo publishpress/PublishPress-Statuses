@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PublishPress Statuses\n"
-"POT-Creation-Date: 2023-09-21 14:52-0400\n"
-"PO-Revision-Date: 2023-09-21 14:52-0400\n"
+"POT-Creation-Date: 2023-09-22 11:29-0400\n"
+"PO-Revision-Date: 2023-09-22 11:29-0400\n"
 "Last-Translator: Kevin Behrens <kevin@publishpress.com>\n"
 "Language-Team: https://publishpress.com\n"
 "Language: en\n"
@@ -36,50 +36,50 @@ msgid ""
 "will be assigned to the default status."
 msgstr ""
 
-#: Admin.php:334
+#: Admin.php:348
 msgid ""
 "<strong>Note:</strong> Your browser does not support JavaScript or has "
 "JavaScript disabled. You will not be able to access or change the post "
 "status."
 msgstr ""
 
-#: Admin.php:362
+#: Admin.php:376
 msgid "Draft"
 msgstr ""
 
-#: Admin.php:413
+#: Admin.php:427
 msgid "&mdash; No Change &mdash;"
 msgstr ""
 
-#: Admin.php:414 PostEditGutenberg.php:176
+#: Admin.php:428 PostEditGutenberg.php:197
 msgid "Save"
 msgstr ""
 
-#: Admin.php:465 Admin.php:466
+#: Admin.php:479 Admin.php:480
 #, php-format
 msgid "%s <span class=\"count\">()</span>"
 msgstr ""
 
-#: Admin.php:490
+#: Admin.php:504
 msgid "Submit"
 msgstr ""
 
-#: Admin.php:492
+#: Admin.php:506
 #, php-format
 msgid "Set to %s"
 msgstr ""
 
-#: Admin.php:494 PostEditClassic.php:99
+#: Admin.php:508 PostEditClassic.php:99
 #, php-format
 msgid "Submit as %s"
 msgstr ""
 
-#: Admin.php:503
+#: Admin.php:517 PostEditGutenberg.php:91
 #, php-format
 msgid "Save as %s"
 msgstr ""
 
-#: Admin.php:515
+#: Admin.php:529
 #, php-format
 msgid "Public (%s)"
 msgstr ""
@@ -89,8 +89,44 @@ msgstr ""
 msgid "Your site is configured to keep only the last %s revisions."
 msgstr ""
 
-#: PostEditGutenberg.php:177
+#: PostEditGutenberg.php:87
+msgid "Publication Workflow"
+msgstr ""
+
+#: PostEditGutenberg.php:88
+msgid "Publish"
+msgstr ""
+
+#: PostEditGutenberg.php:89
+msgid "Schedule"
+msgstr ""
+
+#: PostEditGutenberg.php:90 PostEditGutenberg.php:198
 msgid "Advance Status"
+msgstr ""
+
+#: PostEditGutenberg.php:92
+msgid "Set Selected Status"
+msgstr ""
+
+#: PostEditGutenberg.php:93
+msgid "Keep Current Status"
+msgstr ""
+
+#: PostEditGutenberg.php:94
+msgid "Advance to Next Status"
+msgstr ""
+
+#: PostEditGutenberg.php:95
+msgid "Advance to Max Status"
+msgstr ""
+
+#: PostEditGutenberg.php:96
+msgid "This post is currently published"
+msgstr ""
+
+#: PostEditGutenberg.php:97
+msgid "This post is currently scheduled"
 msgstr ""
 
 #: PostEditGutenbergStatuses.php:108
