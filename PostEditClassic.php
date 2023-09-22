@@ -73,7 +73,7 @@ class PostEditClassic
             'pvtStati' => json_encode($stati['private']),
             'modStati' => json_encode($stati['moderation']),
             'draftSaveAs' => $draft_obj->labels->save_as,
-            'nowCaption' => esc_html__('Current Time', 'presspermit-pro'),
+            'nowCaption' => esc_html__('Current Time', 'publishpress-statuses'),
             'update' => esc_html__('Update'),
             'schedule' => esc_html__('Schedule'),
             'published' => esc_html__('Published'),

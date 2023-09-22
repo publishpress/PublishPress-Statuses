@@ -14,7 +14,7 @@ class StatusHandler {
         check_admin_referer('custom-status-add-nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress'));
+            wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
         // Validate and sanitize the form data
@@ -38,13 +38,13 @@ class StatusHandler {
         $_REQUEST['form-errors'] = [];
         // Check if name field was filled in
         if (empty($status_label)) {
-            $_REQUEST['form-errors']['label'] = __('Please enter a name for the status', 'publishpress');
+            $_REQUEST['form-errors']['label'] = __('Please enter a name for the status', 'publishpress-statuses');
         }
         // Check that the name isn't numeric
         if (is_numeric($status_label)) {
             $_REQUEST['form-errors']['label'] = __(
                 'Please enter a valid, non-numeric name for the status.',
-                'publishpress'
+                'publishpress-statuses'
             );
         }
         // Check that the status name doesn't exceed 20 chars
@@ -61,7 +61,7 @@ class StatusHandler {
         if (! $name_is_valid) {
             $_REQUEST['form-errors']['label'] = __(
                 'Status name cannot exceed 20 characters. Please try a shorter name.',
-                'publishpress'
+                'publishpress-statuses'
             );
 
             return;
@@ -71,14 +71,14 @@ class StatusHandler {
         if (term_exists($status_name, 'post_status')) {
             $_REQUEST['form-errors']['label'] = __(
                 'Status name conflicts with existing term. Please choose another.',
-                'publishpress'
+                'publishpress-statuses'
             );
         }
         // Check to make sure the name is not restricted
         if (self::is_restricted_status(strtolower($status_name))) {
             $_REQUEST['form-errors']['label'] = __(
                 'Status name is restricted. Please choose another name.',
-                'publishpress'
+                'publishpress-statuses'
             );
         }
 
@@ -100,7 +100,7 @@ class StatusHandler {
         $return = \PublishPress_Statuses::instance()->addStatus($taxonomy, $status_label, $status_args);
 
         if (is_wp_error($return)) {
-            wp_die(__('Could not add status: ', 'publishpress') . $return->get_error_message());
+            wp_die(__('Could not add status: ', 'publishpress-statuses') . $return->get_error_message());
         }
 
         $roles = ['administrator', 'editor', 'author', 'contributor'];
@@ -135,19 +135,19 @@ class StatusHandler {
 
         // Only allow users with the proper caps
         if (! current_user_can('manage_options')) {
-            wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress'));
+            wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
         // Check to make sure the status isn't already deleted
         $name = sanitize_key($_GET['name']);
         $term = \PublishPress_Statuses::getStatusBy('id', $name);
         if (! $term) {
-            wp_die(__('Status does not exist.', 'publishpress'));
+            wp_die(__('Status does not exist.', 'publishpress-statuses'));
         }
 
         $return = self::deleteCustomStatus($name);
         if (is_wp_error($return)) {
-            wp_die(__('Could not delete the status: ', 'publishpress') . $return->get_error_message());
+            wp_die(__('Could not delete the status: ', 'publishpress-statuses') . $return->get_error_message());
         }
 
         $redirect_url = \PublishPress_Statuses::getLink(['message' => 'status-deleted']);
@@ -166,11 +166,11 @@ class StatusHandler {
         check_admin_referer('edit-status');
 
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('You are not permitted to do that.', 'press-permit-core'));
+            wp_die(esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
         if (!$existing_status = \PublishPress_Statuses::getStatusBy('name', sanitize_key($_GET['name']))) {
-            wp_die(__("Post status doesn't exist.", 'publishpress'));
+            wp_die(__("Post status doesn't exist.", 'publishpress-statuses'));
         }
 
         $color = sanitize_hex_color($_POST['status_color']);
@@ -203,14 +203,14 @@ class StatusHandler {
             if (isset($_REQUEST['status_label'])) {
                 // Check if name field was filled in
                 if (empty($label)) {
-                    $_REQUEST['form-errors']['status_label'] = __('Please enter a name for the status', 'publishpress');
+                    $_REQUEST['form-errors']['status_label'] = __('Please enter a name for the status', 'publishpress-statuses');
                 }
 
                 // Check that the name isn't numeric
                 if (is_numeric($label)) {
                     $_REQUEST['form-errors']['status_label'] = __(
                         'Please enter a valid, non-numeric name for the status.',
-                        'publishpress'
+                        'publishpress-statuses'
                     );
                 }
                 // Check that the status name doesn't exceed 20 chars
@@ -229,7 +229,7 @@ class StatusHandler {
                 if (! $name_is_valid) {
                     $_REQUEST['form-errors']['status_label'] = __(
                         'Status name cannot exceed 20 characters. Please try a shorter name.',
-                        'publishpress'
+                        'publishpress-statuses'
                     );
                 }
             }
@@ -245,7 +245,7 @@ class StatusHandler {
             if ($term_exists && $term_exists != $existing_status->name) {
                 $_REQUEST['form-errors']['status_label'] = __(
                     'Status name conflicts with existing term. Please choose another.',
-                    'publishpress'
+                    'publishpress-statuses'
                 );
             }
             // Check to make sure the status doesn't already exist
@@ -254,14 +254,14 @@ class StatusHandler {
             if ($search_status && $search_status->name != $existing_status->name) {
                 $_REQUEST['form-errors']['status_label'] = __(
                     'Status name conflicts with existing status. Please choose another.',
-                    'publishpress'
+                    'publishpress-statuses'
                 );
             }
             // Check to make sure the name is not restricted
             if (self::is_restricted_status(strtolower(sanitize_title($label)))) {
                 $_REQUEST['form-errors']['status_label'] = __(
                     'Status name is restricted. Please choose another name.',
-                    'publishpress'
+                    'publishpress-statuses'
                 );
             }
 
@@ -395,7 +395,7 @@ class StatusHandler {
             $return = self::updateCustomStatus($existing_status->name, $args);
 
             if (is_wp_error($return)) {
-                wp_die(__('Error updating post status.', 'publishpress'));
+                wp_die(__('Error updating post status.', 'publishpress-statuses'));
             }
         //}
 
@@ -429,7 +429,7 @@ class StatusHandler {
         $status_obj = \PublishPress_Statuses::getStatusBy('slug', $name);
 
         if (! $status_obj || is_wp_error($status_obj)) {
-            return new \WP_Error('invalid', __("Custom status ($name) doesn't exist.", 'publishpress'));
+            return new \WP_Error('invalid', __("Custom status ($name) doesn't exist.", 'publishpress-statuses'));
         }
 
         // Reset our internal object cache
@@ -570,7 +570,7 @@ class StatusHandler {
                     )
                 );
 
-                return new \WP_Error('custom-status-term_id', esc_html__("Error while updating the status ($name)", 'publishpress'));
+                return new \WP_Error('custom-status-term_id', esc_html__("Error while updating the status ($name)", 'publishpress-statuses'));
             }
 
             $updatedStatusId = $updated_status_array['term_id'];
@@ -602,7 +602,7 @@ class StatusHandler {
     public static function deleteCustomStatus($old_status, $args = [], $reassign_status = '')
     {
         if ($reassign_status == $old_status) {
-            return new \WP_Error('invalid', __('Cannot reassign to the status you want to delete', 'publishpress'));
+            return new \WP_Error('invalid', __('Cannot reassign to the status you want to delete', 'publishpress-statuses'));
         }
 
         // Reset our internal object cache
@@ -647,7 +647,7 @@ class StatusHandler {
         } else {
             return new \WP_Error(
                 'restricted',
-                __('Restricted status ', 'publishpress') . '(' . \PublishPress_Statuses::getStatusBy(
+                __('Restricted status ', 'publishpress-statuses') . '(' . \PublishPress_Statuses::getStatusBy(
                     'id',
                     $old_status
                 )->label . ')'
@@ -684,26 +684,26 @@ class StatusHandler {
     public static function handleAjaxDeleteStatus() {
         if (!empty($_REQUEST['delete_status'])) {
             if (! current_user_can('manage_options')) {
-                self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress'));
+                self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
             }
 
             $status_name = sanitize_key($_REQUEST['delete_status']);
 
             if ($status = \PublishPress_Statuses::getStatusBy('slug', $status_name)) {
                 if (!empty($status->_builtin) || !empty($status->pp_builtin)) {
-                    self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress'));
+                    self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
                     return;
                 }
                 
                 $return = self::deleteCustomStatus($status_name);
 
                 if (is_wp_error($return)) {
-                    self::printAjaxResponse('error', __('Could not delete the status: ', 'publishpress'));
+                    self::printAjaxResponse('error', __('Could not delete the status: ', 'publishpress-statuses'));
                 } else {
-                    self::printAjaxResponse('success', __('Status deleted', 'publishpress'));
+                    self::printAjaxResponse('success', __('Status deleted', 'publishpress-statuses'));
                 }
             } else {
-                self::printAjaxResponse('error', esc_html__('Status does not exist.', 'publishpress'));
+                self::printAjaxResponse('error', esc_html__('Status does not exist.', 'publishpress-statuses'));
             }
         }
     }
@@ -718,11 +718,11 @@ class StatusHandler {
         check_ajax_referer('custom-status-sortable');
 
         if (! current_user_can('manage_options')) {
-            self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress'));
+            self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
         if (! isset($_POST['status_positions']) || ! is_array($_POST['status_positions'])) {
-            self::printAjaxResponse('error', __('Status positions were not sent.', 'publishpress'));
+            self::printAjaxResponse('error', __('Status positions were not sent.', 'publishpress-statuses'));
         }
 
         update_option('publishpress_status_positions', array_map('sanitize_key', array_values(array_filter($_POST['status_positions']))));
@@ -778,7 +778,7 @@ class StatusHandler {
             }
         }
         
-        self::printAjaxResponse('success', __('Status order updated', 'publishpress'));
+        self::printAjaxResponse('success', __('Status order updated', 'publishpress-statuses'));
     }
 
     /**

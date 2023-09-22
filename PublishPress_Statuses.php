@@ -133,7 +133,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 if (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']) && !empty($_REQUEST['action']) && ('edit-status' == $_REQUEST['action'])) {
                     $status_name = sanitize_key($_REQUEST['name']);
                     if ($status_obj = get_post_status_object($status_name)) {
-                        $this->title = sprintf(__('Edit Post Status: %s', 'publishpress'), $status_obj->label);
+                        $this->title = sprintf(__('Edit Post Status: %s', 'publishpress-statuses'), $status_obj->label);
                     }
                 }
             }, 999);
@@ -149,7 +149,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $this->name = 'publishpress_statuses';
         
         if (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']) && !empty($_REQUEST['action']) && ('edit-status' == $_REQUEST['action'])) {
-            $this->title = __('Edit Post Status', 'publishpress');
+            $this->title = __('Edit Post Status', 'publishpress-statuses');
 
         } elseif (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']) && !empty($_REQUEST['action']) && ('add-new' == $_REQUEST['action'])) {
             if (!empty($_REQUEST['taxonomy'])) {
@@ -162,12 +162,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             } 
             
             if (empty($this->title)) {
-                $this->title = __('Add Post Status', 'publishpress');
+                $this->title = __('Add Post Status', 'publishpress-statuses');
             }
         } elseif (!empty($_REQUEST['page']) && 'publishpress-hub' == $_REQUEST['page']) {
-            $this->title = __('PublishPress Hub', 'publishpress');
+            $this->title = __('PublishPress Hub', 'publishpress-statuses');
         } else {
-            $this->title = __('Post Statuses', 'publishpress');
+            $this->title = __('Post Statuses', 'publishpress-statuses');
         }
 
         $this->default_options = [
@@ -184,15 +184,15 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         /*
         if (!empty($_REQUEST['action']) && ('edit-status' == $_REQUEST['action'])) {
-            $args['title'] = __('Edit Post Status', 'publishpress');
+            $args['title'] = __('Edit Post Status', 'publishpress-statuses');
 
         } elseif (!empty($_REQUEST['action']) && ('add-new' == $_REQUEST['action'])) {
-            $args['title'] = __('Add Post Status', 'publishpress');
+            $args['title'] = __('Add Post Status', 'publishpress-statuses');
         }
         */
 
         $args = [
-            'title' => __('PublishPress Statuses', 'publishpress'),
+            'title' => __('PublishPress Statuses', 'publishpress-statuses'),
             'short_description' => false,
             'extended_description' => false,
             'module_url' => PUBLISHPRESS_STATUSES_URL,
@@ -201,33 +201,33 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             'default_options' => $this->default_options,
             'post_type_support' => 'pp_custom_statuses', // This has been plural in all of our docs
             'configure_page_cb' => 'print_configure_view',
-            'configure_link_text' => __('Edit Statuses', 'publishpress'),
+            'configure_link_text' => __('Edit Statuses', 'publishpress-statuses'),
             'messages' => [
-                'status-added' => __('Post status created.', 'publishpress'),
-                'status-updated' => __('Post status updated.', 'publishpress'),
-                'status-missing' => __("Post status doesn't exist.", 'publishpress'),
-                'default-status-changed' => __('Default post status has been changed.', 'publishpress'),
-                'term-updated' => __("Post status updated.", 'publishpress'),
-                'status-deleted' => __('Post status deleted.', 'publishpress'),
-                'status-position-updated' => __("Status order updated.", 'publishpress'),
+                'status-added' => __('Post status created.', 'publishpress-statuses'),
+                'status-updated' => __('Post status updated.', 'publishpress-statuses'),
+                'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
+                'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
+                'term-updated' => __("Post status updated.", 'publishpress-statuses'),
+                'status-deleted' => __('Post status deleted.', 'publishpress-statuses'),
+                'status-position-updated' => __("Status order updated.", 'publishpress-statuses'),
             ],
             'autoload' => false,
             'settings_help_tab' => [
                 'id' => 'pp-custom-status-overview',
-                'title' => __('Overview', 'publishpress'),
+                'title' => __('Overview', 'publishpress-statuses'),
                 'content' => __(
                     '<p>PublishPress custom statuses allow you to define the most important stages of your editorial workflow. Out of the box, WordPress only offers "Draft" and "Pending Review" as post states. With custom statuses, you can create your own post states like "In Progress", "Pitch", or "Waiting for Edit" and keep or delete the originals. You can also drag and drop statuses to set the best order for your workflow.</p><p>Custom statuses are fully integrated into the rest of PublishPress and the WordPress admin. On the calendar and content overview, you can filter your view to see only posts of a specific post state. Furthermore, email notifications can be sent to a specific group of users when a post changes state.</p>',
-                    'publishpress'
+                    'publishpress-statuses'
                 ),
             ],
             'settings_help_sidebar' => __(
                 '<p><strong>For more information:</strong></p><p><a href="https://publishpress.com/features/custom-statuses/">Custom Status Documentation</a></p><p><a href="https://github.com/ostraining/PublishPress">PublishPress on Github</a></p>',
-                'publishpress'
+                'publishpress-statuses'
             ),
             'options_page' => false,
         ];
 
-        //if (class_exists('PublishPress')) {
+        //if (class_exists('publishpress-statuses')) {
         //    $this->module = PublishPress()->register_module(self::MODULE_NAME, $args);
         //} else {
             $this->module = (object) array_merge($args, ['name' => 'custom-status']);
@@ -672,9 +672,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             case self::TAXONOMY_PRE_PUBLISH :
                 $statuses = [
                     'pitch' => (object) [
-                        'label' => __('Pitch', 'publishpress'),
+                        'label' => __('Pitch', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Throw Pitch', 'publishpress-statuses')],
-                        'description' => __('Idea proposed; waiting for acceptance.', 'publishpress'),
+                        'description' => __('Idea proposed; waiting for acceptance.', 'publishpress-statuses'),
                         'color' => '#f4c5b0',
                         'icon' => 'dashicons-lightbulb',
                         'position' => 1,
@@ -684,9 +684,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     ],
     
                     'assigned' => (object) [
-                        'label' => __('Assigned', 'publishpress'),
+                        'label' => __('Assigned', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Assign', 'publishpress-statuses')],
-                        'description' => __('Post idea assigned to writer.', 'publishpress'),
+                        'description' => __('Post idea assigned to writer.', 'publishpress-statuses'),
                         'color' => '#00bcc5',
                         'icon' => 'dashicons-admin-users',
                         'position' => 2,
@@ -696,9 +696,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     ],
     
                     'in-progress' => (object) [
-                        'label' => __('In Progress', 'publishpress'),
+                        'label' => __('In Progress', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Mark in Progress', 'publishpress-statuses')],
-                        'description' => __('Writer is working on the post.', 'publishpress'),
+                        'description' => __('Writer is working on the post.', 'publishpress-statuses'),
                         'color' => '#ccc500',
                         'icon' => 'dashicons-performance',
                         'position' => 3,
@@ -708,7 +708,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     ],
     
                     'approved' => (object) [
-                        'label' => __('Approved', 'publishpress'),
+                        'label' => __('Approved', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
                         'description' => '-',
                         'color' => '#3ffc3f',
@@ -726,7 +726,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     // [Fake status to support organization by table position re-ordering]: "Pre-Publication Statuses:"
                     '_pre-publish-alternate' => (object) [
-                        'label' => __('Alternate Pre-Publication Workflow:', 'publishpress'),
+                        'label' => __('Alternate Pre-Publication Workflow:', 'publishpress-statuses'),
                         'description' => '-',
                         'color' => '',
                         'icon' => '',
@@ -739,7 +739,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     
                     // [Fake status to support organization by table position re-oredering]: "Disabled Statuses:"
                     '_disabled' => (object) [
-                        'label' => __('Disabled Statuses:', 'publishpress'),
+                        'label' => __('Disabled Statuses:', 'publishpress-statuses'),
                         'description' => '-',
                         'color' => '',
                         'icon' => '',
@@ -1957,7 +1957,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             
             // Leave a note to the admin as a reminder that add_post_type_support has been used somewhere in their code
             if (post_type_supports($post_type, $this->post_type_support_slug)) {
-                echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(__('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress'), $post_type, $this->post_type_support_slug) . '</span>';
+                echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(__('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), $post_type, $this->post_type_support_slug) . '</span>';
             }
         }
 

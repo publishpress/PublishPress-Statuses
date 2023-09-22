@@ -278,7 +278,7 @@ class PostEditClassicSubmitMetabox
                 && (current_user_can('pp_define_post_status') || current_user_can('pp_define_moderation'))
                 ) {
                     $url = admin_url('admin.php?action=add-new&page=publishpress-statuses');
-                    echo "<br /><a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'presspermit-pro') . '</a>';
+                    echo "<br /><a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'publishpress-statuses') . '</a>';
                 }
                 ?>
             </div>
