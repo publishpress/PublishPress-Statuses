@@ -1,21 +1,4 @@
 
-/*
-.publishpress-extended-post-status {
-  flex-flow: row wrap;
-}
-.publishpress-extended-post-status > * {
-  flex-basis: 45% !important;
-}
-.publishpress-extended-post-status .publishpress-extended-post-status-note {
-  flex-basis: 100%;
-}
-
-.publishpress-extended-post-status h4 {
-  font-size: inherit!important;
-  font-weight: normal;
-}
-*/
-
 #ppcs_save_draft_label {
 white-space: nowrap;
 }
@@ -58,54 +41,8 @@ div.editor-post-publish-panel__prepublish div.components-site-card {
 display: inherit;
 }
 
-/* @todo: how to inherit label, select styling? */
-div.publishpress-extended-post-status label {
-font-size: 11px;
-font-weight: 500;
-line-height: 1.4;
-text-transform: uppercase;
-box-sizing: border-box;
-display: block;
-padding-top: 0px;
-padding-bottom: 0px;
-max-width: 100%;
-z-index: 1;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-}
-
 div.publishpress-extended-post-status div.components-base-control {
 width: 100%;
 }
-
-div.publishpress-extended-post-status select {
-appearance: none;
-background: transparent;
-box-sizing: border-box;
-border: medium;
-box-shadow: none !important;
-color: rgb(30, 30, 30);
-display: block;
-font-family: inherit;
-margin: 0px;
-width: 100%;
-max-width: none;
-cursor: pointer;
-white-space: nowrap;
-text-overflow: ellipsis;
-font-size: 16px;
-height: 30px;
-min-height: 30px;
-padding: 0px 26px 0px 8px;
-overflow: hidden;
-}
-
-/*
-div.pp-statuses-workflow input[type=radio] {
-
-}
-*/
-
 
 /*# sourceMappingURL=custom-status-block-editor.css.map */
