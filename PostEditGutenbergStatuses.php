@@ -36,8 +36,7 @@ class PostEditGutenbergStatuses
         if ($args['workflowSequence'] = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) {
             $default_by_sequence = true;
             $max_status_obj = \PublishPress_Statuses::defaultStatusProgression(0, ['default_by_sequence' => false, 'skip_current_status_check' => true]);
-            $args['advanceStatus'] = esc_html__('Advance Status', 'presspermit-pro');
-            //$next_status_obj = $max_status_obj;
+            $args['advanceStatus'] = esc_html__('Advance Status', 'publishpress-statuses');
         } else {
             $max_status_obj = $next_status_obj;
             $args['advanceStatus'] = '';
@@ -65,7 +64,7 @@ class PostEditGutenbergStatuses
 
         if (!isset($save_as_label)) {
             if ((!empty($next_status_obj->labels->publish))) {
-                $save_as_label = (!empty($default_by_sequence)) ? esc_html__('Advance Status', 'presspermit-pro') : $next_status_obj->labels->publish;
+                $save_as_label = (!empty($default_by_sequence)) ? esc_html__('Advance Status', 'publishpress-statuses') : $next_status_obj->labels->publish;
             } else {
                 $save_as_label = $args['update'];
             }
@@ -103,13 +102,12 @@ class PostEditGutenbergStatuses
             }
         }
 
-        //if ((!empty($next_status_obj->moderation) || (!$is_administrator && !$can_publish)) && !defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
         if (!defined('PRESSPERMIT_NO_PREPUBLISH_RECAPTION')) {
-            $args['prePublish'] = apply_filters('presspermit_workflow_button_label', __('Workflow', 'presspermit-pro'), $post_id);
+            $args['prePublish'] = apply_filters('presspermit_workflow_button_label', __('Workflow', 'publishpress-statuses'), $post_id);
         }
 
         $args['saveDraftCaption'] = esc_html__('Save Draft'); // this is used for reference in js
-        $args['submitRevisionCaption'] = esc_html__('Submit Revision', 'presspermit-pro'); // identify Revisions caption, to avoid overriding it
+        $args['submitRevisionCaption'] = esc_html__('Submit Revision', 'publishpress-statuses'); // identify Revisions caption, to avoid overriding it
 
         $args['disableRecaption'] = defined('PRESSPERMIT_EDITOR_NO_RECAPTION');
 

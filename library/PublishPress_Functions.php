@@ -1,13 +1,4 @@
 <?php
-/*
-if (!defined('PUBLISHPRESS_FUNCTIONS_VERSION')) {
-    define('PUBLISHPRESS_FUNCTIONS_VERSION', '0.9-beta');
-
-    define('PUBLISHPRESS_FUNCTIONS_URL', trailingslashit(plugins_url('', __FILE__)));
-    define('PUBLISHPRESS_FUNCTIONS_DIR', __DIR__);
-}
-*/
-
 if (!class_exists('PublishPress_Functions')) {
 
 /**
@@ -303,7 +294,7 @@ class PublishPress_Functions
         <div class="pp-rating">
         <a href="https://wordpress.org/support/plugin/press-permit-core/reviews/#new-post" target="_blank" rel="noopener noreferrer">
         <?php printf( 
-            esc_html__('If you like %s, please leave us a %s rating. Thank you!', 'press-permit-core'),
+            esc_html__('If you like %s, please leave us a %s rating. Thank you!', 'publishpress-statuses'),
             '<strong>PublishPress Permissions</strong>',
             '<span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span>'
             );
@@ -314,11 +305,11 @@ class PublishPress_Functions
         <hr>
         <nav>
         <ul>
-        <li><a href="https://publishpress.com/permissions" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('About PublishPress Permissions', 'press-permit-core');?>"><?php esc_html_e('About', 'press-permit-core');?>
+        <li><a href="https://publishpress.com/permissions" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('About PublishPress Permissions', 'publishpress-statuses');?>"><?php esc_html_e('About', 'publishpress-statuses');?>
         </a></li>
-        <li><a href="https://publishpress.com/documentation/permissions-start/" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Permissions Documentation', 'press-permit-core');?>"><?php esc_html_e('Documentation', 'press-permit-core');?>
+        <li><a href="https://publishpress.com/documentation/permissions-start/" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Permissions Documentation', 'publishpress-statuses');?>"><?php esc_html_e('Documentation', 'publishpress-statuses');?>
         </a></li>
-        <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'press-permit-core');?>"><?php esc_html_e('Contact', 'press-permit-core');?>
+        <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'publishpress-statuses');?>"><?php esc_html_e('Contact', 'publishpress-statuses');?>
         </a></li>
         <li><a href="https://twitter.com/publishpresscom" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-twitter"></span>
         </a></li>

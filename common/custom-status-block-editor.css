@@ -1,27 +1,43 @@
 
-/*
-.publishpress-extended-post-status {
-  flex-flow: row wrap;
-}
-.publishpress-extended-post-status > * {
-  flex-basis: 45% !important;
-}
-.publishpress-extended-post-status .publishpress-extended-post-status-note {
-  flex-basis: 100%;
-}
-
-.publishpress-extended-post-status h4 {
-  font-size: inherit!important;
-  font-weight: normal;
-}
-*/
-
-#ppcs_save_draft_label {
+/* Save As Button */
+#ppcs_save_draft_label,
+button.editor-post-save-draft, button.editor-post-switch-to-draft {
 white-space: nowrap;
 }
 
+#ppcs_save_draft_label {
+padding-right: 80px;
+}
 
 
+/* Status Dropdown */
+div.publishpress-extended-post-status .dashicons {
+  margin-right: 3px;
+}
+
+div.publishpress-extended-post-status div.components-base-control {
+width: 100%;
+}
+
+div.publishpress-extended-post-status div.components-base-control,
+div.publishpress-extended-post-status-published, 
+div.publishpress-extended-post-status-scheduled {
+display: none;
+}
+
+
+/* Pre-Publish Panel: Hide most other divs by default (will redisplay if Publish action is selected) */
+div.editor-post-publish-panel__prepublish div.components-panel__body {
+display: none;
+}
+
+div.editor-post-publish-panel__prepublish div.pp-statuses-workflow,
+div.editor-post-publish-panel__prepublish div.components-site-card {
+display: inherit;
+}
+
+
+/* Publication Workflow Radio Buttons */
 div.pp-statuses-workflow {
 border-top: none;
 padding-top: 0;
@@ -35,77 +51,13 @@ div.pp-statuses-workflow div.components-radio-control__option label {
 vertical-align: text-top !important;
 }
 
+div.div.pp-statuses-workflow div.pp-editor-workflow-caption {
+padding-left: 25px;
+padding-top: 5px;
+}
+
 div.pp-statuses-workflow span.pp-status-color-title, div.pp-statuses-workflow span.dashicons {
 padding: 2px;
 }
-
-div.publishpress-extended-post-status .dashicons {
-margin-right: 3px;
-}
-
-div.publishpress-extended-post-status div.components-base-control,
-div.publishpress-extended-post-status-published, 
-div.publishpress-extended-post-status-scheduled {
-display: none;
-}
-
-div.editor-post-publish-panel__prepublish div.components-panel__body {
-display: none;
-}
-
-div.editor-post-publish-panel__prepublish div.pp-statuses-workflow,
-div.editor-post-publish-panel__prepublish div.components-site-card {
-display: inherit;
-}
-
-/* @todo: how to inherit label, select styling? */
-div.publishpress-extended-post-status label {
-font-size: 11px;
-font-weight: 500;
-line-height: 1.4;
-text-transform: uppercase;
-box-sizing: border-box;
-display: block;
-padding-top: 0px;
-padding-bottom: 0px;
-max-width: 100%;
-z-index: 1;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-}
-
-div.publishpress-extended-post-status div.components-base-control {
-width: 100%;
-}
-
-div.publishpress-extended-post-status select {
-appearance: none;
-background: transparent;
-box-sizing: border-box;
-border: medium;
-box-shadow: none !important;
-color: rgb(30, 30, 30);
-display: block;
-font-family: inherit;
-margin: 0px;
-width: 100%;
-max-width: none;
-cursor: pointer;
-white-space: nowrap;
-text-overflow: ellipsis;
-font-size: 16px;
-height: 30px;
-min-height: 30px;
-padding: 0px 26px 0px 8px;
-overflow: hidden;
-}
-
-/*
-div.pp-statuses-workflow input[type=radio] {
-
-}
-*/
-
 
 /*# sourceMappingURL=custom-status-block-editor.css.map */

@@ -259,17 +259,6 @@ class PostEditClassicSubmitMetabox
                         </option>
                     <?php endforeach ?>
 
-                    <?php 
-                    /*
-                    if (empty($moderation_statuses['draft'])) :
-                    $draft_status_obj = get_post_status_object('draft');
-                    ?>
-                        <option <?php selected($post_status, 'draft'); ?> value='draft'>
-                        <?php echo esc_html($draft_status_obj->label) ?>
-                        </option>
-                    <?php
-                    endif;
-                    */?>
                 </select>
                 <a href="#post_status" class="save-post-status hide-if-no-js button"><?php echo esc_html(\PublishPress_Statuses::__wp('OK')); ?></a>
                 <a href="#post_status" class="pp-cancel-post-status hide-if-no-js"><?php echo esc_html(\PublishPress_Statuses::__wp('Cancel')); ?></a>
@@ -278,7 +267,7 @@ class PostEditClassicSubmitMetabox
                 && (current_user_can('pp_define_post_status') || current_user_can('pp_define_moderation'))
                 ) {
                     $url = admin_url('admin.php?action=add-new&page=publishpress-statuses');
-                    echo "<br /><a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'presspermit-pro') . '</a>';
+                    echo "<br /><a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'publishpress-statuses') . '</a>';
                 }
                 ?>
             </div>

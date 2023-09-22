@@ -58,7 +58,7 @@ class PostsListing
         foreach ($posts_columns as $key => $value) {
             if ($key == 'title') {
                 $result[$key] = $value;
-                $result['status'] = __('Status', 'publishpress');
+                $result['status'] = __('Status', 'publishpress-statuses');
             } else {
                 $result[$key] = $value;
             }
@@ -136,18 +136,6 @@ class PostsListing
                 $isContentAdministrator = current_user_can('administrator') 
                 || current_user_can('pp_administer_content') 
                 || (is_multisite() && is_super_admin());
-                
-                /*
-                $moderation_statuses = [];
-
-                $_stati = \PublishPress_Functions::orderTypes(
-                    \PublishPress_Statuses::getPostStati(
-                        ['_builtin' => false, 'moderation' => true, 'post_type' => $typenow], 
-                        'object'
-                    ), 
-                    ['order_property' => 'order']
-                );
-                */
 
                 $type_obj = get_post_type_object($screen->post_type);
 
@@ -155,20 +143,6 @@ class PostsListing
                 $moderation_statuses = Admin::get_selectable_statuses(false, $args);
 
                 $can_publish = current_user_can($type_obj->cap->publish_posts);
-                
-                /*
-                foreach ($_stati as $status => $status_obj) {
-                    $set_status_cap = "set_{$status}_posts";
-
-                    $check_cap = (!empty($post_type_object->cap->$set_status_cap)) 
-                    ? $post_type_object->cap->$set_status_cap 
-                    : $post_type_object->cap->publish_posts;
-
-                    if ($isContentAdministrator || !empty($current_user->allcaps['pp_moderate_any']) || current_user_can($check_cap)) {
-                        $moderation_statuses[$status] = $status_obj;
-                    }
-                }
-                */
 
                 // @todo: ordered, indented statuses in quick edit dropdown
                 ?>
@@ -182,7 +156,6 @@ class PostsListing
                 }
 
                 foreach ($moderation_statuses as $_status => $_status_obj) :
-                    //$html = '<option ' . selected($post_status, $_status) . ' value="' . esc_attr($_status) . '">';
                     $html = '<option value="' . esc_attr($_status) . '">';
 
                     $caption = (!empty($_status_obj->status_parent) && !empty($moderation_statuses[$_status_obj->status_parent])) 

@@ -5,11 +5,6 @@ namespace PublishPress_Statuses;
 class Admin
 {
     function __construct() {
-        /*
-        add_action('publishpress_admin_menu_page', [$this, 'action_admin_menu_page']);
-        add_action('publishpress_admin_submenu', [$this, 'action_admin_submenu']);
-        */
-
         //add_action('presspermit_permissions_menu', [$this, 'act_permissions_menu'], 10, 2);
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 
@@ -18,24 +13,7 @@ class Admin
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
         add_action('admin_notices', [$this, 'no_js_notice']);
         add_action('admin_print_scripts', [$this, 'post_admin_header']);
-
-        //add_action('wp_loaded', [$this, 'act_late_registrations']);
     }
-
-    // late registration of statuses for PublishPress compat (PublishPress hooks to 'init' action at priority 1000)
-    /*
-    function act_late_registrations()
-    {
-        global $pagenow;
-
-        if (in_array($pagenow, ['edit.php', 'post.php', 'post-new.php'])
-            || (is_admin() && \PublishPress_Statuses::isAjax('inline-save'))
-            || (in_array(presspermitPluginPage(), ['presspermit-status-edit', 'presspermit-status-new'], true))) {
-
-            //self::set_status_labels();
-        }
-    }
-    */
 
     function add_admin_styles() {
         global $pagenow;
@@ -72,8 +50,6 @@ class Admin
         if (!empty($pagenow) && ('admin.php' == $pagenow) 
         && (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']))
         ) {
-            //wp_enqueue_script('jquery-ui-sortable');
-
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-sortable');
             wp_enqueue_script('jquery-ui-datepicker');
@@ -93,7 +69,6 @@ class Admin
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
-        //if (isset($_GET['page']) && $_GET['page'] === 'pp-modules-settings') {
             wp_enqueue_script(
                 'publishpress-custom-status-configure',
                 PUBLISHPRESS_STATUSES_URL . 'common/custom-status-configure.js',
@@ -108,7 +83,7 @@ class Admin
                 [
                     'pp_confirm_delete_status_string' => __(
                         'Are you sure you want to delete the post status? All posts with this status will be assigned to the default status.',
-                        'publishpress'
+                        'publishpress-statuses'
                     ),
                 ]
             );
@@ -139,16 +114,6 @@ class Admin
 
         // Custom javascript to modify the post status dropdown where it shows up
         if ($this->is_whitelisted_page()) {
-            /*
-            wp_enqueue_script(
-                'publishpress-custom_status',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status.js',
-                ['jquery'],
-                PUBLISHPRESS_STATUSES_VERSION,
-                true
-            );
-            */
-
             if (class_exists('PublishPress_Functions')) { // @todo: refine library dependency handling
                 if (\PublishPress_Functions::isBlockEditorActive()) {
                     wp_enqueue_style(
@@ -183,34 +148,45 @@ class Admin
         $ui->render_admin_page($this);
     }
 
-    //function act_permissions_menu($options_menu, $handler)
     function act_admin_menu()
     {
-        //if (defined('PRESSPERMIT_COLLAB_VERSION')) {
-            $this->menu_slug = 'publishpress-hub';
-            $this->using_permissions_menu = true;
+        //$this->menu_slug = 'publishpress-hub';
+        $this->menu_slug = 'publishpress-statuses';
 
-            add_menu_page(
-                esc_html__('PublishPress Hub', 'publishpress'),
-                esc_html__('PublishPress Hub', 'publishpress'),
-                'read',
-                'publishpress-hub',
-                [$this, 'render_dashboard_page'],
-                'dashicons-format-status',
-                70
-            );
+        $this->using_permissions_menu = true;
 
-            // If we are disabling native custom statuses in favor of PublishPress, 
-            // but PP Collaborative Editing is not active, hide this menu item.
-            add_submenu_page(
-                'publishpress-hub',
-                esc_html__('Post Statuses', 'press-permit-core'), 
-                esc_html__('Post Statuses', 'press-permit-core'), 
-                'manage_options',   // @todo: custom capability
-                'publishpress-statuses', 
-                [$this, 'render_admin_page']
-            );
-        //}
+        /*
+        add_menu_page(
+            esc_html__('PublishPress Hub', 'publishpress-statuses'),
+            esc_html__('PublishPress Hub', 'publishpress-statuses'),
+            'read',
+            'publishpress-hub',
+            [$this, 'render_dashboard_page'],
+            'dashicons-format-status',
+            70
+        );
+
+        // If we are disabling native custom statuses in favor of PublishPress, 
+        // but PP Collaborative Editing is not active, hide this menu item.
+        add_submenu_page(
+            'publishpress-hub',
+            esc_html__('Post Statuses', 'publishpress-statuses'), 
+            esc_html__('Post Statuses', 'publishpress-statuses'), 
+            'manage_options',   // @todo: custom capability
+            'publishpress-statuses', 
+            [$this, 'render_admin_page']
+        );
+        */
+
+        add_menu_page(
+            esc_html__('Statuses', 'publishpress-statuses'),
+            esc_html__('Statuses', 'publishpress-statuses'),
+            'read',
+            'publishpress-statuses',
+            [$this, 'render_admin_page'],
+            'dashicons-format-status',
+            70
+        );
     }
 
     function render_dashboard_page() {
@@ -218,64 +194,6 @@ class Admin
         $ui = new \PublishPress_Statuses\StatusesUI();
         $ui->render_dashboard_page($this);
     }
-
-    /**
-     * Creates the admin menu if there is no menu set.
-     */
-
-    /*
-    public function action_admin_menu_page()
-    {
-        global $publishpress;
-
-        if (empty($publishpress) || defined('PRESSPERMIT_PRO_VERSION') || defined('PRESSPERMIT_VERSION')) {
-            return;
-        }
-
-        if ($publishpress->get_menu_slug() !== self::MENU_SLUG) {
-            return;
-        }
-
-        $publishpress->add_menu_page(
-            esc_html__('Statuses', 'publishpress'),
-            'read',
-            self::MENU_SLUG,
-            [$this, 'render_admin_page']
-        );
-    }
-    */
-
-    /**
-     * Add necessary things to the admin menu
-     */
-
-    /*
-    public function action_admin_submenu()
-    {
-        global $publishpress;
-        
-        //$submenu_slug = (defined('PRESSPERMIT_PRO_VERSION') || defined('PRESSPERMIT_VERSION')) 
-        //? 'publishpress-statuses-shortcut'
-        //: self::MENU_SLUG;
-
-        if ((!function_exists('presspermit') || version_compare(PRESSPERMIT_VERSION, '3.9-beta', '<'))
-        && !empty($publishpress)
-        ) {
-            $this->menu_slug = $publishpress->get_menu_slug();
-
-            // Main Menu
-            add_submenu_page(
-                $this->menu_slug,
-                esc_html__('Statuses', 'publishpress'),
-                esc_html__('Statuses', 'publishpress'),
-                'read',
-                self::MENU_SLUG,
-                [$this, 'render_admin_page'],
-                5
-            );
-        }
-    }
-    */
 
     /**
      * Check whether custom status stuff should be loaded on this page
@@ -316,23 +234,11 @@ class Admin
     {
         if ($this->is_whitelisted_page()) :
             ?>
-            <style type="text/css">
-                /* Hide post status dropdown by default in case of JS issues **/
-
-                /*
-                label[for=post_status],
-                #post-status-display,
-                #post-status-select,
-                #publish {
-                    display: none;
-                }
-                */
-            </style>
             <div class="update-nag hide-if-js">
                 <?php
                 _e(
                     '<strong>Note:</strong> Your browser does not support JavaScript or has JavaScript disabled. You will not be able to access or change the post status.',
-                    'publishpress'
+                    'publishpress-statuses'
                 ); ?>
             </div>
         <?php
@@ -359,7 +265,7 @@ class Admin
             $post_type_obj = get_post_type_object(\PublishPress_Statuses::getCurrentPostType());
             $custom_statuses = \PublishPress_Statuses::getPostStati([], 'object');  // @todo: confirm inclusion of core statuses here
             $selected = null;
-            $selected_name = __('Draft', 'publishpress');
+            $selected_name = __('Draft', 'publishpress-statuses');
 
             $custom_statuses = apply_filters('pp_custom_status_list', $custom_statuses, $post);
 
@@ -432,13 +338,6 @@ class Admin
 
     public static function set_status_labels($status)
     {
-        /*
-            if (!empty($status_args['moderation'])) {
-                if (defined('PP_NO_MODERATION'))
-                    return $status;
-            }
-        */
-
         foreach (['icon', 'color'] as $prop) {
             if (empty($status->$prop)) {
                 $status->$prop = '';
@@ -462,8 +361,8 @@ class Admin
         }
 
         if (empty($status->label_count)) {
-            $sing = sprintf(__('%s <span class="count">()</span>', 'presspermit-pro'), $status->label);
-            $plur = sprintf(__('%s <span class="count">()</span>', 'presspermit-pro'), $status->label);
+            $sing = sprintf(__('%s <span class="count">()</span>', 'publishpress-statuses'), $status->label);
+            $plur = sprintf(__('%s <span class="count">()</span>', 'publishpress-statuses'), $status->label);
 
             $status->label_count = _n_noop(
                 str_replace('()', '(%s)', $sing), 
@@ -474,31 +373,31 @@ class Admin
         if (empty($status->labels->publish)) {
             // @todo: redundant with status definition?
             if ('pending' == $status->name) {
-                $status->labels->publish = esc_html__('Submit for Review', 'presspermit-pro');
+                $status->labels->publish = esc_html__('Submit for Review', 'publishpress-statuses');
             } elseif ('approved' == $status->name) {
-                $status->labels->publish = esc_html__('Approve', 'presspermit-pro');
+                $status->labels->publish = esc_html__('Approve', 'publishpress-statuses');
             } elseif ('assigned' == $status->name) {
-                $status->labels->publish = esc_html__('Assign', 'presspermit-pro');
+                $status->labels->publish = esc_html__('Assign', 'publishpress-statuses');
             } elseif ('in-progress' == $status->name) {
-                $status->labels->publish = esc_html__('Mark In Progress', 'presspermit-pro');
+                $status->labels->publish = esc_html__('Mark In Progress', 'publishpress-statuses');
             } elseif ('publish' == $status->name) {
-                $status->labels->publish = esc_html__('Publish', 'presspermit-pro');
+                $status->labels->publish = esc_html__('Publish', 'publishpress-statuses');
             } elseif ('future' == $status->name) {
-                $status->labels->publish = esc_html__('Schedule', 'presspermit-pro');
+                $status->labels->publish = esc_html__('Schedule', 'publishpress-statuses');
             } else {
                 if (strlen($status->label) > 16) {
-                    $status->labels->publish = __('Submit', 'presspermit-pro');
+                    $status->labels->publish = __('Submit', 'publishpress-statuses');
                 } elseif (strlen($status->label) > 13) {
-                    $status->labels->publish = esc_attr(sprintf(__('Set to %s', 'presspermit-pro'), $status->label));
+                    $status->labels->publish = esc_attr(sprintf(__('Set to %s', 'publishpress-statuses'), $status->label));
                 } else {
-                    $status->labels->publish = esc_attr(sprintf(__('Submit as %s', 'presspermit-pro'), $status->label));
+                    $status->labels->publish = esc_attr(sprintf(__('Submit as %s', 'publishpress-statuses'), $status->label));
                 }
             }
         }
 
         if (empty($status->labels->save_as)) {
             if ('pending' == $status->name) {
-                $status->labels->save_as = esc_html__('Save as Pending', 'presspermit-pro');
+                $status->labels->save_as = esc_html__('Save as Pending', 'publishpress-statuses');
             } elseif (!in_array($status->name, ['publish', 'private']) && empty($status->public) && empty($status->private)) {
                 $status->labels->save_as = esc_attr(sprintf(__('Save as %s'), $status->label));
             } else {
@@ -585,23 +484,6 @@ class Admin
                 }
             }
         }
-
-        /*
-        if (!empty($post_status_obj->status_parent)) {
-            if ($default_by_sequence) {
-                // If current status is a workflow branch child, only offer other statuses in that branch
-                $_args['status_parent'] = $post_status_obj->status_parent;
-            }
-        } elseif ($status_children = \PublishPress_Statuses::getStatusChildren($post_status_obj->name, $moderation_statuses)) {
-            if ($default_by_sequence) {
-                // If current status is a workflow branch parent, only offer other statuses in that branch
-                $moderation_statuses = array_merge([$post_status_obj->name => $post_status_obj], $status_children);
-            }
-        } else {
-            // If current status is in main workflow with no branch children, only display other main workflow statuses 
-            $_args['status_parent'] = '';
-        }
-        */
 
         $moderation_statuses = \PublishPress_Statuses::orderStatuses($moderation_statuses, $_args);
 

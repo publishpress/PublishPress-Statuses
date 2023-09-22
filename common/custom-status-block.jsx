@@ -84,17 +84,17 @@ let PPCustomPostStatusInfo = ({onUpdate, status}) => (
     <PluginPostStatusInfo
         className={`publishpress-extended-post-status publishpress-extended-post-status-${status}`}
     >
-        <h4>{__('Post Status', 'publishpress')}</h4>
+        <h4>{__('Post Status', 'publishpress-statuses')}</h4>
 
         {status !== 'publish' ? <SelectControl
             label=""
             value={status}
             options={statuses}
             onChange={onUpdate}
-        /> : <div>{__('Published', 'publishpress')}</div>}
+        /> : <div>{__('Published', 'publishpress-statuses')}</div>}
 
         <small className="publishpress-extended-post-status-note">
-            {status !== 'publish' ? __(`Note: this will override all status settings above.`, 'publishpress') : __('To select a custom status, please unpublish the content first.', 'publishpress')}
+            {status !== 'publish' ? __(`Note: this will override all status settings above.`, 'publishpress-statuses') : __('To select a custom status, please unpublish the content first.', 'publishpress-statuses')}
         </small>
     </PluginPostStatusInfo>
 );

@@ -8,7 +8,6 @@ class StatusesUI {
 
         // Register our settings
         add_action('admin_init', [$this, 'register_settings']);
-        //$this->register_settings();
 
         $this->loadAdminMessages();
 
@@ -18,13 +17,13 @@ class StatusesUI {
 
     private function loadAdminMessages() {
         \PublishPress_Statuses::instance()->messages = [
-            'status-added' => __('Post status created.', 'publishpress'),
-            'status-updated' => __('Post status updated.', 'publishpress'),
-            'status-missing' => __("Post status doesn't exist.", 'publishpress'),
-            'default-status-changed' => __('Default post status has been changed.', 'publishpress'),
-            'term-updated' => __("Post status updated.", 'publishpress'),
-            'status-deleted' => __('Post status deleted.', 'publishpress'),
-            'status-position-updated' => __("Status order updated.", 'publishpress'),
+            'status-added' => __('Post status created.', 'publishpress-statuses'),
+            'status-updated' => __('Post status updated.', 'publishpress-statuses'),
+            'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
+            'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
+            'term-updated' => __("Post status updated.", 'publishpress-statuses'),
+            'status-deleted' => __('Post status deleted.', 'publishpress-statuses'),
+            'status-position-updated' => __("Status order updated.", 'publishpress-statuses'),
         ];
     }
 
@@ -47,7 +46,7 @@ class StatusesUI {
             );
             add_settings_field(
                 'post_types',
-                __('Use on these post types:', 'publishpress'),
+                __('Use on these post types:', 'publishpress-statuses'),
                 [$this, 'settings_post_types_option'],
                 $group_name,
                 $group_name . '_general'
@@ -55,7 +54,7 @@ class StatusesUI {
 
             add_settings_field(
                 'moderation_statuses_default_by_sequence',
-                __('Status order:', 'publishpress'),
+                __('Status order:', 'publishpress-statuses'),
                 [$this, 'settings_moderation_statuses_default_by_sequence_option'],
                 $group_name,
                 $group_name . '_general'
@@ -64,30 +63,13 @@ class StatusesUI {
             if (function_exists('presspermit') && defined('PRESSPERMIT_COLLAB_VERSION') && defined('PRESSPERMIT_STATUSES_VERSION')) {
                 add_settings_field(
                     'supplemental_cap_moderate_any',
-                    __('Editor capabilities:', 'publishpress'),
+                    __('Editor capabilities:', 'publishpress-statuses'),
                     [$this, 'settings_supplemental_cap_moderate_any_option'],
                     $group_name,
                     $group_name . '_general'
                 );
             }
         }
-
-        /*
-        //if ($this->using_permissions_menu) {
-            $module = \PublishPress_Statuses::instance();
-
-            $module->options = get_option(
-                $group_name,
-                new \stdClass()
-            );
-
-            foreach ($module->default_options as $default_key => $default_value) {
-                if (! isset($module->options->$default_key)) {
-                    $module->options->$default_key = $default_value;
-                }
-            }
-        //}
-        */
     }
 
     public function settings_supplemental_cap_moderate_any_option() {
@@ -106,7 +88,7 @@ class StatusesUI {
             $module->options->supplemental_cap_moderate_any ? 'checked' : ''
         ) . ' ';
 
-        esc_html_e('Supplemental Role of Editor for "standard statuses" also covers Custom Statuses', 'presspermit-pro');
+        esc_html_e('Supplemental Role of Editor for "standard statuses" also covers Custom Statuses', 'publishpress-statuses');
 
         echo '</div>';
     }
@@ -127,7 +109,7 @@ class StatusesUI {
             $module->options->moderation_statuses_default_by_sequence ? 'checked' : ''
         ) . ' ';
 
-        esc_html_e('Publish button defaults to next status in workflow (instead of highest permitted)', 'presspermit-pro');
+        esc_html_e('Publish button defaults to next status in workflow (instead of highest permitted)', 'publishpress-statuses');
 
         echo '</div>';
     }
@@ -159,10 +141,6 @@ class StatusesUI {
         if (isset($_REQUEST['page'])) {
             $page = sanitize_text_field($_REQUEST['page']);
         }
-
-        /*
-        \PublishPress_Functions::publishpressFooter();
-        */
     }
 
     /**
@@ -194,7 +172,7 @@ class StatusesUI {
                     if (empty($_GET['action']) || $_GET['action'] == 'statuses') {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    _e('Statuses', 'publishpress'); ?></a>
+                    _e('Statuses', 'publishpress-statuses'); ?></a>
 
                 <a href="<?php
                 echo esc_url(\PublishPress_Statuses::getLink(['action' => 'add-new'])); ?>"
@@ -202,7 +180,7 @@ class StatusesUI {
                     if (isset($_GET['action']) && $_GET['action'] == 'add-new') {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    _e('Add New', 'publishpress'); ?></a>
+                    _e('Add New', 'publishpress-statuses'); ?></a>
                 
                 <a href="<?php
                 echo esc_url(\PublishPress_Statuses::getLink(['action' => 'options'])); ?>"
@@ -210,7 +188,7 @@ class StatusesUI {
                     if (isset($_GET['action']) && $_GET['action'] == 'options') {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    _e('Settings', 'publishpress'); ?></a>
+                    _e('Settings', 'publishpress-statuses'); ?></a>
             </h3>
 
             <?php
@@ -254,7 +232,7 @@ class StatusesUI {
 
                                 <p class='submit'><?php
                                     submit_button(
-                                        __('Add New Status', 'publishpress'),
+                                        __('Add New Status', 'publishpress-statuses'),
                                         'primary',
                                         'submit',
                                         false
@@ -273,7 +251,7 @@ class StatusesUI {
                                 <p><?php
                                     echo __(
                                         'Note: Post types can also be specified for each individual status.',
-                                        'publishpress'
+                                        'publishpress-statuses'
                                     ); 
                                     ?>
                                 </p>

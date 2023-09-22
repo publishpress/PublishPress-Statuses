@@ -29,15 +29,15 @@ echo "<ul class='nav-tab-wrapper' style='margin-bottom:-0.1em'>";
 $class_selected = "nav-tab nav-tab-active";
 $class_unselected = "nav-tab";
 
-$tabs = ['name' => __('Name', 'publishpress')];
+$tabs = ['name' => __('Name', 'publishpress-statuses')];
 
 if (empty($status->publish) && empty($status->private) && !in_array($name, ['draft', 'future', 'publish'])) {
-    $tabs['labels'] = __('Labels', 'publishpress');
+    $tabs['labels'] = __('Labels', 'publishpress-statuses');
 
-    $tabs['roles'] = __('Roles', 'publishpress');
+    $tabs['roles'] = __('Roles', 'publishpress-statuses');
 
     if ('pending' != $name) {
-        $tabs['post_types'] = __('Post Types', 'publishpress');
+        $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
     }
 }
 
@@ -101,9 +101,6 @@ echo esc_attr($edit_status_link); ?>">
         $default_tab
     );
 
-    //require_once(PRESSPERMIT_STATUSES_CLASSPATH . '/UI/StatusAdmin.php');
-    //new \PublishPress\Permissions\Statuses\UI\StatusAdmin();
-
     //$default_tab = apply_filters('presspermit_edit_status_default_tab', 'name');
 
     self::tabContent('labels', $status, $default_tab);
@@ -121,7 +118,7 @@ echo esc_attr($edit_status_link); ?>">
             <input type="hidden" name="return_module" value="<?php echo esc_attr($_REQUEST['return_module']);?>" />
         <?php endif;
 
-        submit_button(__('Update Status', 'publishpress'), 'primary pp-statuses', 'submit', false); ?>
+        submit_button(__('Update Status', 'publishpress-statuses'), 'primary pp-statuses', 'submit', false); ?>
     </p>
 </form>
 
@@ -142,7 +139,7 @@ echo esc_attr($edit_status_link); ?>">
                 <th scope="row" valign="top"><label for="label"><?php
                         _e(
                             'Status Label',
-                            'publishpress'
+                            'publishpress-statuses'
                         ); ?></label></th>
                 <td><input name="status_label" id="label"
                             type="text" <?php
@@ -156,7 +153,7 @@ echo esc_attr($edit_status_link); ?>">
                         'label',
                         __(
                             'The name is used to identify the status. (Max: 20 characters)',
-                            'publishpress'
+                            'publishpress-statuses'
                         )
                     ); ?>
                 </td>
@@ -165,7 +162,7 @@ echo esc_attr($edit_status_link); ?>">
             <?php if (!empty($name)):?>
             <tr class="form-field">
                 <th scope="row" valign="top"><?php
-                    _e('Slug', 'publishpress'); ?></th>
+                    _e('Slug', 'publishpress-statuses'); ?></th>
                 <td>
                     <input type="text" name="slug" id="slug" disabled
                             value="<?php
@@ -179,7 +176,7 @@ echo esc_attr($edit_status_link); ?>">
                         'slug',
                         __(
                             'The slug is the unique ID for the status and is changed when the name is changed.',
-                            'publishpress'
+                            'publishpress-statuses'
                         )
                     ); ?>
                 </td>
@@ -190,7 +187,7 @@ echo esc_attr($edit_status_link); ?>">
                 <th scope="row" valign="top"><label for="description"><?php
                         _e(
                             'Description',
-                            'publishpress'
+                            'publishpress-statuses'
                         ); ?></label></th>
                 <td>
                 <textarea name="description" id="description" rows="5"
@@ -202,7 +199,7 @@ echo esc_attr($edit_status_link); ?>">
                         'description',
                         __(
                             'The description is primarily for administrative use, to give you some context on what the custom status is to be used for.',
-                            'publishpress'
+                            'publishpress-statuses'
                         )
                     ); ?>
                 </td>
@@ -211,7 +208,7 @@ echo esc_attr($edit_status_link); ?>">
                 <th scope="row" valign="top"><label for="color"><?php
                         _e(
                             'Color',
-                            'publishpress'
+                            'publishpress-statuses'
                         ); ?></label></th>
                 <td>
 
@@ -221,13 +218,13 @@ echo esc_attr($edit_status_link); ?>">
                     <?php
                     \PublishPress_Statuses\StatusesUI::printErrorOrDescription(
                         'color',
-                        __('The color is used to identify the status.', 'publishpress')
+                        __('The color is used to identify the status.', 'publishpress-statuses')
                     ); ?>
                 </td>
             </tr>
             <tr class="form-field">
                 <th scope="row" valign="top"><label for="icon"><?php
-                        _e('Icon', 'publishpress'); ?></label>
+                        _e('Icon', 'publishpress-statuses'); ?></label>
                 </th>
                 <td>
                     <input class="regular-text" type="hidden" id="status_icon" name="icon"
@@ -241,13 +238,13 @@ echo esc_attr($edit_status_link); ?>">
                         <div id="publishpress_icon_pick_preview" class="dashicons <?php
                         echo isset($icon) ? esc_attr($icon) : ''; ?>"></div>
                         <div class="publishpress_icon_pick_button_label"><?php
-                            echo __('Select Icon', 'publishpress'); ?></div>
+                            echo __('Select Icon', 'publishpress-statuses'); ?></div>
                     </div>
 
                     <?php
                     \PublishPress_Statuses\StatusesUI::printErrorOrDescription(
                         'status_icon',
-                        __('The icon is used to visually represent the status.', 'publishpress')
+                        __('The icon is used to visually represent the status.', 'publishpress-statuses')
                     ); ?>
                 </td>
             </tr>
@@ -261,14 +258,13 @@ echo esc_attr($edit_status_link); ?>">
         // @todo
         $table_class = 'form-table pp-statuses-options';
         
-        //$status = $status->slug;
-        $status_obj = $status; // get_post_status_object($status);
+        $status_obj = $status;
         $status_types = (!empty($status_obj) && !empty($status_obj->post_type)) ? $status_obj->post_type : [];
 
         $label_disabled = ('future' == $status) ? ' disabled ' : '';
 
         echo "<div id='pp-" . esc_attr($tab) . "' style='clear:both;margin:0;style='" . esc_attr($display) . "' class='pp-options'>";
-        //do_action("presspermit_" . esc_attr($tab) . "_options_pre_ui");
+
         echo "<table class='" . esc_attr($table_class) . "' id='pp-" . esc_attr($tab) . "_table' style='" . esc_attr($display) . "'>";
 
         switch ($tab) {
@@ -276,10 +272,10 @@ echo esc_attr($edit_status_link); ?>">
                 $roles = \PublishPress_Functions::getRoles(true);
                 ?>
                 <tr class="form-field">
-                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'presspermit-pro') ?></label>
+                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'publishpress-statuses') ?></label>
                     <br /><br />
                     <span class="pp-statuses-field-descript" style="font-weight: normal">
-                    <?php esc_html_e('Choose which user roles can assign this status to a post.', 'presspermit-pro');?>
+                    <?php esc_html_e('Choose which user roles can assign this status to a post.', 'publishpress-statuses');?>
                     </span>
                     </th>
 
@@ -312,7 +308,7 @@ echo esc_attr($edit_status_link); ?>">
             case 'post_types' :
                 ?>
                 <tr class="form-field">
-                <th><label for="status_label"><?php esc_html_e('Post Types', 'presspermit-pro') ?></label></th>
+                <th><label for="status_label"><?php esc_html_e('Post Types', 'publishpress-statuses') ?></label></th>
                 <td>
 
                 <?php
@@ -348,7 +344,7 @@ echo esc_attr($edit_status_link); ?>">
                             <input name="<?php echo 'pp_status_all_types'; ?>" type="checkbox"
                                     id="<?php echo 'pp_status_all_types'; ?>"
                                     value="1" <?php checked('1', $all_enabled);?> <?php echo esc_attr($disabled); ?> />
-                            <?php esc_html_e('All Post Types', 'presspermit-pro'); ?>
+                            <?php esc_html_e('All Post Types', 'publishpress-statuses'); ?>
                         </label>
                     </div>
                     <?php
@@ -357,17 +353,6 @@ echo esc_attr($edit_status_link); ?>">
 
                     if (!$locked_status) {
                         $disabled = ($all_enabled) ? ' disabled ' : '';
-
-                        // @todo: migrate PublishPress setting to enable / disable all custom statuses per-type ?
-                        /*
-                        if ((defined('PUBLISHPRESS_VERSION') && class_exists('PP_Custom_Status')) && defined('PRESSPERMIT_COLLAB_VERSION') && !empty($status_obj->pp_custom)) {
-                            if (!empty($publishpress->modules->custom_status->options->post_types)) {
-                                $types = array_intersect_key($types, array_intersect($publishpress->modules->custom_status->options->post_types, ['on']));
-
-                                $display_hint = true;
-                            }
-                        }
-                        */
 
                         foreach ($types as $key => $obj) {
                             $id = $option_name . '-' . $key;
@@ -406,7 +391,7 @@ echo esc_attr($edit_status_link); ?>">
                     $save_as_label = (!empty($status_obj) && !empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : '';
                     ?>
                     <tr class="form-field">
-                        <th><label for="status_save_as_label"><?php esc_html_e('Save As Label', 'presspermit-pro') ?></label></th>
+                        <th><label for="status_save_as_label"><?php esc_html_e('Save As Label', 'publishpress-statuses') ?></label></th>
                         <td><input type="text" name="status_save_as_label" id="status_save_as_label" autocomplete="off"
                                 value="<?php echo esc_attr(stripslashes($save_as_label)); ?>" class="regular-text"  /></td>
                     </tr>
@@ -414,7 +399,7 @@ echo esc_attr($edit_status_link); ?>">
                     $button_label = (!empty($status_obj) && !empty($status_obj->labels->publish)) ? $status_obj->labels->publish : '';
                     ?>
                     <tr class="form-field">
-                        <th><label for="status_publish_label"><?php esc_html_e('Submit Button Label', 'presspermit-pro') ?></label></th>
+                        <th><label for="status_publish_label"><?php esc_html_e('Submit Button Label', 'publishpress-statuses') ?></label></th>
                         <td><input type="text" name="status_publish_label" id="status_publish_label" autocomplete="off"
                                 value="<?php echo esc_attr(stripslashes($button_label)); ?>" class="regular-text"  /></td>
                     </tr>

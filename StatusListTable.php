@@ -126,24 +126,14 @@ class StatusListTable extends \WP_List_Table
         global $publishpress;
 
         $columns = [
-            'position' => __('Position', 'publishpress'),
-            'status_name' => __('Status Name', 'publishpress'),
-            'name' => __('Name', 'publishpress'),
-            'icon' => __('Icon', 'publishpress'),
-            'roles' => esc_html__('Roles', 'publishpress'),
-            'post_types' => esc_html__('Post Types', 'publishpress'),
-            'description' => __('Description', 'publishpress'),
+            'position' => __('Position', 'publishpress-statuses'),
+            'status_name' => __('Status Name', 'publishpress-statuses'),
+            'name' => __('Name', 'publishpress-statuses'),
+            'icon' => __('Icon', 'publishpress-statuses'),
+            'roles' => esc_html__('Roles', 'publishpress-statuses'),
+            'post_types' => esc_html__('Post Types', 'publishpress-statuses'),
+            'description' => __('Description', 'publishpress-statuses'),
         ];
-
-        /*
-        $post_types = get_post_types('', 'objects');
-        $supported_post_types = \PublishPress_Statuses::getEnabledPostTypes();
-        foreach ($post_types as $post_type) {
-            if (in_array($post_type->name, $supported_post_types)) {
-                $columns[$post_type->name] = $post_type->label;
-            }
-        }
-        */
 
         return apply_filters('publishpress_statuses_admin_columns', $columns);
     }
@@ -175,8 +165,6 @@ class StatusListTable extends \WP_List_Table
                 <tr>
 
                 <?php
-                //$cols = $this->get_columns();
-
                 list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
 
                 foreach ($columns as $column_name => $column_display_name) {
@@ -277,7 +265,7 @@ if (!empty($this->collapsed_sections[$key])):?>
 <?php if (in_array($key, ['_pre-publish'])):
     $url = \PublishPress_Statuses::getLink(['action' => 'add-new']);
     ?>
-    <button type="button" class="add-new" title="<?php _e("Add New", 'publishpress');?>" onclick="window.location.href='<?php echo $url;?>'">+</button>
+    <button type="button" class="add-new" title="<?php _e("Add New", 'publishpress-statuses');?>" onclick="window.location.href='<?php echo $url;?>'">+</button>
 <?php endif;
 
 do_action('publishpress_statuses_admin_row', $key, []);
@@ -485,7 +473,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
                         $types_caption = implode(', ', array_slice($arr_captions, 0, 7));
 
                         if (count($arr_captions) > 7) {
-                            $types_caption = sprintf(esc_html__('%s, more...', 'presspermit-pro'), esc_html($types_caption));
+                            $types_caption = sprintf(esc_html__('%s, more...', 'publishpress-statuses'), esc_html($types_caption));
                         } else {
                             $types_caption = esc_html($types_caption);
                         }
@@ -526,32 +514,30 @@ do_action('publishpress_statuses_admin_row', $key, []);
                 echo "<div $attributes>";
 
                 if (in_array($item->name, ['draft', 'future', 'publish', 'private'])) {
-                    esc_html_e('(Standard)', 'presspermit-pro');
+                    esc_html_e('(Standard)', 'publishpress-statuses');
                 } else {
-                    $status_obj = $item; // get_post_status_object($item->name);
-
-                    $is_publishpress = false;  // @todo
+                    $status_obj = $item;
 
                     if (!empty($disabled_conditions[$item->name])) {
-                        $caption = esc_html('Disabled', 'presspermit-pro');
+                        $caption = esc_html('Disabled', 'publishpress-statuses');
                 
-                    } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) { // || $is_publishpress) {
-                        //if (!\PublishPress\Permissions\Statuses::postStatusHasCustomCaps($item->name)) {  // @todo
+                    } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) {
+                        //if (!\PublishPress\Permissions\Statuses::postStatusHasCustomCaps($item->name)) {
                         if (empty($status_obj->capability_status)) {
-                            $caption = esc_html('(Standard)', 'presspermit-pro');
+                            $caption = esc_html('(Standard)', 'publishpress-statuses');
                         } else {
                             if (!empty($status_obj->capability_status) && ($status_obj->capability_status != $status_obj->name)) {
                                 if ($cap_status_obj = get_post_status_object($status_obj->capability_status)) {
-                                    $caption = sprintf(esc_html__('(same as %s)', 'presspermit-pro'), esc_html($cap_status_obj->label));
+                                    $caption = sprintf(esc_html__('(same as %s)', 'publishpress-statuses'), esc_html($cap_status_obj->label));
                                 } else {
-                                    $caption = esc_html('Custom', 'presspermit-pro');
+                                    $caption = esc_html('Custom', 'publishpress-statuses');
                                 }
                             } else {
-                                $caption = esc_html('Custom', 'presspermit-pro');
+                                $caption = esc_html('Custom', 'publishpress-statuses');
                             }
                         }
                     } else {
-                        $caption = esc_html('(Standard)', 'presspermit-pro');
+                        $caption = esc_html('(Standard)', 'publishpress-statuses');
                     }
 
                     $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses&pp_tab=post_access");
@@ -620,7 +606,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
      */
     public function no_items()
     {
-        _e('No custom statuses found.', 'publishpress');
+        _e('No custom statuses found.', 'publishpress-statuses');
     }
 
     /**
@@ -668,7 +654,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
            // $item_edit_link = '';
         //}
         
-        $status_obj = $item; // get_post_status_object($item->name);
+        $status_obj = $item;
 
         $handle_class = (!empty($status_obj) && empty($status_obj->public) && !in_array($status_obj->name, ['draft', 'future', 'private']))
         ? 'handle '
@@ -694,7 +680,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
         }
 
         if ($item->name == $this->default_status) {
-            $output .= ' - ' . __('Default', 'publishpress');
+            $output .= ' - ' . __('Default', 'publishpress-statuses');
         }
         if (empty($item->_builtin)) {
             $output .= '</em>';
@@ -707,23 +693,23 @@ do_action('publishpress_statuses_admin_row', $key, []);
         }
 
         $actions = [];
-        //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress') . "</a>";
+        //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress-statuses') . "</a>";
 
-        $status_obj = $item; // get_post_status_object($item->slug);
+        $status_obj = $item;
 
         if (empty($status_obj) || (empty($status_obj->_builtin))) {
-            $actions['disable'] = '<a href="#">' . __('Disable', 'publishpress') . '</a>';
+            $actions['disable'] = '<a href="#">' . __('Disable', 'publishpress-statuses') . '</a>';
         }
 
         if (empty($status_obj) || (empty($status_obj->_builtin) && empty($status_obj->pp_builtin))) {
-            $actions['delete'] = '<a href="#">' . __('X', 'publishpress') . '</a>';
+            $actions['delete'] = '<a href="#">' . __('X', 'publishpress-statuses') . '</a>';
         }
 
         // @todo
         /*
         if (empty($status_obj) || (empty($status_obj->_builtin) && empty($status_obj->pp_builtin))) {
             $actions['delete-status'] = sprintf(
-                '<a href="%1$s">' . __('Delete', 'publishpress') . '</a>',
+                '<a href="%1$s">' . __('Delete', 'publishpress-statuses') . '</a>',
                 \PublishPress_Statuses::getLink(['action' => 'delete-status', 'name' => $item->name])
             );
         }

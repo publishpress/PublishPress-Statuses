@@ -11,8 +11,6 @@ class PostEditGutenberg
             }
         }
         
-        //add_action('rest_api_init', [$this, 'act_status_control_scripts']);
-
         add_action('enqueue_block_editor_assets', [$this, 'actEnqueueBlockEditorAssets']);
 
         // Gutenberg Block Editor support for workflow status progression guidance / limitation
@@ -20,16 +18,6 @@ class PostEditGutenberg
 
         add_action('admin_enqueue_scripts', [$this, 'act_replace_publishpress_scripts'], 50);
     }
-
-    // If PressPermit permissions filtering is enabled for this post type, load additional js to support it
-    /*
-    public function act_status_control_scripts() {
-        if (self::isPostTypeEnabled()) {
-            require_once(PRESSPERMIT_STATUSES_CLASSPATH . '/UI/Gutenberg/PostEditStatus.php');
-            new PostEditStatus();
-        }
-    }
-    */
 
     // If PressPermit permissions filtering is enabled for this post type, replace certain PublishPress scripts with a permissions-aware equivalent
     public function act_replace_publishpress_scripts()
@@ -83,10 +71,31 @@ class PostEditGutenberg
             )
         );
 
+        $captions = (object) [
+            'publicationWorkflow' => __('Publication Workflow', 'publishpress-statuses'),
+            'publish' => __('Publish', 'publishpress-statuses'),
+            'schedule' => __('Schedule', 'publishpress-statuses'),
+            'advance' => __('Advance Status', 'publishpress-statuses'),
+            'saveAs' => __('Save as %s', 'publishpress-statuses'),
+            'setSelected' => __('Set Selected Status', 'publishpress-statuses'),
+            'keepCurrent'=> __('Keep Current Status', 'publishpress-statuses'),
+            'advanceNext' => __('Advance to Next Status', 'publishpress-statuses'),
+            'advanceMax' => __('Advance to Max Status', 'publishpress-statuses'),
+            'currentlyPublished' => __('This post is currently published', 'publishpress-statuses'),
+            'currentlyScheduled' => __('This post is currently scheduled', 'publishpress-statuses')
+        ];
+
         wp_localize_script(
             'publishpress-custom-status-block',
             'PPCustomStatuses',
-            ['statuses' => $statuses, 'publishedStatuses' => $published_statuses, 'publishedStatusObjects' => $published_status_objects, 'ajaxurl' => admin_url('admin-ajax.php'), 'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')]
+            [
+                'statuses' => $statuses, 
+                'publishedStatuses' => $published_statuses, 
+                'publishedStatusObjects' => $published_status_objects, 
+                'captions' => $captions,
+                'ajaxurl' => admin_url('admin-ajax.php'), 
+                'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')
+            ]
         );
     }
 
@@ -107,12 +116,10 @@ class PostEditGutenberg
         $ordered_statuses = array_merge(
             ['draft' => (object)['name' => 'draft', 'label' => esc_html__('Draft')]],
 
-            //\PublishPress_Statuses::orderStatuses(
-                array_diff_key(
-                    \PublishPress_Statuses::getPostStati(['moderation' => true, 'post_type' => $post_type], 'object'),
-                    ['future' => true]
-                ),
-            //),
+            array_diff_key(
+                \PublishPress_Statuses::getPostStati(['moderation' => true, 'post_type' => $post_type], 'object'),
+                ['future' => true]
+            ),
 
             ['publish' => (object)['name' => 'publish', 'label' => esc_html__('Published')]],
             ['future' => (object)['name' => 'future', 'label' => esc_html__('Scheduled')]]
@@ -122,7 +129,6 @@ class PostEditGutenberg
         foreach($ordered_statuses as $key => $status_obj) {
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
-                //$ordered_statuses[$key]->name = $status_obj->label;
                 $ordered_statuses[$key]->description = '-';
                 $ordered_statuses[$key]->color = '';
                 $ordered_statuses[$key]->icon = '';
@@ -137,8 +143,6 @@ class PostEditGutenberg
             }
         }
 
-        //$ordered_statuses = apply_filters('pp_custom_status_list', array_values($ordered_statuses), $post);
-        
         if (!empty($ordered_statuses['pending'])) {
             $_ordered = [];
 
@@ -167,7 +171,6 @@ class PostEditGutenberg
         foreach($ordered_statuses as $key => $status_obj) {
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
-                //$ordered_statuses[$key]->name = $status_obj->label;
                 $ordered_statuses[$key]->description = '-';
                 $ordered_statuses[$key]->color = '';
                 $ordered_statuses[$key]->icon = '';
