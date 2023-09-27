@@ -10,7 +10,6 @@ class Admin
         // Load CSS and JS resources that we probably need
         add_action('admin_print_styles', [$this, 'add_admin_styles']);
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
-        add_action('admin_print_scripts', [$this, 'post_admin_header']);
     }
 
     function add_admin_styles() {
@@ -225,96 +224,6 @@ class Admin
         );
     }
 
-
-    /**
-     * Adds all necessary javascripts to make custom statuses work
-     *
-     * @todo Support private and future posts on edit.php view
-     */
-    public function post_admin_header()
-    {
-        global $post, $pagenow, $current_user;
-
-        if (\PublishPress_Statuses::DisabledForPostType()) {
-            return;
-        }
-
-        // Get current user
-        wp_get_current_user();
-
-        if ($this->is_whitelisted_page()) {
-            $post_type_obj = get_post_type_object(\PublishPress_Statuses::getCurrentPostType());
-            $custom_statuses = \PublishPress_Statuses::getPostStati([], 'object');  // @todo: confirm inclusion of core statuses here
-            $selected = null;
-            $selected_name = __('Draft', 'publishpress-statuses');
-
-            $custom_statuses = apply_filters('pp_custom_status_list', $custom_statuses, $post);
-
-            // Only add the script to Edit Post and Edit Page pages -- don't want to bog down the rest of the admin with unnecessary javascript
-            if (! empty($post)) {
-                //get raw post so custom post status is included
-                $post = get_post($post);
-                // Get the status of the current post
-                if ($post->ID == 0 || $post->post_status == 'auto-draft' || $pagenow == 'edit.php') {
-                    // TODO: check to make sure that the default exists
-                    $selected = \PublishPress_Statuses::DEFAULT_STATUS;
-                } else {
-                    $selected = $post->post_status;
-                }
-
-                if (empty($selected)) {
-                    $selected = \PublishPress_Statuses::DEFAULT_STATUS;
-                }
-
-                // Get the current post status name
-
-                foreach ($custom_statuses as $status) {
-                    if ($status->name == $selected) {
-                        $selected_name = $status->label;
-                    }
-                }
-            }
-
-            $all_statuses = [];
-
-            // Load the custom statuses
-            foreach ($custom_statuses as $status) {
-                // @todo: function argument?
-                if (!empty($status->private) && ('private' != $status->name)) {
-                    continue;
-                }
-
-                $all_statuses[] = [
-                    'label' => esc_js(\PublishPress_Statuses::get_status_property($status, 'label')),
-                    'name' => esc_js(\PublishPress_Statuses::get_status_property($status, 'name')),
-                    'description' => esc_js(\PublishPress_Statuses::get_status_property($status, 'description')),
-                    'color' => esc_js(\PublishPress_Statuses::get_status_property($status, 'color')),
-                    'icon' => esc_js(\PublishPress_Statuses::get_status_property($status, 'icon')),
-
-                ];
-            }
-
-            // TODO: Move this to a script localization method. 
-            ?>
-            <script type="text/javascript">
-                var pp_text_no_change = '<?php echo esc_js(__("&mdash; No Change &mdash;")); ?>';
-                var label_save = '<?php echo __('Save'); ?>';
-                var pp_default_custom_status = '<?php echo esc_js(\PublishPress_Statuses::DEFAULT_STATUS); ?>';
-                var current_status = '<?php echo esc_js($selected); ?>';
-                var current_status_name = '<?php echo esc_js($selected_name); ?>';
-                var custom_statuses = <?php echo json_encode($all_statuses); ?>;
-                var current_user_can_publish_posts = <?php echo current_user_can(
-                    $post_type_obj->cap->publish_posts
-                ) ? 1 : 0; ?>;
-                var current_user_can_edit_published_posts = <?php echo current_user_can(
-                    $post_type_obj->cap->edit_published_posts
-                ) ? 1 : 0; ?>;
-            </script>
-            <?php
-        }
-    }
-
-
     // @todo: merge into getPostStatuses() / register_post_status() calls
 
     public static function set_status_labels($status)
@@ -428,6 +337,17 @@ class Admin
         $moderation_statuses = \PublishPress_Statuses::getPostStati(['moderation' => true, 'internal' => false, 'post_type' => $post_type], 'object');
         unset($moderation_statuses['future']);
 
+        $default_by_sequence = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence;
+
+        if ($post && $is_administrator && $default_by_sequence 
+        && empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status) 
+        && ! \PublishPress_Functions::isBlockEditorActive($post_type)) {
+            $_publish_obj = get_post_status_object('publish');
+            $_publish_obj->save_as = __('Publish', 'publishpress-statuses');
+            $_publish_obj->publish = __('Advance Status', 'publishpress-statuses');
+            $moderation_statuses['_public'] = $_publish_obj;
+        }
+
         if (!$is_administrator) {
             $moderation_statuses = \PublishPress_Statuses::filterAvailablePostStatuses($moderation_statuses, $post_type, $post_status);
         }
@@ -440,7 +360,7 @@ class Admin
         $_args = ['include_status' => $post_status_obj->name];
 
         if ($post) {
-            if ($default_by_sequence = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) {
+            if ($default_by_sequence) {
                 if (!empty($post_status_obj->status_parent)) {
                     // If current status is a sub-status, only offer:
                     // * other sub-statuses in the same workflow branch
