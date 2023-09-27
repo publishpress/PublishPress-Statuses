@@ -2249,7 +2249,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $stored_status_obj = get_post_status_object($stored_status);
         }
 
-        $_post_status = (!empty($_POST) && !empty($_POST['post_status'])) ? $_POST['post_status'] : '';
+        if (!empty($_REQUEST['post_status']) && ('_public' == $_REQUEST['post_status']) && !\PublishPress_Functions::isBlockEditorActive()) {
+            $_post_status = 'public';
+        } else {
+        	$_post_status = (!empty($_POST) && !empty($_POST['post_status'])) ? $_POST['post_status'] : '';
+        }
 
         $selected_status = ($_post_status && ('publish' != $_post_status)) ? $_post_status : $post_status;
 
