@@ -7,4 +7,8 @@ jQuery(document).ready(function ($) {
             $('input.pp_status_post_types').prop('disabled', false);
         }
     });
+
+    $('div.publishpress-admin-wrapper ul.nav-tab-wrapper li a').click(function(e) {
+        $('input[type="hidden"][name="pp_tab"]').val($(this).attr('href'));
+    });
 });
