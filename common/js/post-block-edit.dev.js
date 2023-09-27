@@ -27,7 +27,8 @@ jQuery(document).ready(function ($) {
         var node = $(btnSelector);
 
         var ppClass;
-
+        var hideClass;
+        
         if ('button.editor-post-publish-button' == btnSelector) {
             ppClass = 'presspermit-editor-button';
         } else {
@@ -50,8 +51,6 @@ jQuery(document).ready(function ($) {
             } else {
                 $('.presspermit-editor-hidden').not($(btnSelector)).show();
 
-                var hideClass;
-
                 if ('button.editor-post-publish-button' == btnSelector) {
                     hideClass = 'presspermit-editor-hidden presspermit-editor-button-hidden';
                 } else {
@@ -62,7 +61,7 @@ jQuery(document).ready(function ($) {
                 node.addClass(hideClass).hide().css('z-index', -999);
 
                 // Clone the stock button
-                node.after('<span class="' + ppClass + '">' + node.clone().css('z-index', 0).removeClass(hideClass).removeAttr('aria-disabled').css('position', 'relative').css('background-color', 'var(--wp-admin-theme-color)').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
+                node.after('<span class="' + ppClass + '">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-publish-button').removeAttr('aria-disabled').css('position', 'relative').css('background-color', 'var(--wp-admin-theme-color)').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
         
                 // If the stock button is not the pre-publish toggle, really hide it (re-add hide class; set background color, position and aria-disabled properties)
                 node.not('.editor-post-publish-panel__toggle').addClass(hideClass).css('background-color', 'inherit').css('position', 'fixed').attr('aria-disabled', true);
