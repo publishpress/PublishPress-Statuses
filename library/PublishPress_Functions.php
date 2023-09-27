@@ -293,8 +293,9 @@ class PublishPress_Functions
 
         <div class="pp-rating">
         <a href="https://wordpress.org/support/plugin/publishpress-statuses/reviews/#new-post" target="_blank" rel="noopener noreferrer">
-        <?php printf( 
-            esc_html__('If you like %s, please leave us a %s rating. Thank you!', 'publishpress-statuses'),
+        <?php printf(
+                // translators: %1$s is the plugin name, %2$s is the rating stars
+            esc_html__('If you like %1$s, please leave us a %2$s rating. Thank you!', 'publishpress-statuses'),
             '<strong>PublishPress Statuses</strong>',
             '<span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span>'
             );
