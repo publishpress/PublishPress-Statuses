@@ -99,8 +99,10 @@ class PostEditGutenberg
         global $post;
         $post_type = \PublishPress_Functions::findPostType();
 
+        $draft_obj = get_post_status_object('draft');
+
         $ordered_statuses = array_merge(
-            ['draft' => (object)['name' => 'draft', 'label' => esc_html__('Draft')]],
+            ['draft' => (object)['name' => 'draft', 'label' => esc_html__('Draft'), 'icon' => $draft_obj->icon, 'color' => $draft_obj->color]],
 
             array_diff_key(
                 \PublishPress_Statuses::getPostStati(['moderation' => true, 'post_type' => $post_type], 'object'),
@@ -116,8 +118,8 @@ class PostEditGutenberg
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
                 $ordered_statuses[$key]->description = '-';
-                $ordered_statuses[$key]->color = '';
-                $ordered_statuses[$key]->icon = '';
+                //$ordered_statuses[$key]->color = '';
+                //$ordered_statuses[$key]->icon = '';
             }
 
             if (!empty($status_obj->status_parent) && !empty($ordered_statuses[$status_obj->status_parent])) {
@@ -158,8 +160,8 @@ class PostEditGutenberg
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
                 $ordered_statuses[$key]->description = '-';
-                $ordered_statuses[$key]->color = '';
-                $ordered_statuses[$key]->icon = '';
+                //$ordered_statuses[$key]->color = '';
+                //$ordered_statuses[$key]->icon = '';
             }
 
             $ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : __('Save', 'publishpress-statuses');
