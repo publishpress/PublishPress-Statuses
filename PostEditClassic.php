@@ -59,8 +59,8 @@ class PostEditClassic
         $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 
         wp_enqueue_script(
-            'publishpress-statuses-object-edit', 
-            PUBLISHPRESS_STATUSES_URL . "common/js/object-edit{$suffix}.js", 
+            'publishpress-statuses-classic-edit', 
+            PUBLISHPRESS_STATUSES_URL . "common/js/classic-edit{$suffix}.js", 
             ['jquery', 'jquery-form'], 
             PUBLISHPRESS_STATUSES_VERSION, 
             true
@@ -99,10 +99,10 @@ class PostEditClassic
             }
         }
 
-        wp_localize_script('publishpress-statuses-object-edit', 'ppObjEdit', $args);
+        wp_localize_script('publishpress-statuses-classic-edit', 'ppObjEdit', $args);
 
         global $wp_scripts;
-        $wp_scripts->in_footer [] = 'publishpress-statuses-object-edit';  // otherwise it will not be printed in footer (@todo review)
+        $wp_scripts->in_footer [] = 'publishpress-statuses-classic-edit';  // otherwise it will not be printed in footer (@todo review)
     }
 
     // ensure Comments metabox for custom published / private stati

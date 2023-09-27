@@ -19,16 +19,14 @@ class Admin
         global $pagenow;
 
         if ('admin.php' === $pagenow && isset($_GET['page']) && $_GET['page'] === 'publishpress-statuses') { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            wp_enqueue_style('publishpress-settings-css', PUBLISHPRESS_STATUSES_URL . 'common/settings.css', false, PUBLISHPRESS_STATUSES_VERSION);
-
             wp_enqueue_style(
-                'publishpress-statuses-css',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status.css',
+                'publishpress-status-admin-css',
+                PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-admin.css',
                 [],
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
-            wp_enqueue_style('presspermit-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/css/pressshack-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
+            wp_enqueue_style('presspermit-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/libs/publishpress/publishpress-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
         }
     }
 
@@ -46,6 +44,35 @@ class Admin
             return;
         }
 
+        if (!empty($pagenow) && ('admin.php' == $pagenow) 
+        && (!empty($_REQUEST['page']) && 0 === strpos($_REQUEST['page'], 'publishpress-statuses'))
+        ) {
+            wp_enqueue_script(
+                'publishpress-icon-preview',
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/icon-picker/icon-picker.js',
+                ['jquery'],
+                PUBLISHPRESS_STATUSES_VERSION,
+                true
+            );
+            wp_enqueue_style(
+                'publishpress-icon-preview',
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/icon-picker/icon-picker.css',
+                ['dashicons'],
+                PUBLISHPRESS_STATUSES_VERSION,
+                'all'
+            );
+
+            $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+
+            wp_enqueue_script(
+                'publishpress-status-edit',
+                PUBLISHPRESS_STATUSES_URL . "common/js/status-edit{$suffix}.js",
+                ['jquery', 'jquery-ui-sortable'],
+                PUBLISHPRESS_STATUSES_VERSION,
+                true
+            );
+        }
+
         // Load Javascript we need to use on the configuration views (jQuery Sortable)
         if (!empty($pagenow) && ('admin.php' == $pagenow) 
         && (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']))
@@ -56,22 +83,24 @@ class Admin
 
             global $wp_post_statuses;
 
+            $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+
             wp_enqueue_script(
                 'ui-touch-punch', 
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/jquery.ui.touch-punch.min.js', 
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/jquery.ui.touch-punch/jquery.ui.touch-punch.min.js', 
                 ['jquery', 'jquery-ui-sortable'], 
                 PUBLISHPRESS_STATUSES_VERSION
             );
             wp_enqueue_script(
                 'nested-sortable-mjs-pp', 
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/jquery.mjs.nestedSortable-pp.js', 
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/jquery.mjs.nestedSortable-pp/jquery.mjs.nestedSortable-pp.js', 
                 ['jquery', 'jquery-ui-sortable'], 
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
             wp_enqueue_script(
                 'publishpress-custom-status-configure',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status-configure.js',
+                PUBLISHPRESS_STATUSES_URL . "common/js/custom-status-configure{$suffix}.js",
                 ['jquery', 'jquery-ui-sortable'],
                 PUBLISHPRESS_STATUSES_VERSION,
                 true
@@ -87,29 +116,6 @@ class Admin
                     ),
                 ]
             );
-
-            wp_enqueue_script(
-                'publishpress-icon-preview',
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/icon-picker.js',
-                ['jquery'],
-                PUBLISHPRESS_STATUSES_VERSION,
-                true
-            );
-            wp_enqueue_style(
-                'publishpress-icon-preview',
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/icon-picker.css',
-                ['dashicons'],
-                PUBLISHPRESS_STATUSES_VERSION,
-                'all'
-            );
-
-            wp_enqueue_style(
-                'publishpress-custom_status-admin',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status-admin.css',
-                false,
-                PUBLISHPRESS_STATUSES_VERSION,
-                'all'
-            );
         }
 
         // Custom javascript to modify the post status dropdown where it shows up
@@ -118,15 +124,15 @@ class Admin
                 if (\PublishPress_Functions::isBlockEditorActive()) {
                     wp_enqueue_style(
                         'publishpress-custom_status-block',
-                        PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block-editor.css',
+                        PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-block-editor.css',
                         false,
                         PUBLISHPRESS_STATUSES_VERSION,
                         'all'
                     );
                 } else {
                     wp_enqueue_style(
-                        'publishpress-custom_status',
-                        PUBLISHPRESS_STATUSES_URL . 'common/custom-status.css',
+                        'publishpress-custom_status-classic',
+                        PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-classic-editor.css',
                         false,
                         PUBLISHPRESS_STATUSES_VERSION,
                         'all'
@@ -200,7 +206,7 @@ class Admin
      *
      * @todo migrate this to the base module class
      */
-    public function is_whitelisted_page()
+    public static function is_post_management_page()
     {
         global $pagenow;
 
