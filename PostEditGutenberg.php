@@ -164,8 +164,13 @@ class PostEditGutenberg
                 //$ordered_statuses[$key]->icon = '';
             }
 
-            $ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : __('Save', 'publishpress-statuses');
-            $ordered_statuses[$key]->submit = (!empty($status_obj->labels->publish)) ? $status_obj->labels->publish : __('Advance Status', 'publishpress-statuses');
+            if ('draft' == $status_obj->name) {
+                $ordered_statuses[$key]->save_as = __('Save Draft', 'publishpress-statuses');
+                $ordered_statuses[$key]->submit = $ordered_statuses[$key]->save_as;
+            } else {
+            	$ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : __('Save', 'publishpress-statuses');
+            	$ordered_statuses[$key]->submit = (!empty($status_obj->labels->publish)) ? $status_obj->labels->publish : __('Advance Status', 'publishpress-statuses');
+            }
         }
 
         foreach ($ordered_statuses as $k => $status_obj) {
