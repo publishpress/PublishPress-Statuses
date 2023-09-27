@@ -5,7 +5,9 @@
  * Description: Manage and create post statuses to customize your editorial workflow
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
- * Version: 1.0-beta7
+ * Version: 1.0-beta8
+ * Requires at least: 5.5
+ * Requires PHP: 7.2.5
  *
  * Copyright (c) 2023 PublishPress
  *
@@ -129,7 +131,7 @@ if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
     } 
     
     if (empty($interrupt_load)) {
-        define('PUBLISHPRESS_STATUSES_VERSION', '1.0-beta7');
+        define('PUBLISHPRESS_STATUSES_VERSION', '1.0-beta8');
 
         define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
         define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
