@@ -304,7 +304,7 @@ class StatusesUI {
             wp_enqueue_style('wp-color-picker');
             wp_enqueue_script(
                 'publishpress-color-picker',
-                PUBLISHPRESS_STATUSES_URL . 'common/color-picker.js',
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/color-picker/color-picker.js',
                 ['wp-color-picker'],
                 false,
                 true
