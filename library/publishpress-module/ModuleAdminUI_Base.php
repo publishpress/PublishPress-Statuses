@@ -3,7 +3,7 @@
 namespace PublishPress;
 
 class ModuleAdminUI_Base {
-    private $module;
+    public $module;
 
     private static $instance = null;
 

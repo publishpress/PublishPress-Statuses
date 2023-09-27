@@ -15,7 +15,7 @@ class Admin
     function add_admin_styles() {
         global $pagenow;
 
-        if ('admin.php' === $pagenow && isset($_GET['page']) && $_GET['page'] === 'publishpress-statuses') { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ('admin.php' === $pagenow && isset($_GET['page']) && 0 === strpos($_GET['page'], 'publishpress-statuses')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             wp_enqueue_style(
                 'publishpress-status-admin-css',
                 PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-admin.css',
@@ -116,7 +116,7 @@ class Admin
         }
 
         // Custom javascript to modify the post status dropdown where it shows up
-        if ($this->is_whitelisted_page()) {
+        if (self::is_post_management_page()) {
             if (class_exists('PublishPress_Functions')) { // @todo: refine library dependency handling
                 if (\PublishPress_Functions::isBlockEditorActive()) {
                     wp_enqueue_style(
@@ -147,8 +147,8 @@ class Admin
     public function render_admin_page()
     {
         require_once(__DIR__ . '/StatusesUI.php');
-        $ui = new \PublishPress_Statuses\StatusesUI();
-        $ui->render_admin_page($this);
+        $ui = \PublishPress_Statuses\StatusesUI::instance();
+        $ui->render_admin_page();
     }
 
     function act_admin_menu()
@@ -181,10 +181,11 @@ class Admin
         );
         */
 
+        $check_cap = (current_user_can('manage_options')) ? 'read' : 'pp_manage_statuses';
+
         add_menu_page(
             esc_html__('Statuses', 'publishpress-statuses'),
             esc_html__('Statuses', 'publishpress-statuses'),
-            'read',
             $check_cap,
             'publishpress-statuses',
             [$this, 'render_admin_page'],
@@ -192,6 +193,23 @@ class Admin
             70
         );
 
+        add_submenu_page(
+            'publishpress-statuses',
+            esc_html__('Add New', 'publishpress-statuses'), 
+            esc_html__('Add New', 'publishpress-statuses'), 
+            $check_cap,   // @todo: custom capability
+            'publishpress-statuses-add-new', 
+            [$this, 'render_admin_page']
+        );
+
+        add_submenu_page(
+            'publishpress-statuses',
+            esc_html__('Settings', 'publishpress-statuses'), 
+            esc_html__('Settings', 'publishpress-statuses'), 
+            'manage_options',   // @todo: custom capability
+            'publishpress-statuses-settings', 
+            [$this, 'render_admin_page']
+        );
     }
 
     /**
