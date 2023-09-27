@@ -283,8 +283,12 @@ class StatusesUI {
         endif; ?>
 
         <?php
-
-        \PublishPress_Functions::publishpressFooter();
+        if (did_action('publishpress_default_header')) {
+        	\PublishPress_Functions::publishpressFooter();
+    	}
+        ?>
+        </div>
+        <?php
     }
 
     /**
