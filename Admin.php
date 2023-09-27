@@ -191,12 +191,7 @@ class Admin
             'dashicons-format-status',
             70
         );
-    }
 
-    function render_dashboard_page() {
-        require_once(__DIR__ . '/StatusesUI.php');
-        $ui = new \PublishPress_Statuses\StatusesUI();
-        $ui->render_dashboard_page($this);
     }
 
     /**
