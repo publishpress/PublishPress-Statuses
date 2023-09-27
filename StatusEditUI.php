@@ -15,6 +15,13 @@ if (! $status) {
     return;
 }
 
+$url = \PublishPress_Statuses::getLink(['action' => 'statuses']);
+?>
+<div class='pp-edit-status-back'>
+    <a href="<?php echo esc_url($url); ?>"><?php esc_html_e('Back to Statuses', 'publishpress-statuses'); ?></a>
+</div>
+<?php
+
 $edit_status_link = \PublishPress_Statuses::getLink(['action' => 'edit-status', 'name' => $name]);
 
 $label = (isset($_POST['label'])) ? sanitize_text_field($_POST['label']) : $status->label;
