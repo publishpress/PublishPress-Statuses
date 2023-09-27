@@ -53,9 +53,11 @@ class PostEditGutenberg
             return;
         }
 
+        $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+
         wp_enqueue_script(
             'publishpress-custom-status-block',
-            PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block.min.js',
+            PUBLISHPRESS_STATUSES_URL . "common/js/custom-status-block{$suffix}.js",
             ['wp-blocks', 'wp-i18n', 'wp-element', 'wp-hooks'],
             PUBLISHPRESS_STATUSES_VERSION,
             true
