@@ -13,7 +13,7 @@ class StatusHandler {
 
         check_admin_referer('custom-status-add-nonce');
 
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
@@ -134,7 +134,7 @@ class StatusHandler {
         check_admin_referer('delete-status');
 
         // Only allow users with the proper caps
-        if (! current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
@@ -165,7 +165,7 @@ class StatusHandler {
     {
         check_admin_referer('edit-status');
 
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             wp_die(esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
@@ -648,7 +648,7 @@ class StatusHandler {
         global $current_user;
         
         // low capability requirement since this is just a convenience toggle
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             return;
         }
 
@@ -672,7 +672,7 @@ class StatusHandler {
 
     public static function handleAjaxDeleteStatus() {
         if (!empty($_REQUEST['delete_status'])) {
-            if (! current_user_can('manage_options')) {
+            if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
                 self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
             }
 
@@ -706,7 +706,7 @@ class StatusHandler {
     {
         check_ajax_referer('custom-status-sortable');
 
-        if (! current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
