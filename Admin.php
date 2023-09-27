@@ -10,7 +10,6 @@ class Admin
         // Load CSS and JS resources that we probably need
         add_action('admin_print_styles', [$this, 'add_admin_styles']);
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
-        add_action('admin_notices', [$this, 'no_js_notice']);
         add_action('admin_print_scripts', [$this, 'post_admin_header']);
     }
 
@@ -231,24 +230,6 @@ class Admin
         );
     }
 
-    /**
-     * Displays a notice to users if they have JS disabled
-     * Javascript is needed for custom statuses to be fully functional
-     */
-    public function no_js_notice()
-    {
-        if ($this->is_whitelisted_page()) :
-            ?>
-            <div class="update-nag hide-if-js">
-                <?php
-                _e(
-                    '<strong>Note:</strong> Your browser does not support JavaScript or has JavaScript disabled. You will not be able to access or change the post status.',
-                    'publishpress-statuses'
-                ); ?>
-            </div>
-        <?php
-        endif;
-    }
 
     /**
      * Adds all necessary javascripts to make custom statuses work
