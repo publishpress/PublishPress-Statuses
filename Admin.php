@@ -5,7 +5,6 @@ namespace PublishPress_Statuses;
 class Admin
 {
     function __construct() {
-        //add_action('presspermit_permissions_menu', [$this, 'act_permissions_menu'], 10, 2);
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 
         // Load CSS and JS resources that we probably need
