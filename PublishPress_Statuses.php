@@ -128,6 +128,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         add_action('rest_api_init', [$this, 'actRestInit'], 1);
         add_filter('pre_post_status', [$this, 'fltPostStatus'], 20);
 
+        add_filter('cme_plugin_capabilities', [$this, 'fltRegisterCapabilities']);
+
         // Register the module with PublishPress
         
         $this->slug = 'publishpress_statuses';
@@ -213,6 +215,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $init_priority = (defined('PUBLISHPRESS_ACTION_PRIORITY_INIT')) ? PUBLISHPRESS_ACTION_PRIORITY_INIT : 10;
             add_action('init', [$this, 'init'], $init_priority);
         }
+    }
+
+    public function fltRegisterCapabilities($cme_caps) {
+        $cme_caps[__('PublishPress Statues', 'publishpress-statues')] = ['pp_manage_statuses'];
+
+        return $cme_caps;
     }
 
     /**
