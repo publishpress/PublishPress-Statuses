@@ -62,6 +62,7 @@ class PostEditGutenberg
             'publish' => __('Publish', 'publishpress-statuses'),
             'schedule' => __('Schedule', 'publishpress-statuses'),
             'advance' => __('Advance Status', 'publishpress-statuses'),
+            // translators: %s is the status label
             'saveAs' => __('Save as %s', 'publishpress-statuses'),
             'setSelected' => __('Set Selected Status', 'publishpress-statuses'),
             'keepCurrent'=> __('Keep Current Status', 'publishpress-statuses'),

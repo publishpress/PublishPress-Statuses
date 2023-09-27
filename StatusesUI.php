@@ -53,6 +53,7 @@ class StatusesUI {
             if (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']) && !empty($_REQUEST['action']) && ('edit-status' == $_REQUEST['action'])) {
                 $status_name = sanitize_key($_REQUEST['name']);
                 if ($status_obj = get_post_status_object($status_name)) {
+                    // translators: %s is the status label
                     $title = sprintf(__('Edit Post Status: %s', 'publishpress-statuses'), $status_obj->label);
                 }
             }
@@ -210,10 +211,12 @@ class StatusesUI {
 
         \PublishPress_Statuses::instance()->messages = [
             'status-added' => __('Post status created. Select a tab for further configuration.', 'publishpress-statuses'),
-            'status-updated' => sprintf(__('Post status%s updated. %s', 'publishpress-statuses'), $status_name, $edit_again),
+            // translators: %1$s is the status name, %2$s is the edit link
+            'status-updated' => sprintf(__('Post status %1$s updated. %2$s', 'publishpress-statuses'), $status_name, $edit_again),
             'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
             'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
-            'term-updated' => sprintf(__('Post status%s updated. %s', 'publishpress-statuses'), $status_name, $edit_again),
+            // translators: %1$s is the status name, %2$s is the edit link
+            'term-updated' => sprintf(__('Post status%1$s updated. %2$s', 'publishpress-statuses'), $status_name, $edit_again),
             'status-deleted' => __('Post status deleted.', 'publishpress-statuses'),
             'status-position-updated' => __("Status order updated.", 'publishpress-statuses'),
         ];
@@ -356,6 +359,7 @@ class StatusesUI {
             
             // Leave a note to the admin as a reminder that add_post_type_support has been used somewhere in their code
             if (post_type_supports($post_type, 'pp_custom_statuses')) {
+                // translators: %1$s is the post type name, %2$s is the pp_custom_statuses feature
                 echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(__('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), $post_type, 'pp_custom_statuses') . '</span>';
             }
         }
