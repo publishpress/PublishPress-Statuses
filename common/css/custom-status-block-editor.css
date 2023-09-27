@@ -51,9 +51,32 @@ div.pp-statuses-workflow div.components-radio-control__option label {
 vertical-align: text-top !important;
 }
 
-div.div.pp-statuses-workflow div.pp-editor-workflow-caption {
+div.pp-statuses-workflow div.pp-editor-workflow-caption {
 padding-left: 25px;
 padding-top: 5px;
+}
+
+.pp-status-color {
+display: inline-block;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+-o-border-radius: 3px;
+}
+
+.pp-status-color-title {
+width: auto;
+height: auto;
+padding: 1px 2px 1px 2px;
+color: black;
+-webkit-user-select: none;  
+-moz-user-select: none;    
+-ms-user-select: none;      
+user-select: none;
+}
+
+.pp-status-color + strong {
+margin-left: 5px;
 }
 
 div.pp-statuses-workflow span.pp-status-color-title, div.pp-statuses-workflow span.dashicons {
