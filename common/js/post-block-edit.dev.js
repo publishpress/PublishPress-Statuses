@@ -292,6 +292,11 @@ jQuery(document).ready(function ($) {
             ppLastStatus = false;
             PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
             PP_SetPublishButtonCaption(ppObjEdit.publish, false);
+
+            setTimeout(function() {
+            PPCS_RecaptionOnDisplay('');
+            }, 500);
+
             ppEnablePostUpdate();
         }, 500);
 
@@ -393,6 +398,8 @@ jQuery(document).ready(function ($) {
         setTimeout(function () {
             $('button.editor-post-publish-panel__toggle').removeClass('presspermit-editor-hidden').css('z-index', 1);
             PP_RecaptionButton('prePublish', 'button.editor-post-publish-panel__toggle', ppObjEdit.prePublish);
+
+            PPCS_RecaptionOnDisplay('');
         }, 100);
     });
 
