@@ -15,22 +15,6 @@ class PostEditGutenberg
 
         // Gutenberg Block Editor support for workflow status progression guidance / limitation
         add_action('enqueue_block_editor_assets', [$this, 'act_status_guidance_scripts']);
-
-        add_action('admin_enqueue_scripts', [$this, 'act_replace_publishpress_scripts'], 50);
-    }
-
-    // If PressPermit permissions filtering is enabled for this post type, replace certain PublishPress scripts with a permissions-aware equivalent
-    public function act_replace_publishpress_scripts()
-    {
-        //if (\PublishPress_Statuses\PostEdit::isPostTypeEnabled()) {  @todo: check post type enable (for whole custom statuses feature)
-            wp_enqueue_style(
-                'publishpress-custom-status-block',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block-editor.css', 
-                false,
-                PUBLISHPRESS_STATUSES_VERSION,
-                'all'
-            );
-        //}
     }
 
     // If PressPermit permissions filtering is enabled for this post type and the user may be limited, load scripts to support status progression guidance
