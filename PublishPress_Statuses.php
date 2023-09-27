@@ -1355,6 +1355,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             if (!$function_args['show_disabled']) {
                 if (!empty($status_by_position[$key]->disabled)) {
                     unset($status_by_position[$key]);
+                    continue;
                 }
             }
 
