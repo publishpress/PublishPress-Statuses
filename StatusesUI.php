@@ -221,7 +221,24 @@ class StatusesUI {
                     </div>
                 </div>
             
-            <?php else: ?>
+            <?php else: 
+                if ($_GET['page'] === 'publishpress-statuses-add-new') {
+                    $title = (!empty($_REQUEST['taxonomy']) && 'post_visibility_pp' == $_REQUEST['taxonomy']) 
+                    ?  __('Add New Visibility Status', 'publishpress-statuses')
+                    :  __('Add New Pre-Publication Status', 'publishpress-statuses');
+
+                    $descript = (!empty($_REQUEST['taxonomy']) && 'post_visibility_pp' == $_REQUEST['taxonomy']) 
+                    ?  __('This status can be assigned to a post as a different form of Private Publication with its own capability requirements.', 'publishpress-statuses')
+                    :  __('This status can be assigned to an unpublished post using the Post Status dropdown.', 'publishpress-statuses');
+
+                    \PublishPress\ModuleAdminUI_Base::instance()->module->title = $title;
+                    \PublishPress\ModuleAdminUI_Base::instance()->default_header($descript);
+
+                } elseif ($_GET['page'] === 'publishpress-statuses-settings') {
+                    \PublishPress\ModuleAdminUI_Base::instance()->module->title = __('PublishPress Statuses Settings', 'publishpress-statuses');
+                    \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Note: Post types can also be specified for each individual status.', 'publishpress-statuses')); //$descript);
+                }
+            ?>
             <div id='co-l-left' class='pp-statuses-co-l-left'>
                 <div class='col-wrap'>
                     <div class='form-wrap'>
