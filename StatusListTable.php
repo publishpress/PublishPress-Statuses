@@ -260,7 +260,7 @@ if (!empty($this->collapsed_sections[$key])):?>
 <td class="status_name" style="width:0"><div class="status_name <?php echo $key;?> column-<?php echo $key;?> hidden"><?php echo $key;?></div></td>
 <?php endif; ?>
 
-<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><em><?php echo $label;?></em></strong>
+<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo $label;?></strong>
 
 <?php if (in_array($key, ['_pre-publish'])):
     $url = \PublishPress_Statuses::getLink(['action' => 'add-new']);
