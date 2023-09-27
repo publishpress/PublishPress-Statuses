@@ -112,6 +112,9 @@ class ModuleAdminUI_Base {
                     <?php endif; ?>
                 </h2>
 
+                <?php 
+                do_action('publishpress_default_header');
+                ?>
             </header>
         <?php
     }
