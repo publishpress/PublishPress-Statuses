@@ -6,15 +6,15 @@
  * Copyright (c) 2023 PublishPress
  *
  * ------------------------------------------------------------------------------
- * Based on Edit Flow
+ * Portions of this code were originally derived from the Edit Flow plugin
  * Author: Daniel Bachhuber, Scott Bressler, Mohammad Jangda, Automattic, and
  * others
  * Copyright (c) 2009-2016 Mohammad Jangda, Daniel Bachhuber, et al.
  * ------------------------------------------------------------------------------
  *
- * This file is part of PublishPress
+ * This file is part of PublishPress Statuses
  *
- * PublishPress is free software: you can redistribute it and/or modify
+ * PublishPress Statuses is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
