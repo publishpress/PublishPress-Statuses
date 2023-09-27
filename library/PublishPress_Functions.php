@@ -318,7 +318,7 @@ class PublishPress_Functions
         </ul>
         </nav>
 
-        <div class="pp-pressshack-logo">
+        <div class="pp-publishpress-logo">
         <a href="//publishpress.com" target="_blank" rel="noopener noreferrer">
         <img src="<?php echo esc_url(PUBLISHPRESS_STATUSES_URL . '/common/assets/publishpress-logo.png');?>" />
         </a>

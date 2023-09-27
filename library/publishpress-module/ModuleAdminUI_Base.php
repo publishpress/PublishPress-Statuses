@@ -90,7 +90,7 @@ class ModuleAdminUI_Base {
         }
         ?>
 
-        <div class="publishpress-admin pressshack-admin-wrapper wrap">
+        <div class="publishpress-admin publishpress-admin-wrapper wrap">
             <header>
                 <!--
                 <div class="pp-icon">
