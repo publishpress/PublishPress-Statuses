@@ -30,6 +30,54 @@
  *
  **/
 
+ if (!defined('ABSPATH')) exit; // Exit if accessed directly
+
+ global $wp_version;
+
+ $min_php_version = '7.2.5';
+ $min_wp_version  = '5.5';
+ 
+ $invalid_php_version = version_compare(phpversion(), $min_php_version, '<');
+ $invalid_wp_version = version_compare($wp_version, $min_wp_version, '<');
+ 
+ // If the PHP version is not compatible, terminate the plugin execution and show an admin notice.
+ if (is_admin() && $invalid_php_version) {
+     add_action(
+         'admin_notices',
+         function () use ($min_php_version) {
+             if (current_user_can('activate_plugins')) {
+                 echo '<div class="notice notice-error"><p>';
+                 printf(
+                     'PublishPress Statuses requires PHP version %s or higher.',
+                     $min_php_version
+                 );
+                 echo '</p></div>';
+             }
+         }
+     );
+ }
+ 
+ // If the WP version is not compatible, terminate the plugin execution and show an admin notice.
+ if (is_admin() && $invalid_wp_version) {
+     add_action(
+         'admin_notices',
+         function () use ($min_wp_version) {
+             if (current_user_can('activate_plugins')) {
+                 echo '<div class="notice notice-error"><p>';
+                 printf(
+                     'PublishPress Statuses requires WordPress version %s or higher.',
+                     $min_wp_version
+                 );
+                 echo '</p></div>';
+             }
+         }
+     );
+ }
+ 
+ if ($invalid_php_version || $invalid_wp_version) {
+     return;
+ }
+
 if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
 
     if (defined('PUBLISHPRESS_VERSION') && version_compare(PUBLISHPRESS_VERSION, '3.11-beta', '<')) {
