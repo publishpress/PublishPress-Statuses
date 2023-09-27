@@ -1,4 +1,6 @@
 jQuery(document).ready(function ($) {
+    $('#submitdiv').addClass("submitdiv-pps");
+
     updateStatusDropdownElements();
 
     // Advanced Custom Fields compat
@@ -41,6 +43,8 @@ function updateStatusDropdownElements() {
         var is_private = false;
         var pvt_stati = jQuery.parseJSON(ppObjEdit.pvtStati.replace(/&quot;/g, '"'));
 
+        //console.log('updateStatusDropdownElements');
+
         $(pvt_stati).each(function (i) {
             if (pvt_stati[i].name == status_val) {
                 is_private = true;
@@ -59,19 +63,23 @@ function updateStatusDropdownElements() {
             $('option[value="publish"]', postStatus).prop('selected', true);
             $('.edit-post-status', '#misc-publishing-actions').hide();
         } else {
+            //console.log($('#post_status').val());
+
 			if (postL10n.publish) {
 				$('#publish').val(postL10n.publish);
 			} else {
             	$('#publish').val(ppObjEdit.publish);
 			}
 
-            if ($('#original_post_status').val() == 'future' || $('#original_post_status').val() == 'draft') {
+            if ($('#original_post_status').val() == 'future' || $('#original_post_status').val() == 'dr-aft') {
                 if (optPublish.length) {
-                    optPublish.remove();
+                    optPublish.remove();    // @todo
                     postStatus.val($('#hidden_post_status').val());
                 }
             } else {
                 optPublish.html(ppObjEdit.published);
+
+                //$('option[value="public"]', postStatus).prop('selected', true);
             }
             if (postStatus.is(':hidden'))
                 $('.edit-post-status', '#misc-publishing-actions').show();
@@ -118,6 +126,8 @@ function updateStatusCaptions() {
                 status_type = 'private';
             }
         });
+
+        $('#publish').toggle(status_val != '_public');
 
         switch (status_type) {
             case 'public':
@@ -227,7 +237,8 @@ jQuery(document).ready(function ($) {
             $('option[value="publish"]', postStatus).prop('selected', true);
             $('.edit-post-status', '#misc-publishing-actions').hide();
         } else {
-            if ($('#original_post_status').val() == 'future' || $('#original_post_status').val() == 'draft') {
+            //if ($('#original_post_status').val() == 'future' || $('#original_post_status').val() == 'draft') {
+            if ($('#original_post_status').val() == 'future') {
                 if (optPublish.length) {
                     optPublish.remove();
                     postStatus.val($('#hidden_post_status').val());
@@ -294,7 +305,7 @@ jQuery(document).ready(function ($) {
         return false;
     });
 
-    $('.pp-cancel-post-status', '#post-status-select').on('click', function (e) {
+    $('.pp-cancel-post-status').on('click', function (e) {
         $('#post-status-select').slideUp("fast");
 
         $('#post_status option').removeAttr('selected');
@@ -303,6 +314,15 @@ jQuery(document).ready(function ($) {
         $('#post-status-select').siblings('a.edit-post-status').show();
         updateStatusCaptions();
 
+        return false;
+    });
+
+    //$('#post-status-select').on('click', function (e) {
+    $('#save-post-status').on('click', function (e) {
+        //$('#post-status-select').slideUp("fast");
+
+        //$('#post-status-select').siblings('a.edit-post-status').show();
+        updateStatusCaptions();
         return false;
     });
 
