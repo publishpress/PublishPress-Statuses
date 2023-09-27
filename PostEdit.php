@@ -44,7 +44,7 @@ class PostEdit
             if (\PublishPress_Functions::isBlockEditorActive()) {
                 wp_enqueue_style(
                     'publishpress-custom_status-block',
-                    PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block-editor.css',
+                    PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-block-editor.css',
                     false,
                     PUBLISHPRESS_STATUSES_VERSION,
                     'all'
@@ -52,7 +52,7 @@ class PostEdit
             } else {
                 wp_enqueue_style(
                     'publishpress-custom_status',
-                    PUBLISHPRESS_STATUSES_URL . 'common/custom-status.css',
+                    PUBLISHPRESS_STATUSES_URL . 'common/custom-status-classic-editor.css',
                     false,
                     PUBLISHPRESS_STATUSES_VERSION,
                     'all'
