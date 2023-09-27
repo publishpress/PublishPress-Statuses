@@ -597,7 +597,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('Approved', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
                         'description' => '-',
-                        'color' => '#3ffc3f',
+                        'color' => '#41d836',
                         'icon' => 'dashicons-yes-alt',
                         'position' => 5,
                         'order' => 250,
