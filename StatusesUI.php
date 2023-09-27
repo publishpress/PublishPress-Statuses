@@ -69,7 +69,7 @@ class StatusesUI {
 
             add_settings_field(
                 'moderation_statuses_default_by_sequence',
-                __('Status order:', 'publishpress-statuses'),
+                __('Workflow sequence:', 'publishpress-statuses'),
                 [$this, 'settings_moderation_statuses_default_by_sequence_option'],
                 $group_name,
                 $group_name . '_general'
