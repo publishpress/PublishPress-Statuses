@@ -113,20 +113,32 @@ class StatusesUI {
         
         echo '<div class="c-input-group">';
 
+        echo '<div>';
+
         echo sprintf(
             '<input type="hidden" name="%s" value="0" />',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]'
         ) . ' ';
 
         echo sprintf(
-            '<input type="checkbox" name="%s" value="on" autocomplete="off" %s>',
+            '<input type="radio" name="%s" value="0" autocomplete="off" %s>',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
+            !$module->options->moderation_statuses_default_by_sequence ? 'checked' : ''
+        ) . ' ';
+
+        esc_html_e('Publish button defaults to highest status available to user', 'publishpress-statuses');
+
+        echo '</div><div style="margin-top: 10px;">';
+
+        echo sprintf(
+            '<input type="radio" name="%s" value="on" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
             $module->options->moderation_statuses_default_by_sequence ? 'checked' : ''
         ) . ' ';
 
-        esc_html_e('Publish button defaults to next status in workflow (instead of highest permitted)', 'publishpress-statuses');
+        esc_html_e('Publish button defaults to next status in publication workflow', 'publishpress-statuses');
 
-        echo '</div>';
+        echo '</div></div>';
     }
 
     /**
