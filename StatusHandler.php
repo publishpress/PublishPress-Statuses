@@ -381,6 +381,12 @@ class StatusHandler {
         } else {
             $arr = ['message' => 'status-updated'];
             $arr['page'] = 'publishpress-statuses';
+            $arr['action'] = 'edit-status';
+            $arr['name'] = $name;
+
+            if (!empty($_REQUEST['pp_tab'])) {
+                $arr['pp_tab'] = str_replace('pp-', '', sanitize_key($_REQUEST['pp_tab']));
+            }
 
             $arr = apply_filters('publishpress_status_edit_redirect_args', $arr, $status_obj);
 
