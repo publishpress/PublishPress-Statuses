@@ -5,30 +5,25 @@ namespace PublishPress_Statuses;
 class Admin
 {
     function __construct() {
-        //add_action('presspermit_permissions_menu', [$this, 'act_permissions_menu'], 10, 2);
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 
         // Load CSS and JS resources that we probably need
         add_action('admin_print_styles', [$this, 'add_admin_styles']);
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
-        add_action('admin_notices', [$this, 'no_js_notice']);
-        add_action('admin_print_scripts', [$this, 'post_admin_header']);
     }
 
     function add_admin_styles() {
         global $pagenow;
 
-        if ('admin.php' === $pagenow && isset($_GET['page']) && $_GET['page'] === 'publishpress-statuses') { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            wp_enqueue_style('publishpress-settings-css', PUBLISHPRESS_STATUSES_URL . 'common/settings.css', false, PUBLISHPRESS_STATUSES_VERSION);
-
+        if ('admin.php' === $pagenow && isset($_GET['page']) && 0 === strpos($_GET['page'], 'publishpress-statuses')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             wp_enqueue_style(
-                'publishpress-statuses-css',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status.css',
+                'publishpress-status-admin-css',
+                PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-admin.css',
                 [],
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
-            wp_enqueue_style('presspermit-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/css/pressshack-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
+            wp_enqueue_style('presspermit-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/libs/publishpress/publishpress-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
         }
     }
 
@@ -46,6 +41,35 @@ class Admin
             return;
         }
 
+        if (!empty($pagenow) && ('admin.php' == $pagenow) 
+        && (!empty($_REQUEST['page']) && 0 === strpos($_REQUEST['page'], 'publishpress-statuses'))
+        ) {
+            wp_enqueue_script(
+                'publishpress-icon-preview',
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/icon-picker/icon-picker.js',
+                ['jquery'],
+                PUBLISHPRESS_STATUSES_VERSION,
+                true
+            );
+            wp_enqueue_style(
+                'publishpress-icon-preview',
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/icon-picker/icon-picker.css',
+                ['dashicons'],
+                PUBLISHPRESS_STATUSES_VERSION,
+                'all'
+            );
+
+            $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+
+            wp_enqueue_script(
+                'publishpress-status-edit',
+                PUBLISHPRESS_STATUSES_URL . "common/js/status-edit{$suffix}.js",
+                ['jquery', 'jquery-ui-sortable'],
+                PUBLISHPRESS_STATUSES_VERSION,
+                true
+            );
+        }
+
         // Load Javascript we need to use on the configuration views (jQuery Sortable)
         if (!empty($pagenow) && ('admin.php' == $pagenow) 
         && (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']))
@@ -56,22 +80,24 @@ class Admin
 
             global $wp_post_statuses;
 
+            $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+
             wp_enqueue_script(
                 'ui-touch-punch', 
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/jquery.ui.touch-punch.min.js', 
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/jquery.ui.touch-punch/jquery.ui.touch-punch.min.js', 
                 ['jquery', 'jquery-ui-sortable'], 
                 PUBLISHPRESS_STATUSES_VERSION
             );
             wp_enqueue_script(
                 'nested-sortable-mjs-pp', 
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/jquery.mjs.nestedSortable-pp.js', 
+                PUBLISHPRESS_STATUSES_URL . 'common/libs/jquery.mjs.nestedSortable-pp/jquery.mjs.nestedSortable-pp.js', 
                 ['jquery', 'jquery-ui-sortable'], 
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
             wp_enqueue_script(
                 'publishpress-custom-status-configure',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status-configure.js',
+                PUBLISHPRESS_STATUSES_URL . "common/js/custom-status-configure{$suffix}.js",
                 ['jquery', 'jquery-ui-sortable'],
                 PUBLISHPRESS_STATUSES_VERSION,
                 true
@@ -87,46 +113,23 @@ class Admin
                     ),
                 ]
             );
-
-            wp_enqueue_script(
-                'publishpress-icon-preview',
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/icon-picker.js',
-                ['jquery'],
-                PUBLISHPRESS_STATUSES_VERSION,
-                true
-            );
-            wp_enqueue_style(
-                'publishpress-icon-preview',
-                PUBLISHPRESS_STATUSES_URL . 'common/lib/icon-picker.css',
-                ['dashicons'],
-                PUBLISHPRESS_STATUSES_VERSION,
-                'all'
-            );
-
-            wp_enqueue_style(
-                'publishpress-custom_status-admin',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status-admin.css',
-                false,
-                PUBLISHPRESS_STATUSES_VERSION,
-                'all'
-            );
         }
 
         // Custom javascript to modify the post status dropdown where it shows up
-        if ($this->is_whitelisted_page()) {
+        if (self::is_post_management_page()) {
             if (class_exists('PublishPress_Functions')) { // @todo: refine library dependency handling
                 if (\PublishPress_Functions::isBlockEditorActive()) {
                     wp_enqueue_style(
                         'publishpress-custom_status-block',
-                        PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block-editor.css',
+                        PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-block-editor.css',
                         false,
                         PUBLISHPRESS_STATUSES_VERSION,
                         'all'
                     );
                 } else {
                     wp_enqueue_style(
-                        'publishpress-custom_status',
-                        PUBLISHPRESS_STATUSES_URL . 'common/custom-status.css',
+                        'publishpress-custom_status-classic',
+                        PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-classic-editor.css',
                         false,
                         PUBLISHPRESS_STATUSES_VERSION,
                         'all'
@@ -144,8 +147,8 @@ class Admin
     public function render_admin_page()
     {
         require_once(__DIR__ . '/StatusesUI.php');
-        $ui = new \PublishPress_Statuses\StatusesUI();
-        $ui->render_admin_page($this);
+        $ui = \PublishPress_Statuses\StatusesUI::instance();
+        $ui->render_admin_page();
     }
 
     function act_admin_menu()
@@ -178,21 +181,35 @@ class Admin
         );
         */
 
+        $check_cap = (current_user_can('manage_options')) ? 'read' : 'pp_manage_statuses';
+
         add_menu_page(
             esc_html__('Statuses', 'publishpress-statuses'),
             esc_html__('Statuses', 'publishpress-statuses'),
-            'read',
+            $check_cap,
             'publishpress-statuses',
             [$this, 'render_admin_page'],
             'dashicons-format-status',
             70
         );
-    }
 
-    function render_dashboard_page() {
-        require_once(__DIR__ . '/StatusesUI.php');
-        $ui = new \PublishPress_Statuses\StatusesUI();
-        $ui->render_dashboard_page($this);
+        add_submenu_page(
+            'publishpress-statuses',
+            esc_html__('Add New', 'publishpress-statuses'), 
+            esc_html__('Add New', 'publishpress-statuses'), 
+            $check_cap,   // @todo: custom capability
+            'publishpress-statuses-add-new', 
+            [$this, 'render_admin_page']
+        );
+
+        add_submenu_page(
+            'publishpress-statuses',
+            esc_html__('Settings', 'publishpress-statuses'), 
+            esc_html__('Settings', 'publishpress-statuses'), 
+            'manage_options',   // @todo: custom capability
+            'publishpress-statuses-settings', 
+            [$this, 'render_admin_page']
+        );
     }
 
     /**
@@ -200,7 +217,7 @@ class Admin
      *
      * @todo migrate this to the base module class
      */
-    public function is_whitelisted_page()
+    public static function is_post_management_page()
     {
         global $pagenow;
 
@@ -225,114 +242,6 @@ class Admin
             ['post.php', 'edit.php', 'post-new.php', 'page.php', 'edit-pages.php', 'page-new.php']
         );
     }
-
-    /**
-     * Displays a notice to users if they have JS disabled
-     * Javascript is needed for custom statuses to be fully functional
-     */
-    public function no_js_notice()
-    {
-        if ($this->is_whitelisted_page()) :
-            ?>
-            <div class="update-nag hide-if-js">
-                <?php
-                _e(
-                    '<strong>Note:</strong> Your browser does not support JavaScript or has JavaScript disabled. You will not be able to access or change the post status.',
-                    'publishpress-statuses'
-                ); ?>
-            </div>
-        <?php
-        endif;
-    }
-
-    /**
-     * Adds all necessary javascripts to make custom statuses work
-     *
-     * @todo Support private and future posts on edit.php view
-     */
-    public function post_admin_header()
-    {
-        global $post, $pagenow, $current_user;
-
-        if (\PublishPress_Statuses::DisabledForPostType()) {
-            return;
-        }
-
-        // Get current user
-        wp_get_current_user();
-
-        if ($this->is_whitelisted_page()) {
-            $post_type_obj = get_post_type_object(\PublishPress_Statuses::getCurrentPostType());
-            $custom_statuses = \PublishPress_Statuses::getPostStati([], 'object');  // @todo: confirm inclusion of core statuses here
-            $selected = null;
-            $selected_name = __('Draft', 'publishpress-statuses');
-
-            $custom_statuses = apply_filters('pp_custom_status_list', $custom_statuses, $post);
-
-            // Only add the script to Edit Post and Edit Page pages -- don't want to bog down the rest of the admin with unnecessary javascript
-            if (! empty($post)) {
-                //get raw post so custom post status is included
-                $post = get_post($post);
-                // Get the status of the current post
-                if ($post->ID == 0 || $post->post_status == 'auto-draft' || $pagenow == 'edit.php') {
-                    // TODO: check to make sure that the default exists
-                    $selected = \PublishPress_Statuses::DEFAULT_STATUS;
-                } else {
-                    $selected = $post->post_status;
-                }
-
-                if (empty($selected)) {
-                    $selected = \PublishPress_Statuses::DEFAULT_STATUS;
-                }
-
-                // Get the current post status name
-
-                foreach ($custom_statuses as $status) {
-                    if ($status->name == $selected) {
-                        $selected_name = $status->label;
-                    }
-                }
-            }
-
-            $all_statuses = [];
-
-            // Load the custom statuses
-            foreach ($custom_statuses as $status) {
-                // @todo: function argument?
-                if (!empty($status->private) && ('private' != $status->name)) {
-                    continue;
-                }
-
-                $all_statuses[] = [
-                    'label' => esc_js(\PublishPress_Statuses::get_status_property($status, 'label')),
-                    'name' => esc_js(\PublishPress_Statuses::get_status_property($status, 'name')),
-                    'description' => esc_js(\PublishPress_Statuses::get_status_property($status, 'description')),
-                    'color' => esc_js(\PublishPress_Statuses::get_status_property($status, 'color')),
-                    'icon' => esc_js(\PublishPress_Statuses::get_status_property($status, 'icon')),
-
-                ];
-            }
-
-            // TODO: Move this to a script localization method. 
-            ?>
-            <script type="text/javascript">
-                var pp_text_no_change = '<?php echo esc_js(__("&mdash; No Change &mdash;")); ?>';
-                var label_save = '<?php echo __('Save'); ?>';
-                var pp_default_custom_status = '<?php echo esc_js(\PublishPress_Statuses::DEFAULT_STATUS); ?>';
-                var current_status = '<?php echo esc_js($selected); ?>';
-                var current_status_name = '<?php echo esc_js($selected_name); ?>';
-                var custom_statuses = <?php echo json_encode($all_statuses); ?>;
-                var current_user_can_publish_posts = <?php echo current_user_can(
-                    $post_type_obj->cap->publish_posts
-                ) ? 1 : 0; ?>;
-                var current_user_can_edit_published_posts = <?php echo current_user_can(
-                    $post_type_obj->cap->edit_published_posts
-                ) ? 1 : 0; ?>;
-            </script>
-            <?php
-        }
-    }
-
 
     // @todo: merge into getPostStatuses() / register_post_status() calls
 
@@ -447,6 +356,17 @@ class Admin
         $moderation_statuses = \PublishPress_Statuses::getPostStati(['moderation' => true, 'internal' => false, 'post_type' => $post_type], 'object');
         unset($moderation_statuses['future']);
 
+        $default_by_sequence = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence;
+
+        if ($post && $is_administrator && $default_by_sequence 
+        && empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status) 
+        && ! \PublishPress_Functions::isBlockEditorActive($post_type)) {
+            $_publish_obj = get_post_status_object('publish');
+            $_publish_obj->save_as = __('Publish', 'publishpress-statuses');
+            $_publish_obj->publish = __('Advance Status', 'publishpress-statuses');
+            $moderation_statuses['_public'] = $_publish_obj;
+        }
+
         if (!$is_administrator) {
             $moderation_statuses = \PublishPress_Statuses::filterAvailablePostStatuses($moderation_statuses, $post_type, $post_status);
         }
@@ -459,7 +379,7 @@ class Admin
         $_args = ['include_status' => $post_status_obj->name];
 
         if ($post) {
-            if ($default_by_sequence = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) {
+            if ($default_by_sequence) {
                 if (!empty($post_status_obj->status_parent)) {
                     // If current status is a sub-status, only offer:
                     // * other sub-statuses in the same workflow branch

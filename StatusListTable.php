@@ -220,7 +220,7 @@ class StatusListTable extends \WP_List_Table
 	public function display_rows() {
         $this->display_section_row('_pre-publish', 
             [
-                'label' => __('Pre-Publication Workflow:', 'publishpress-statuses'),
+                'label' => __('Pre-Publication Workflow Sequence:', 'publishpress-statuses'),
                 'class' => 'moderation-status'
             ]);
 
@@ -260,12 +260,12 @@ if (!empty($this->collapsed_sections[$key])):?>
 <td class="status_name" style="width:0"><div class="status_name <?php echo $key;?> column-<?php echo $key;?> hidden"><?php echo $key;?></div></td>
 <?php endif; ?>
 
-<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><em><?php echo $label;?></em></strong>
+<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo $label;?></strong>
 
 <?php if (in_array($key, ['_pre-publish'])):
     $url = \PublishPress_Statuses::getLink(['action' => 'add-new']);
     ?>
-    <button type="button" class="add-new" title="<?php _e("Add New", 'publishpress-statuses');?>" onclick="window.location.href='<?php echo $url;?>'">+</button>
+    <button type="button" class="add-new" title="<?php _e("Add New Pre-Publication Status", 'publishpress-statuses');?>" onclick="window.location.href='<?php echo $url;?>'">+</button>
 <?php endif;
 
 do_action('publishpress_statuses_admin_row', $key, []);
@@ -314,18 +314,14 @@ do_action('publishpress_statuses_admin_row', $key, []);
         } elseif ('private' == $item->name) {
             $this->display_section_row('_visibility-statuses', 
             [
-                'label' => __('Visibility Status for Private Publication:', 'publishpress-statuses'),
+                'label' => __('Visibility Statuses for Private Publication:', 'publishpress-statuses'),
                 'class' => 'private-status'
             ]);
 
         } elseif ('_pre-publish-alternate' == $item->name) {
             $this->display_section_row('_pre-publish-alternate', 
             [
-                'label' => sprintf(
-                    __('Alternate Pre-Publication Workflow(s) %s(drag to reorder / nest / move to main workflow)%s:', 'publishpress-statuses'),
-                    '<span class="pp-status-ordering-note">',
-                    '</span>'
-                ),
+                'label' => __('Manually Selectable Pre-Publication Statuses (may be dragged to desired sequence position):', 'publishpress-statuses'),
                 'class' => 'alternate-moderation-status'
             ]);
 

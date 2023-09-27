@@ -23,24 +23,6 @@ class PostEdit
         }
     }
 
-    // @todo: CSS separation?
-    /*
-    function add_admin_styles() {
-        global $pagenow;
-
-        if ('admin.php' === $pagenow && isset($_GET['page']) && $_GET['page'] === 'publishpress-statuses') { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            wp_enqueue_style('publishpress-settings-css', PUBLISHPRESS_STATUSES_URL . 'common/settings.css', false, PUBLISHPRESS_STATUSES_VERSION);
-            
-            wp_enqueue_style(
-                'publishpress-statuses-css',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status.css',
-                [],
-                PUBLISHPRESS_STATUSES_VERSION
-            );
-        }
-    }
-    */
-
     /**
      * Enqueue Javascript resources that we need in the admin:
      * - Primary use of Javascript is to manipulate the post status dropdown on Edit Post and Manage Posts
@@ -62,7 +44,7 @@ class PostEdit
             if (\PublishPress_Functions::isBlockEditorActive()) {
                 wp_enqueue_style(
                     'publishpress-custom_status-block',
-                    PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block-editor.css',
+                    PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-block-editor.css',
                     false,
                     PUBLISHPRESS_STATUSES_VERSION,
                     'all'
@@ -70,7 +52,7 @@ class PostEdit
             } else {
                 wp_enqueue_style(
                     'publishpress-custom_status',
-                    PUBLISHPRESS_STATUSES_URL . 'common/custom-status.css',
+                    PUBLISHPRESS_STATUSES_URL . 'common/custom-status-classic-editor.css',
                     false,
                     PUBLISHPRESS_STATUSES_VERSION,
                     'all'

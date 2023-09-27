@@ -8,7 +8,7 @@
 
 /**
  * ------------------------------------------------------------------------------
- * Based on Edit Flow
+ * Portions of this module were originally derived from the Edit Flow plugin
  * Author: Daniel Bachhuber, Scott Bressler, Mohammad Jangda, Automattic, and
  * others
  * Copyright (c) 2009-2019 Mohammad Jangda, Daniel Bachhuber, et al.
@@ -161,6 +161,76 @@ var refreshSelectableStatuses = function (status) {
 }
 
 
+
+/******************** FUNCTIONS FOR RECAPTIONING SAVE AS BUTTON **************************/
+
+/*
+* The goal is to allow recaptioning "Save draft" to "Save as Pitch" etc.
+*/
+function PPCS_RecaptionButton(btnSelector, btnCaption) {
+  /*
+  if (wp.data.select('core/editor').isSavingPost()) {
+      return;
+  }
+  */
+
+  var node = $(btnSelector);
+
+  if (!btnCaption) {
+    var status = wp.data.select('core/editor').getEditedPostAttribute('status');
+    btnCaption = ppGetStatusSaveAs(status);
+  }
+
+  if ($(btnSelector).length && btnCaption 
+  && (btnCaption != $('span.presspermit-save-button button').html() || !$('span.presspermit-save-button button:visible').length || $('button.editor-post-save-draft:visible').length)
+  ) {
+    //console.log('PPCS_RecaptionButton: ' + status + ' : ' + btnCaption);
+    
+    $('span.presspermit-save-button').remove();
+
+    hideClass = 'presspermit-save-hidden';
+
+    // Hide the stock button
+    node.addClass(hideClass).hide().css('z-index', -999);
+
+    // Clone the stock button
+    node.after('<span class="presspermit-save-button">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-save-draft').removeAttr('aria-disabled').css('position', 'relative').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
+
+    node.addClass(hideClass).attr('aria-disabled', true);
+  }
+}
+
+// Update main publish ("Publish" / "Submit Pending") button width and span caption
+function PPCS_RecaptionOnDisplay(caption) {
+  if (($('button.editor-post-save-draft').filter(':visible').length || !$('.is-saving').length)
+  && $('button.editor-post-save-draft').length) {  // indicates save operation (or return from Pre-Publish) is done
+    PPCS_RecaptionButton('button.editor-post-save-draft', caption);
+    $('span.presspermit-save-button button').removeAttr('aria-disabled');
+  } else {
+    var SaveRecaptionInterval = setInterval(WaitForRecaption, 100);
+    var SaveRecaptionTimeout = setTimeout(function () {
+        clearInterval(SaveRecaptionInterval);
+    }, 20000);
+
+    function WaitForRecaption() {
+      if ($('button.editor-post-save-draft').filter(':visible').length || !$('.is-saving').length) { // indicates save operation (or return from Pre-Publish) is done
+        clearInterval(SaveRecaptionInterval);
+        clearTimeout(SaveRecaptionTimeout);
+
+        PPCS_RecaptionButton('button.editor-post-save-draft', '');
+      }
+    }
+  }
+}
+
+$(document).on('click', 'span.presspermit-save-button button', function() {
+  if (!wp.data.select('core/editor').isSavingPost() && !$('span.presspermit-save-button button').attr('aria-disabled')) {
+      $(this).parent().prev('button.editor-post-save-draft').trigger('click').css('z-index', 0).css('position', 'relative').show();
+  }
+});
+/*****************************************************************************************************************/
+
+
 /**
  * Hack :(
  *
@@ -169,107 +239,34 @@ var refreshSelectableStatuses = function (status) {
  * @param status
  */
 var sideEffectL10nManipulation = function sideEffectL10nManipulation(status) {
-  var statusLabel = ppGetStatusLabel(status);
-
   if ('future' == status ) {
     return;
   }
 
   if (wp.data.select('core/editor').isSavingPost() || $('span.editor-post-saved-state:visible').length) {
-    $('#ppcs_save_draft_label').hide();
+    $('span.presspermit-save-button').css('z-index', -999).attr('aria-disabled', true).hide();
     return;
+  } else {
+    $('span.presspermit-save-button').css('z-index', 0).attr('aria-disabled', false);
   }
 
   refreshSelectableStatuses(status);
 
   var node = document.querySelector('.editor-post-save-draft');
 
-  if (!node) {
-    node = document.querySelector('.editor-post-switch-to-draft');
-  }
-
   if (node) {
-    if (statusLabel && (-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
-      
+    var saveAsLabel = ppGetStatusSaveAs(status);
+
+    if (saveAsLabel && (-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
       $('div.publishpress-extended-post-status div.components-base-control').show();
       
-      var useButton = $('button.editor-post-save-draft').length ? 'button.editor-post-save-draft' : 'button.editor-post-switch-to-draft';
-
-      if('draft' == status) {
-          $('#ppcs_save_draft_label').hide();
-
-          if (ppcsOrigSaveDraftWidth) {
-            $(useButton).css('width', ppcsOrigSaveDraftWidth);
-          }
-
-          if (ppcsSaveDraftLinkColor !== false) {
-            $('button.editor-post-save-draft, button.editor-post-switch-to-draft').css('color', ppcsSaveDraftLinkColor);
-          }
-
-          if ('button.editor-post-switch-to-draft' == useButton) {
-            $('div.publishpress-extended-post-status select option[value!="draft"]').attr('disabled', true);
-            
-          } else {
-            $('div.publishpress-extended-post-status select option[value!="draft"]').removeAttr('disabled');
-          }
-
-      } else {
+      //if ('draft' == status || 'pending' == status) {
+      //    $('div.publishpress-extended-post-status select option[value!="draft"]').removeAttr('disabled');
+      //} else {
         if (-1 === PPCustomStatuses.publishedStatuses.indexOf(status)) {
-          if ($(useButton).filter(':visible').length && (document.querySelector(useButton).innerText || document.querySelector(useButton).innerText)) {
-            var setColor = $('.edit-post-header').css('background');
-            if (!setColor || (setColor.indexOf(' ') != -1) || (setColor.indexOf('.') != -1)) {
-              setColor = '#fff';
-            }
-            
-            if (ppcsSaveDraftLinkColor === false) {
-              ppcsSaveDraftLinkColor = $('button.editor-post-save-draft, button.editor-post-switch-to-draft').css('color');
-
-              if ((setColor === ppcsSaveDraftLinkColor) || !ppcsSaveDraftLinkColor) {
-                ppcsSaveDraftLinkColor = '#007cba';
-              }
-            }
-
-            $('button.editor-post-save-draft, button.editor-post-switch-to-draft').css('color', setColor);
-
-            if (!$('#ppcs_save_draft_label').length) {
-              $(useButton).after('<span id="ppcs_save_draft_label" style="display: none"></span>');
-              $('#ppcs_save_draft_label').css('color', ppcsSaveDraftLinkColor).css('position', 'absolute').css('pointer-events', 'none');
-            }
-          }
-
-          var lblWidth = parseInt($('button.editor-post-save-draft').css('width')) - 20;
-
-          $('#ppcs_save_draft_label').css(
-            'width', 
-            lblWidth.toString() + 'px',
-          ).css('text-align', 'center').show();
+          PPCS_RecaptionOnDisplay(saveAsLabel);
         }
-
-        $('button.editor-post-save-draft, button.editor-post-switch-to-draft').hover(function() {
-          $(this).css("background-color", $('div.edit-post-header').css('background-color'));
-          $(this).css("background", $('div.edit-post-header').css('background-color'));
-        });
-      }
-
-      if ($('#ppcs_save_draft_label').filter(':visible').length) {
-        if (!ppcsOrigSaveDraftWidth) {
-          ppcsOrigSaveDraftWidth = $('button.editor-post-save-draft').width();
-        }
-
-        var buttonWidth = parseInt(ppcsOrigSaveDraftWidth + 50 + (statusLabel.length - 5) * 7);
-        
-        if (buttonWidth < ppcsOrigSaveDraftWidth) {
-          buttonWidth = ppcsOrigSaveDraftWidth;
-        }
-
-        var newPadding = 20 + (buttonWidth - ppcsOrigSaveDraftWidth);
-        $(useButton).css('width', buttonWidth).css('padding-right', newPadding.toString() + 'px');
-
-        var spanPosLeft = $(useButton).position().left + 10;
-        
-        statusLabel = statusLabel.replace('—', '');
-        $('#ppcs_save_draft_label').html(ppsCaptions.saveAs.replace('%s', statusLabel)).css('left', spanPosLeft + 'px');
-      }
+      //}
     }
   }
 
@@ -304,9 +301,13 @@ setInterval(function () {
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-published').toggle(isPublished && ('future' != status) && !updateDisabled);
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-scheduled').toggle(('future' == status) && !updateDisabled);
 
-    if (! $('span.presspermit-editor-toggle button').length) {
+    /*
+    if (! $('span.presspermit-editor-toggle button').length
+    && (status == ppLastPostStatus)
+    ) {
       return;
     }
+    */
 
     sideEffectL10nManipulation(status);
   });

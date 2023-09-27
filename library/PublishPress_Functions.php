@@ -292,10 +292,10 @@ class PublishPress_Functions
         <footer>
 
         <div class="pp-rating">
-        <a href="https://wordpress.org/support/plugin/press-permit-core/reviews/#new-post" target="_blank" rel="noopener noreferrer">
+        <a href="https://wordpress.org/support/plugin/publishpress-statuses/reviews/#new-post" target="_blank" rel="noopener noreferrer">
         <?php printf( 
             esc_html__('If you like %s, please leave us a %s rating. Thank you!', 'publishpress-statuses'),
-            '<strong>PublishPress Permissions</strong>',
+            '<strong>PublishPress Statuses</strong>',
             '<span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span>'
             );
         ?>
@@ -305,9 +305,9 @@ class PublishPress_Functions
         <hr>
         <nav>
         <ul>
-        <li><a href="https://publishpress.com/permissions" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('About PublishPress Permissions', 'publishpress-statuses');?>"><?php esc_html_e('About', 'publishpress-statuses');?>
+        <li><a href="https://publishpress.com/statuses" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('About PublishPress Statuses', 'publishpress-statuses');?>"><?php esc_html_e('About', 'publishpress-statuses');?>
         </a></li>
-        <li><a href="https://publishpress.com/documentation/permissions-start/" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Permissions Documentation', 'publishpress-statuses');?>"><?php esc_html_e('Documentation', 'publishpress-statuses');?>
+        <li><a href="https://publishpress.com/documentation/statuses-start/" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Statuses Documentation', 'publishpress-statuses');?>"><?php esc_html_e('Documentation', 'publishpress-statuses');?>
         </a></li>
         <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'publishpress-statuses');?>"><?php esc_html_e('Contact', 'publishpress-statuses');?>
         </a></li>
@@ -318,7 +318,7 @@ class PublishPress_Functions
         </ul>
         </nav>
 
-        <div class="pp-pressshack-logo">
+        <div class="pp-publishpress-logo">
         <a href="//publishpress.com" target="_blank" rel="noopener noreferrer">
         <img src="<?php echo esc_url(PUBLISHPRESS_STATUSES_URL . '/common/assets/publishpress-logo.png');?>" />
         </a>

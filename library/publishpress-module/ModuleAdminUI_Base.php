@@ -3,7 +3,7 @@
 namespace PublishPress;
 
 class ModuleAdminUI_Base {
-    private $module;
+    public $module;
 
     private static $instance = null;
 
@@ -90,7 +90,7 @@ class ModuleAdminUI_Base {
         }
         ?>
 
-        <div class="publishpress-admin pressshack-admin-wrapper wrap">
+        <div class="publishpress-admin publishpress-admin-wrapper wrap">
             <header>
                 <!--
                 <div class="pp-icon">
@@ -112,6 +112,9 @@ class ModuleAdminUI_Base {
                     <?php endif; ?>
                 </h2>
 
+                <?php 
+                do_action('publishpress_default_header');
+                ?>
             </header>
         <?php
     }

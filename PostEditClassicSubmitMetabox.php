@@ -198,6 +198,7 @@ class PostEditClassicSubmitMetabox
                 $moderation_statuses
             );
         }
+
         ?>
         <label for="post_status"><?php echo esc_html(\PublishPress_Statuses::__wp('Status:')); ?></label>
         <?php
@@ -224,16 +225,6 @@ class PostEditClassicSubmitMetabox
             <a href="#post_status"
             <?php if ($post_status_obj->private || ($post_status_obj->public && 'publish' != $post_status)) { ?>style="display:none;"
             <?php } ?>class="edit-post-status hide-if-no-js" tabindex='4'><?php echo esc_html(\PublishPress_Statuses::__wp('Edit')) ?></a>
-            <?php
-            if (current_user_can('pp_create_groups')) :
-                $url = admin_url("admin.php?page=presspermit-groups");
-                ?>
-                <span style="float:right; margin-top: -5px;">
-                <a href="<?php echo esc_url($url); ?>" class="visibility-customize pp-submitbox-customize" target="_blank">
-                <span class="dashicons dashicons-groups" title="<?php esc_attr_e('Define Permission Groups'); ?>" alt="<?php esc_attr_e('groups', 'presspermit');?>"></span>
-                </a>
-            </span>
-            <?php endif; ?>
 
             <div id="post-status-select" class="hide-if-js">
                 <input type="hidden" name="hidden_post_status" id="hidden_post_status"
@@ -263,10 +254,11 @@ class PostEditClassicSubmitMetabox
                 <a href="#post_status" class="save-post-status hide-if-no-js button"><?php echo esc_html(\PublishPress_Statuses::__wp('OK')); ?></a>
                 <a href="#post_status" class="pp-cancel-post-status hide-if-no-js"><?php echo esc_html(\PublishPress_Statuses::__wp('Cancel')); ?></a>
                 <?php
+
                 if (('draft' == $post_status_obj->name || $post_status_obj->moderation) 
                 && (current_user_can('pp_define_post_status') || current_user_can('pp_define_moderation'))
                 ) {
-                    $url = admin_url('admin.php?action=add-new&page=publishpress-statuses');
+                    $url = admin_url('admin.php?page=publishpress-statuses-add-new');
                     echo "<br /><a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'publishpress-statuses') . '</a>';
                 }
                 ?>

@@ -15,6 +15,13 @@ if (! $status) {
     return;
 }
 
+$url = \PublishPress_Statuses::getLink(['action' => 'statuses']);
+?>
+<div class='pp-edit-status-back'>
+    <a href="<?php echo esc_url($url); ?>"><?php esc_html_e('Back to Statuses', 'publishpress-statuses'); ?></a>
+</div>
+<?php
+
 $edit_status_link = \PublishPress_Statuses::getLink(['action' => 'edit-status', 'name' => $name]);
 
 $label = (isset($_POST['label'])) ? sanitize_text_field($_POST['label']) : $status->label;
@@ -113,6 +120,7 @@ echo esc_attr($edit_status_link); ?>">
     <p class="submit">
         <input type="hidden" name="page" value="publishpress-statuses" />
         <input type="hidden" name="action" value="edit-status" />
+        <input type="hidden" name="pp_tab" value="<?php echo '#pp-' . esc_attr($default_tab);?>" />
         <?php
         if (!empty($_REQUEST['return_module'])) :?>
             <input type="hidden" name="return_module" value="<?php echo esc_attr($_REQUEST['return_module']);?>" />

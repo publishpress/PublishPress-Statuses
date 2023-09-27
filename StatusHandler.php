@@ -13,7 +13,7 @@ class StatusHandler {
 
         check_admin_referer('custom-status-add-nonce');
 
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
@@ -115,7 +115,7 @@ class StatusHandler {
 
         delete_user_meta($current_user->ID, 'publishpress_statuses_collapsed_sections');
 
-        $redirect_args = ['message' => 'status-added'];
+        $redirect_args = ['action' => 'edit-status', 'name' => $status_name, 'message' => 'status-added'];
 
         // Redirect if successful
         $redirect_url = \PublishPress_Statuses::getLink($redirect_args);
@@ -134,7 +134,7 @@ class StatusHandler {
         check_admin_referer('delete-status');
 
         // Only allow users with the proper caps
-        if (! current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
@@ -165,7 +165,7 @@ class StatusHandler {
     {
         check_admin_referer('edit-status');
 
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             wp_die(esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
@@ -381,6 +381,12 @@ class StatusHandler {
         } else {
             $arr = ['message' => 'status-updated'];
             $arr['page'] = 'publishpress-statuses';
+            $arr['action'] = 'edit-status';
+            $arr['name'] = $name;
+
+            if (!empty($_REQUEST['pp_tab'])) {
+                $arr['pp_tab'] = str_replace('pp-', '', sanitize_key($_REQUEST['pp_tab']));
+            }
 
             $arr = apply_filters('publishpress_status_edit_redirect_args', $arr, $status_obj);
 
@@ -642,7 +648,7 @@ class StatusHandler {
         global $current_user;
         
         // low capability requirement since this is just a convenience toggle
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             return;
         }
 
@@ -666,7 +672,7 @@ class StatusHandler {
 
     public static function handleAjaxDeleteStatus() {
         if (!empty($_REQUEST['delete_status'])) {
-            if (! current_user_can('manage_options')) {
+            if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
                 self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
             }
 
@@ -700,7 +706,7 @@ class StatusHandler {
     {
         check_ajax_referer('custom-status-sortable');
 
-        if (! current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
             self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 

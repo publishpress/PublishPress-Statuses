@@ -15,22 +15,6 @@ class PostEditGutenberg
 
         // Gutenberg Block Editor support for workflow status progression guidance / limitation
         add_action('enqueue_block_editor_assets', [$this, 'act_status_guidance_scripts']);
-
-        add_action('admin_enqueue_scripts', [$this, 'act_replace_publishpress_scripts'], 50);
-    }
-
-    // If PressPermit permissions filtering is enabled for this post type, replace certain PublishPress scripts with a permissions-aware equivalent
-    public function act_replace_publishpress_scripts()
-    {
-        //if (\PublishPress_Statuses\PostEdit::isPostTypeEnabled()) {  @todo: check post type enable (for whole custom statuses feature)
-            wp_enqueue_style(
-                'publishpress-custom-status-block',
-                PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block-editor.css', 
-                false,
-                PUBLISHPRESS_STATUSES_VERSION,
-                'all'
-            );
-        //}
     }
 
     // If PressPermit permissions filtering is enabled for this post type and the user may be limited, load scripts to support status progression guidance
@@ -53,9 +37,11 @@ class PostEditGutenberg
             return;
         }
 
+        $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+
         wp_enqueue_script(
             'publishpress-custom-status-block',
-            PUBLISHPRESS_STATUSES_URL . 'common/custom-status-block.min.js',
+            PUBLISHPRESS_STATUSES_URL . "common/js/custom-status-block{$suffix}.js",
             ['wp-blocks', 'wp-i18n', 'wp-element', 'wp-hooks'],
             PUBLISHPRESS_STATUSES_VERSION,
             true
@@ -113,8 +99,10 @@ class PostEditGutenberg
         global $post;
         $post_type = \PublishPress_Functions::findPostType();
 
+        $draft_obj = get_post_status_object('draft');
+
         $ordered_statuses = array_merge(
-            ['draft' => (object)['name' => 'draft', 'label' => esc_html__('Draft')]],
+            ['draft' => (object)['name' => 'draft', 'label' => esc_html__('Draft'), 'icon' => $draft_obj->icon, 'color' => $draft_obj->color]],
 
             array_diff_key(
                 \PublishPress_Statuses::getPostStati(['moderation' => true, 'post_type' => $post_type], 'object'),
@@ -130,8 +118,8 @@ class PostEditGutenberg
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
                 $ordered_statuses[$key]->description = '-';
-                $ordered_statuses[$key]->color = '';
-                $ordered_statuses[$key]->icon = '';
+                //$ordered_statuses[$key]->color = '';
+                //$ordered_statuses[$key]->icon = '';
             }
 
             if (!empty($status_obj->status_parent) && !empty($ordered_statuses[$status_obj->status_parent])) {
@@ -172,12 +160,17 @@ class PostEditGutenberg
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
                 $ordered_statuses[$key]->description = '-';
-                $ordered_statuses[$key]->color = '';
-                $ordered_statuses[$key]->icon = '';
+                //$ordered_statuses[$key]->color = '';
+                //$ordered_statuses[$key]->icon = '';
             }
 
-            $ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : __('Save', 'publishpress-statuses');
-            $ordered_statuses[$key]->submit = (!empty($status_obj->labels->publish)) ? $status_obj->labels->publish : __('Advance Status', 'publishpress-statuses');
+            if ('draft' == $status_obj->name) {
+                $ordered_statuses[$key]->save_as = __('Save Draft', 'publishpress-statuses');
+                $ordered_statuses[$key]->submit = $ordered_statuses[$key]->save_as;
+            } else {
+            	$ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : __('Save', 'publishpress-statuses');
+            	$ordered_statuses[$key]->submit = (!empty($status_obj->labels->publish)) ? $status_obj->labels->publish : __('Advance Status', 'publishpress-statuses');
+            }
         }
 
         foreach ($ordered_statuses as $k => $status_obj) {

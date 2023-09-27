@@ -1,0 +1,9 @@
+*.log
+/vendor
+/lib/**/.git
+.idea
+.DS_Store
+/dist
+.vscode/
+*.code-workspace
+/version.txt
