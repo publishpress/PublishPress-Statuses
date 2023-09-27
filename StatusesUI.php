@@ -17,8 +17,8 @@ class StatusesUI {
 
     private function loadAdminMessages() {
         \PublishPress_Statuses::instance()->messages = [
-            'status-added' => __('Post status created.', 'publishpress-statuses'),
             'status-updated' => __('Post status updated.', 'publishpress-statuses'),
+            'status-added' => __('Post status created. Select a tab for further configuration.', 'publishpress-statuses'),
             'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
             'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
             'term-updated' => __("Post status updated.", 'publishpress-statuses'),
