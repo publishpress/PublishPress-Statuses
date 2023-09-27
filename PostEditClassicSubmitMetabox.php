@@ -224,16 +224,6 @@ class PostEditClassicSubmitMetabox
             <a href="#post_status"
             <?php if ($post_status_obj->private || ($post_status_obj->public && 'publish' != $post_status)) { ?>style="display:none;"
             <?php } ?>class="edit-post-status hide-if-no-js" tabindex='4'><?php echo esc_html(\PublishPress_Statuses::__wp('Edit')) ?></a>
-            <?php
-            if (current_user_can('pp_create_groups')) :
-                $url = admin_url("admin.php?page=presspermit-groups");
-                ?>
-                <span style="float:right; margin-top: -5px;">
-                <a href="<?php echo esc_url($url); ?>" class="visibility-customize pp-submitbox-customize" target="_blank">
-                <span class="dashicons dashicons-groups" title="<?php esc_attr_e('Define Permission Groups'); ?>" alt="<?php esc_attr_e('groups', 'presspermit');?>"></span>
-                </a>
-            </span>
-            <?php endif; ?>
 
             <div id="post-status-select" class="hide-if-js">
                 <input type="hidden" name="hidden_post_status" id="hidden_post_status"
