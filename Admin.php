@@ -185,6 +185,7 @@ class Admin
             esc_html__('Statuses', 'publishpress-statuses'),
             esc_html__('Statuses', 'publishpress-statuses'),
             'read',
+            $check_cap,
             'publishpress-statuses',
             [$this, 'render_admin_page'],
             'dashicons-format-status',
