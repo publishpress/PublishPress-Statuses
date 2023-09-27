@@ -21,11 +21,20 @@
         }
     },
     "prefer-stable": true,
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "php": ">=7.2.5",
         "ext-json": "*"
     },
+    "repositories": [
+        {
+            "url": "https://github.com/10up/plugin-check",
+            "type": "github",
+            "only": [
+                "wordpress/plugin-check"
+            ]
+        }
+    ],
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
         "phpcompatibility/php-compatibility": "^9.3",
@@ -37,7 +46,8 @@
         "automattic/vipwpcs": "^2.3",
         "publishpress/publishpress-phpcs-standards": "dev-main",
         "szepeviktor/phpstan-wordpress": "^1.1",
-        "phpstan/extension-installer": "^1.2"
+        "phpstan/extension-installer": "^1.2",
+        "wordpress/plugin-check": "^0.2"
     },
     "scripts": {
         "build": "ppbuild build",
@@ -57,6 +67,7 @@
             "@check:php81",
             "@check:php82"
         ],
+        "check:plugin": "phpcs --standard=./vendor/wordpress/plugin-check/checks/phpcs/plugin-check.xml ./dist/publishpress-statuses",
         "check:php56": "phpcs --standard=.phpcs-php-compatibility.xml --runtime-set testVersion 5.6 ./publishpress-statuses.php",
         "check:php72": "phpcs --standard=.phpcs-php-compatibility.xml --runtime-set testVersion 7.2",
         "check:php74": "phpcs --standard=.phpcs-php-compatibility.xml --runtime-set testVersion 7.4",
