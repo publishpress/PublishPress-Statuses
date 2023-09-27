@@ -16,12 +16,27 @@ class StatusesUI {
     }
 
     private function loadAdminMessages() {
+		/*
+        if (!empty($_REQUEST['name'])) {
+            if ($status_obj = get_post_status_object(sanitize_key($_REQUEST['name']))) {
+                $status_name = ' ("' . $status_obj->label . '")';
+                $url = \PublishPress_Statuses::getLink(['page' => 'publishpress-statuses', 'action' => 'edit-status', 'name' => sanitize_key($_REQUEST['name'])]);
+                $edit_again = '&nbsp;&nbsp;<a href="' . esc_url($url) . '">' . esc_html__('Edit again', 'publishpress-statuses') . '</a>';
+            }
+        }
+        */
+
+        if (empty($status_name)) {
+            $status_name = '';
+            $edit_again = '';
+        }
+    
         \PublishPress_Statuses::instance()->messages = [
-            'status-updated' => __('Post status updated.', 'publishpress-statuses'),
             'status-added' => __('Post status created. Select a tab for further configuration.', 'publishpress-statuses'),
+            'status-updated' => sprintf(__('Post status%s updated. %s', 'publishpress-statuses'), $status_name, $edit_again),
             'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
             'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
-            'term-updated' => __("Post status updated.", 'publishpress-statuses'),
+            'term-updated' => sprintf(__('Post status%s updated. %s', 'publishpress-statuses'), $status_name, $edit_again),
             'status-deleted' => __('Post status deleted.', 'publishpress-statuses'),
             'status-position-updated' => __("Status order updated.", 'publishpress-statuses'),
         ];
