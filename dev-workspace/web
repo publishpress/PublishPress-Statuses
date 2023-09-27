@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Create empty cache files if not exists.
-[[ -d cache/html ]] || mkdir -p cache/html
+[[ -d cache/web ]] || mkdir -p cache/html
 
 is_online() {
     echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
@@ -18,7 +18,7 @@ pull_image() {
 }
 
 run_wp_service() {
-    docker compose -f docker/compose.yaml up wp "$@"
+    docker compose -f docker/compose.yaml up web "$@"
 }
 
 if [ "$(is_online)" -eq 1 ]; then

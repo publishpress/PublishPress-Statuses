@@ -18,14 +18,14 @@ services:
             - ../cache/.composer/cache:/root/.composer/cache
             - ../cache/.composer/auth.json:/root/.composer/auth.json
             - /var/run/docker.sock:/var/run/docker.sock
-            - html:/var/www/html
+            - web:/var/www/html
             - db:/var/lib/mysql
         extra_hosts:
             - "dockerhost:${DOCKER_HOST_IP}"
         environment:
             - DOCKER_HOST_IP=${DOCKER_HOST_IP}
 
-    wp:
+    web:
         image: wordpress:6.3.1-apache
         restart: always
         ports:
@@ -36,7 +36,7 @@ services:
             WORDPRESS_DB_PASSWORD: statuses_dev
             WORDPRESS_DB_NAME: wp_statuses_dev
         volumes:
-            - html:/var/www/html
+            - web:/var/www/html
         depends_on:
             - db
 
@@ -54,10 +54,10 @@ services:
             - db:/var/lib/mysql
 
 volumes:
-    html:
+    web:
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: ../cache/html
+            device: ../cache/web
     db:
