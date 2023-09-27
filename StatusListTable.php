@@ -331,7 +331,8 @@ do_action('publishpress_statuses_admin_row', $key, []);
             $this->display_section_row('_disabled', 
             [
                 'label' => sprintf(
-                    __('Disabled Statuses %s(drag to re-enable)%s:', 'publishpress-statuses'),
+                        // translators: %s is the opening and closing <span> tags
+                    __('Disabled Statuses %1$s(drag to re-enable)%2$s:', 'publishpress-statuses'),
                     '<span class="pp-status-ordering-note">',
                     '</span>'
                 ),
@@ -469,6 +470,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
                         $types_caption = implode(', ', array_slice($arr_captions, 0, 7));
 
                         if (count($arr_captions) > 7) {
+                            // translators: %s is the list of post types
                             $types_caption = sprintf(esc_html__('%s, more...', 'publishpress-statuses'), esc_html($types_caption));
                         } else {
                             $types_caption = esc_html($types_caption);
@@ -524,6 +526,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
                         } else {
                             if (!empty($status_obj->capability_status) && ($status_obj->capability_status != $status_obj->name)) {
                                 if ($cap_status_obj = get_post_status_object($status_obj->capability_status)) {
+                                    // translators: %s is the name of the status that has the same capabilities
                                     $caption = sprintf(esc_html__('(same as %s)', 'publishpress-statuses'), esc_html($cap_status_obj->label));
                                 } else {
                                     $caption = esc_html('Custom', 'publishpress-statuses');
