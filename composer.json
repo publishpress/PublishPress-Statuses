@@ -71,7 +71,7 @@
         "-pre-update-cmd": "composer update --working-dir=./lib",
         "-pre-install-cmd": "composer install --working-dir=./lib",
         "web:start": "cd dev-workspace && ./web",
-        "web:stop": "cd dev-workspace/docker && docker compose down",
+        "web:stop": "cd dev-workspace/docker && docker compose down web db",
         "web:restart": [
             "@web:stop",
             "@web:start"
