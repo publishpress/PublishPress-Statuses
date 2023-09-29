@@ -8,6 +8,7 @@
 [[ -f cache/.zsh_history ]] || touch cache/.zsh_history
 [[ -f cache/.bash_history ]] || touch cache/.bash_history
 [[ -f cache/.composer/auth.json ]] || echo '{}' > cache/.composer/auth.json
+[[ -d cache/web ]] || mkdir -p cache/web
 
 export DOCKER_HOST_IP=$(php ./scripts/getip)
 
