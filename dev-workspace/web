@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Create empty cache files if not exists.
-[[ -d cache/web ]] || mkdir -p cache/web
+[[ -d cache/html ]] || mkdir -p cache/html
 
 export DOCKER_HOST_IP=$(php ./scripts/getip)
 
