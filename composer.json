@@ -45,7 +45,7 @@
         "build:clean": "ppbuild clean",
         "build:web": [
             "@build:dir",
-            "rsync -av --delete /project/dist/publishpress-statuses/ /project/dev-workspace/cache/web/wp-content/plugins/publishpress-statuses/"
+            "rsync -av --delete /project/dist/publishpress-statuses/ /project/dev-workspace/cache/html/wp-content/plugins/publishpress-statuses/"
         ],
         "get:version": "ppbuild version",
         "gen:mo": "wp i18n make-mo ./languages ./languages --allow-root",
