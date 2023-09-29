@@ -3,7 +3,8 @@
 # Create empty cache files if not exists.
 [[ -d cache/html ]] || mkdir -p cache/html
 
-export DOCKER_HOST_IP=$(php ./scripts/getip)
+DOCKER_HOST_IP=$(php ./scripts/getip)
+export DOCKER_HOST_IP
 
 is_online() {
     echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
