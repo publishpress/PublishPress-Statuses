@@ -515,9 +515,11 @@ class StatusesUI {
      */
     public static function printErrorOrDescription($field, $description)
     {
-        if (isset($_REQUEST['form-errors'][$field])): ?>
+        if ($form_errors = \PublishPress_Statuses::instance()->form_errors): ?>
             <div class="form-error">
-                <p><?php echo esc_html($_REQUEST['form-errors'][$field]); ?></p>
+                <?php if (!empty($form_errors[$field])):?>
+                <p><?php echo esc_html($form_errors[$field]); ?></p>
+                <?php endif;?>
             </div>
         <?php else: ?>
             <p class="description"><?php echo esc_html($description); ?></p>

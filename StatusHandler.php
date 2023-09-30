@@ -35,14 +35,15 @@ class StatusHandler {
          * - Name is required and can't conflict with an existing name or slug
          * - Description is optional
          */
-        $_REQUEST['form-errors'] = [];
+        $form_errors = [];
+
         // Check if name field was filled in
         if (empty($status_label)) {
-            $_REQUEST['form-errors']['label'] = __('Please enter a name for the status', 'publishpress-statuses');
+            $form_errors['label'] = __('Please enter a name for the status', 'publishpress-statuses');
         }
         // Check that the name isn't numeric
         if (is_numeric($status_label)) {
-            $_REQUEST['form-errors']['label'] = __(
+            $form_errors['label'] = __(
                 'Please enter a valid, non-numeric name for the status.',
                 'publishpress-statuses'
             );
@@ -59,7 +60,7 @@ class StatusHandler {
             }
         }
         if (! $name_is_valid) {
-            $_REQUEST['form-errors']['label'] = __(
+            $form_errors['label'] = __(
                 'Status name cannot exceed 20 characters. Please try a shorter name.',
                 'publishpress-statuses'
             );
@@ -69,23 +70,23 @@ class StatusHandler {
 
         // Check to make sure the status doesn't already exist as another term because otherwise we'd get a weird slug
         if (term_exists($status_name, 'post_status')) {
-            $_REQUEST['form-errors']['label'] = __(
-                'Status name conflicts with existing term. Please choose another.',
+            $form_errors['label'] = __(
+                'Name conflicts with existing status. Please choose another.',
                 'publishpress-statuses'
             );
         }
         // Check to make sure the name is not restricted
         if (self::is_restricted_status(strtolower($status_name))) {
-            $_REQUEST['form-errors']['label'] = __(
+            $form_errors['label'] = __(
                 'Status name is restricted. Please choose another name.',
                 'publishpress-statuses'
             );
         }
 
         // If there were any form errors, kick out and return them
-        if (count($_REQUEST['form-errors'])) {
-            $_REQUEST['error'] = 'form-error';
-
+        if (count($form_errors)) {
+            \PublishPress_Statuses::instance()->form_errors = $form_errors;
+            \PublishPress_Statuses::instance()->last_error = 'form-error';
             return;
         }
 
@@ -182,6 +183,8 @@ class StatusHandler {
 
         $name = sanitize_text_field(trim($_POST['name']));
 
+        $form_errors = [];
+
         if (isset($_REQUEST['description'])) {
             $description = stripslashes(wp_filter_nohtml_kses(trim($_REQUEST['description'])));
         }
@@ -194,18 +197,17 @@ class StatusHandler {
          * - 'name' is a required field and can't conflict with existing name or slug
          * - 'description' is optional
          */
-        $_REQUEST['form-errors'] = [];
 
             $label = sanitize_text_field(trim($_POST['status_label']));
 
             // Check if name field was filled in
             if (empty($label)) {
-                $_REQUEST['form-errors']['status_label'] = __('Please enter a name for the status', 'publishpress-statuses');
+                $form_errors['status_label'] = __('Please enter a name for the status', 'publishpress-statuses');
             }
 
             // Check that the name isn't numeric
             if (is_numeric($label)) {
-                $_REQUEST['form-errors']['status_label'] = __(
+                $form_errors['status_label'] = __(
                     'Please enter a valid, non-numeric name for the status.',
                     'publishpress-statuses'
                 );
@@ -224,10 +226,14 @@ class StatusHandler {
             }
 
             if (! $name_is_valid) {
-                $_REQUEST['form-errors']['status_label'] = __(
+                $form_errors['status_label'] = __(
                     'Status name cannot exceed 20 characters. Please try a shorter name.',
                     'publishpress-statuses'
                 );
+            }
+
+            if (!empty($form_errors)) {
+                \PublishPress_Statuses::instance()->form_errors = $form_errors;
             }
         }
 
