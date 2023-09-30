@@ -35,9 +35,11 @@ class StatusListTable extends \WP_List_Table
 
         add_action('admin_footer', [$this, 'adminFooterScripts']);
 
+        /*
         if (!empty($_REQUEST['pp_refresh_role_counts'])) {
             delete_option('publishpress_statuses_num_roles');
         }
+        */
 
         if (!$this->status_roles = get_option('publishpress_statuses_num_roles')) {
             $this->status_roles = [];
