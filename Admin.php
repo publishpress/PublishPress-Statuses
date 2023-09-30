@@ -79,8 +79,6 @@ class Admin
             wp_enqueue_script('jquery-ui-sortable');
             wp_enqueue_script('jquery-ui-datepicker');
 
-            global $wp_post_statuses;
-
             $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 
             wp_enqueue_script(
