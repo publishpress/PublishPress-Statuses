@@ -109,7 +109,7 @@ class PostEditClassic
                 var pp_default_custom_status = '<?php echo esc_js(\PublishPress_Statuses::DEFAULT_STATUS); ?>';
                 var current_status = '<?php echo esc_js($selected); ?>';
                 var current_status_name = '<?php echo esc_js($selected_name); ?>';
-                var custom_statuses = <?php echo json_encode($all_statuses); ?>;
+                var custom_statuses = <?php echo wp_json_encode($all_statuses); ?>;
                 var current_user_can_publish_posts = <?php echo current_user_can(
                     $post_type_obj->cap->publish_posts
                 ) ? 1 : 0; ?>;
@@ -176,9 +176,9 @@ class PostEditClassic
         );
 
         $args = [
-            'pubStati' => json_encode($stati['public']),
-            'pvtStati' => json_encode($stati['private']),
-            'modStati' => json_encode($stati['moderation']),
+            'pubStati' => wp_json_encode($stati['public']),
+            'pvtStati' => wp_json_encode($stati['private']),
+            'modStati' => wp_json_encode($stati['moderation']),
             'draftSaveAs' => $draft_obj->labels->save_as,
             'nowCaption' => esc_html__('Current Time', 'publishpress-statuses'),
             'update' => esc_html__('Update'),
