@@ -365,7 +365,7 @@ class StatusesUI {
         /** Edit Status screen **/
         if (('publishpress-statuses' === $plugin_page) && ('edit-status' == $action) && !\PublishPress_Functions::empty_REQUEST('name')) {
             \PublishPress\ModuleAdminUI_Base::instance()->module->title = __('Edit Status', 'publishpress-statuses');
-            \PublishPress\ModuleAdminUI_Base::instance()->default_header(''); //__('', 'publishpress-statuses'));
+            \PublishPress\ModuleAdminUI_Base::instance()->default_header('');
 
             require_once(__DIR__ . '/StatusEditUI.php');
             \PublishPress_Statuses\StatusEditUI::display();
