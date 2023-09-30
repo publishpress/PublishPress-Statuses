@@ -7,3 +7,4 @@
 .vscode/
 *.code-workspace
 /version.txt
+.php-cs-fixer.cache

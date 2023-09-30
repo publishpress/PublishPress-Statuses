@@ -1,39 +1,30 @@
+# Copyright (C) 2023 PublishPress
+# This file is distributed under the same license as the PublishPress Statuses plugin.
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses\n"
-"POT-Creation-Date: 2023-09-29 23:03-0400\n"
-"PO-Revision-Date: 2023-09-29 23:03-0400\n"
-"Last-Translator: Kevin Behrens <kevin@publishpress.com>\n"
-"Language-Team: https://publishpress.com\n"
-"Language: en\n"
+"Project-Id-Version: PublishPress Statuses 1.0-beta8\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
+"POT-Creation-Date: 2023-09-29 23:02-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.0.1\n"
+"X-Domain: publishpress-statuses\n"
+"X-Poedit-KeywordsList: __;_e;esc_attr__;esc_attr_e;esc_html__;esc_html_e;_x;_n;_c\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;_x;_c;_n;esc_html__;esc_html_e;esc_attr__;"
-"esc_attr_e\n"
-"X-Poedit-SearchPath-0: Admin.php\n"
-"X-Poedit-SearchPath-1: PostEdit.php\n"
-"X-Poedit-SearchPath-2: PostEditClassic.php\n"
-"X-Poedit-SearchPath-3: PostEditClassicSubmitMetabox.php\n"
-"X-Poedit-SearchPath-4: PostEditGutenberg.php\n"
-"X-Poedit-SearchPath-5: PostEditGutenbergStatuses.php\n"
-"X-Poedit-SearchPath-6: PostsListing.php\n"
-"X-Poedit-SearchPath-7: PublishPress_Statuses.php\n"
-"X-Poedit-SearchPath-8: publishpress-statuses.php\n"
-"X-Poedit-SearchPath-9: REST.php\n"
-"X-Poedit-SearchPath-10: StatusEditUI.php\n"
-"X-Poedit-SearchPath-11: StatusesUI.php\n"
-"X-Poedit-SearchPath-12: StatusHandler.php\n"
-"X-Poedit-SearchPath-13: StatusListTable.php\n"
-"X-Poedit-SearchPath-14: Workarounds.php\n"
-"X-Poedit-SearchPath-15: common/js\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: common\n"
+"X-Poedit-SearchPathExcluded-1: dev-workspace\n"
+"X-Poedit-SearchPathExcluded-2: dist\n"
+"X-Poedit-SearchPathExcluded-3: languages\n"
+"X-Poedit-SearchPathExcluded-4: lib\n"
 
 #: Admin.php:110
-msgid ""
-"Are you sure you want to delete the post status? All posts with this status "
-"will be assigned to the default status."
+msgid "Are you sure you want to delete the post status? All posts with this status will be assigned to the default status."
 msgstr ""
 
 #: Admin.php:162 Admin.php:163
@@ -135,7 +126,6 @@ msgid "Save"
 msgstr ""
 
 #: PostEditClassic.php:159 PostEditClassic.php:186 PostEditGutenberg.php:113
-#: common/js/classic-edit.dev.js:250 common/js/classic-edit.js:21
 msgid "Published"
 msgstr ""
 
@@ -167,9 +157,9 @@ msgid "Your site is configured to keep only the last %s revisions."
 msgstr ""
 
 #: PostEditClassicSubmitMetabox.php:58 PostEditClassicSubmitMetabox.php:61
-#, fuzzy, php-format
+#, php-format
 msgid "Revisions: %s"
-msgstr "%sMy Revisionz%s(%s)"
+msgstr ""
 
 #: PostEditClassicSubmitMetabox.php:262
 msgid "add workflow status"
@@ -316,6 +306,10 @@ msgstr ""
 msgid "Disabled Statuses:"
 msgstr ""
 
+#: StatusAddNewUI.php:23
+msgid "Add New Status"
+msgstr ""
+
 #: StatusEditUI.php:20
 msgid "Back to Statuses"
 msgstr ""
@@ -353,9 +347,7 @@ msgid "Slug"
 msgstr ""
 
 #: StatusEditUI.php:183
-msgid ""
-"The slug is the unique ID for the status and is changed when the name is "
-"changed."
+msgid "The slug is the unique ID for the status and is changed when the name is changed."
 msgstr ""
 
 #: StatusEditUI.php:194 StatusListTable.php:137
@@ -363,9 +355,7 @@ msgid "Description"
 msgstr ""
 
 #: StatusEditUI.php:206
-msgid ""
-"The description is primarily for administrative use, to give you some "
-"context on what the custom status is to be used for."
+msgid "The description is primarily for administrative use, to give you some context on what the custom status is to be used for."
 msgstr ""
 
 #: StatusEditUI.php:215
@@ -506,9 +496,7 @@ msgid "Visibility Statuses for Private Publication:"
 msgstr ""
 
 #: StatusListTable.php:326
-msgid ""
-"Manually Selectable Pre-Publication Statuses (may be dragged to desired "
-"sequence position):"
+msgid "Manually Selectable Pre-Publication Statuses (may be dragged to desired sequence position):"
 msgstr ""
 
 #: StatusListTable.php:337
@@ -607,9 +595,7 @@ msgid "Editor capabilities:"
 msgstr ""
 
 #: StatusesUI.php:264
-msgid ""
-"Supplemental Role of Editor for \"standard statuses\" also covers Custom "
-"Statuses"
+msgid "Supplemental Role of Editor for \"standard statuses\" also covers Custom Statuses"
 msgstr ""
 
 #: StatusesUI.php:287
@@ -630,9 +616,7 @@ msgstr ""
 
 #: StatusesUI.php:341
 #, php-format
-msgid ""
-"Disabled because add_post_type_support('%1$s', '%2$s') is included in a "
-"loaded file."
+msgid "Disabled because add_post_type_support('%1$s', '%2$s') is included in a loaded file."
 msgstr ""
 
 #: StatusesUI.php:368
@@ -640,9 +624,7 @@ msgid "Edit Status"
 msgstr ""
 
 #: StatusesUI.php:377
-msgid ""
-"Click any status property to edit. Drag to re-order, nest, or move to a "
-"different section."
+msgid "Click any status property to edit. Drag to re-order, nest, or move to a different section."
 msgstr ""
 
 #: StatusesUI.php:389
@@ -662,15 +644,11 @@ msgid "Add New Visibility Status"
 msgstr ""
 
 #: StatusesUI.php:431
-msgid ""
-"This status can be assigned to a post as a different form of Private "
-"Publication with its own capability requirements."
+msgid "This status can be assigned to a post as a different form of Private Publication with its own capability requirements."
 msgstr ""
 
 #: StatusesUI.php:432
-msgid ""
-"This status can be assigned to an unpublished post using the Post Status "
-"dropdown."
+msgid "This status can be assigned to an unpublished post using the Post Status dropdown."
 msgstr ""
 
 #: StatusesUI.php:441
@@ -708,37 +686,15 @@ msgstr ""
 
 #: publishpress-statuses.php:90
 #, php-format
-msgid ""
-"To use PublishPress Statuses, please upgrade PublishPress Plannner to "
-"version %s or higher."
+msgid "To use PublishPress Statuses, please upgrade PublishPress Plannner to version %s or higher."
 msgstr ""
 
 #: publishpress-statuses.php:106
 #, php-format
-msgid ""
-"To use PublishPress Statuses, please upgrade PublishPress Permissions to "
-"version %s or higher."
+msgid "To use PublishPress Statuses, please upgrade PublishPress Permissions to version %s or higher."
 msgstr ""
 
 #: publishpress-statuses.php:122
 #, php-format
-msgid ""
-"To use PublishPress Statuses, please upgrade PublishPress Capabilities to "
-"version %s or higher."
-msgstr ""
-
-#: common/js/classic-edit.dev.js:193 common/js/classic-edit.js:12
-msgid "Schedule for:"
-msgstr ""
-
-#: common/js/classic-edit.dev.js:196 common/js/classic-edit.js:12
-msgid "Publish On:"
-msgstr ""
-
-#: common/js/classic-edit.dev.js:199 common/js/classic-edit.js:12
-msgid "Published On:"
-msgstr ""
-
-#: common/js/post-block-edit.dev.js:177 common/js/post-block-edit.js:15
-msgid "Schedule…"
+msgid "To use PublishPress Statuses, please upgrade PublishPress Capabilities to version %s or higher."
 msgstr ""

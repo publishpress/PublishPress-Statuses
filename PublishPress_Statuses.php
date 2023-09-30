@@ -59,6 +59,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public $module;
     public $doing_rest = false;
 
+    public $last_error = '';
+    public $form_errors = [];
+
     private static $instance = null;
 
     public static function instance() {
@@ -92,11 +95,17 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     private function load() {
+        $plugin_page = \PublishPress_Functions::getPluginPage();
+
         if (is_admin()) {
             // Methods for handling the actions of creating, making default, and deleting post stati
 
             add_action('wp_ajax_pp_get_selectable_statuses', [$this, 'get_ajax_selectable_statuses']);
             add_action('wp_ajax_pp_set_workflow_action', [$this, 'set_workflow_action']);
+
+            add_action('wp_ajax_pp_update_status_positions', [$this, 'handle_ajax_update_status_positions']);
+            add_action('wp_ajax_pp_statuses_toggle_section', [$this, 'handle_ajax_pp_statuses_toggle_section']);
+            add_action('wp_ajax_pp_delete_custom_status', [$this, 'handle_ajax_delete_custom_status']);
 
             add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 4);
             add_filter('presspermit_order_statuses', [$this, 'orderStatuses'], 10, 2);
@@ -143,14 +152,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $this->load_options(self::SETTINGS_SLUG);
 
         if (is_admin()) {
-            // Status Administration
-            if ((!empty($_REQUEST['page']) && 0 === strpos($_REQUEST['page'], 'publishpress-statuses')) 
-            || (defined('DOING_AJAX') && DOING_AJAX && !empty($_POST['action']) && ('pp_update_status_positions' == $_POST['action']))
-            || (defined('DOING_AJAX') && DOING_AJAX && !empty($_POST['action']) && ('pp_statuses_toggle_section' == $_POST['action']))
-            || (defined('DOING_AJAX') && DOING_AJAX && !empty($_POST['action']) && ('pp_delete_custom_status' == $_POST['action']))
-            ) {
-                require_once(__DIR__ . '/StatusesUI.php');
-                \PublishPress_Statuses\StatusesUI::instance();
+            // Status Administration (@todo: separate modules for Add New, Settings)
+            if (isset($plugin_page) && (0 === strpos($plugin_page, 'publishpress-statuses'))) {
+                add_action('pp_statuses_init', function() {
+                    require_once(__DIR__ . '/StatusesUI.php');
+                    \PublishPress_Statuses\StatusesUI::instance();
+                });
             }
         }
 
@@ -272,6 +279,31 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }
         }
+
+        do_action('pp_statuses_init');
+    }
+
+    /**
+     * Handle an ajax request to update the order of custom statuses
+     *
+     * @since 0.7
+     */
+    public function handle_ajax_update_status_positions()
+    {
+        require_once(__DIR__ . '/StatusHandler.php');
+        \PublishPress_Statuses\StatusHandler::handleAjaxUpdateStatusPositions();
+    }
+
+    public function handle_ajax_pp_statuses_toggle_section()
+    {
+        require_once(__DIR__ . '/StatusHandler.php');
+        \PublishPress_Statuses\StatusHandler::handleAjaxToggleStatusSection();
+    }
+
+    public function handle_ajax_delete_custom_status()
+    {
+        require_once(__DIR__ . '/StatusHandler.php');
+        \PublishPress_Statuses\StatusHandler::handleAjaxDeleteStatus();
     }
 
     public function get_ajax_selectable_statuses()
@@ -349,8 +381,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public static function isStatusManagement() {
+        $plugin_page = \PublishPress_Functions::getPluginPage();
+        
         return
-            (is_admin() && (!empty($_REQUEST['page']) && in_array($_REQUEST['page'], ['publishpress-statuses', 'pp-capabilities'])))
+            in_array($plugin_page, ['publishpress-statuses', 'pp-capabilities'])
             || (
                 isset($_SERVER['SCRIPT_NAME']) 
                 && false !== strpos(sanitize_text_field($_SERVER['SCRIPT_NAME']), 'admin-ajax.php') 
@@ -659,7 +693,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             'protected' => true,
             'date_floating' => true,
             '_builtin' => false,
-            'pp_builtin' => true,
+            'pp_builtin' => false,
             'private' => true,
             'post_type' => (!empty($status->post_type)) ? $status->post_type : [],
             'labels' => (!empty($status->labels)) ? $status->labels : (object) ['publish' => '', 'save_as' => '', 'name' => $label],
@@ -681,7 +715,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public static function getCurrentPostType() {
-        return self::instance()->get_current_post_type();
+        return \PublishPress_Functions::getPostType();
     }
 
     public static function DisabledForPostType($post_type = null) {
@@ -863,6 +897,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
      */
     public function getPostStatuses($status_args = [], $return_args = [], $function_args = [])
     {
+        $plugin_page = \PublishPress_Functions::getPluginPage();
+        
         // $status_args: filtering of return array based on status properties, applied outside the cache by function process_return_array()
         //
 
@@ -873,7 +909,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         //
         foreach (
             [
-                'show_disabled' => is_admin() && !empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page'])
+                'show_disabled' => ('publishpress-statuses' === $plugin_page)
             ] 
         as $prop => $default_val) {
             if (!isset($function_args[$prop])) {
@@ -886,7 +922,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         if (!isset($function_args['show_disabled'])) {
-            $function_args['show_disabled'] = is_admin() && !empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']);
+            $function_args['show_disabled'] = ('publishpress-statuses' === $plugin_page);
         }
 
         //   On the Edit Post screen, the Status Control plugin has two implementations for statuses without a non-zero order:
@@ -2077,10 +2113,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $stored_status_obj = get_post_status_object($stored_status);
         }
 
-        if (!empty($_REQUEST['post_status']) && ('_public' == $_REQUEST['post_status']) && !\PublishPress_Functions::isBlockEditorActive()) {
+        if (('_public' === \PublishPress_Functions::REQUEST_key('post_status'))
+        && !\PublishPress_Functions::isBlockEditorActive()) {
             $_post_status = 'public';
         } else {
-            $_post_status = (!empty($_POST) && !empty($_POST['post_status'])) ? $_POST['post_status'] : '';
+        	$_post_status = \PublishPress_Functions::POST_key('post_status');
         }
 
         $selected_status = ($_post_status && ('publish' != $_post_status)) ? $_post_status : $post_status;
@@ -2106,7 +2143,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             return $post_status;
         }
 
-        $doing_rest = defined('REST_REQUEST') && (!empty($_REQUEST['meta-box-loader']) || $this->doing_rest);
+        $doing_rest = defined('REST_REQUEST') && (!\PublishPress_Functions::empty_REQUEST('meta-box-loader') || $this->doing_rest);
 
         // Allow Publish / Submit button to trigger our desired workflow progression instead of Publish / Pending status.
         // Apply this change only if stored post is not already published or scheduled.
@@ -2158,7 +2195,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         break;
 
                     default:
-                        if (empty($save_as_pending) && ($doing_rest && ($selected_status != $stored_status || (('pending' == $selected_status) && !$can_publish))) || (!empty($_POST) && !empty($_POST['publish']))) { //} && ! empty( $_POST['pp_submission_status'] ) ) { 
+                        if (empty($save_as_pending) 
+                        && ($doing_rest && ($selected_status != $stored_status || (('pending' == $selected_status) && !$can_publish))) 
+                        || !\PublishPress_Functions::empty_POST('publish')
+                        ) { //} && ! empty( $_POST['pp_submission_status'] ) ) { 
+                        
                             // Submission status inferred using same logic as UI generation (including permission check)
                             $post_status = \PublishPress_Statuses::defaultStatusProgression($post_id, ['return' => 'name', 'post_type' => $post_type]);
                         }

@@ -35,14 +35,15 @@ class StatusHandler {
          * - Name is required and can't conflict with an existing name or slug
          * - Description is optional
          */
-        $_REQUEST['form-errors'] = [];
+        $form_errors = [];
+
         // Check if name field was filled in
         if (empty($status_label)) {
-            $_REQUEST['form-errors']['label'] = __('Please enter a name for the status', 'publishpress-statuses');
+            $form_errors['label'] = __('Please enter a name for the status', 'publishpress-statuses');
         }
         // Check that the name isn't numeric
         if (is_numeric($status_label)) {
-            $_REQUEST['form-errors']['label'] = __(
+            $form_errors['label'] = __(
                 'Please enter a valid, non-numeric name for the status.',
                 'publishpress-statuses'
             );
@@ -59,7 +60,7 @@ class StatusHandler {
             }
         }
         if (! $name_is_valid) {
-            $_REQUEST['form-errors']['label'] = __(
+            $form_errors['label'] = __(
                 'Status name cannot exceed 20 characters. Please try a shorter name.',
                 'publishpress-statuses'
             );
@@ -69,23 +70,23 @@ class StatusHandler {
 
         // Check to make sure the status doesn't already exist as another term because otherwise we'd get a weird slug
         if (term_exists($status_name, 'post_status')) {
-            $_REQUEST['form-errors']['label'] = __(
-                'Status name conflicts with existing term. Please choose another.',
+            $form_errors['label'] = __(
+                'Name conflicts with existing status. Please choose another.',
                 'publishpress-statuses'
             );
         }
         // Check to make sure the name is not restricted
         if (self::is_restricted_status(strtolower($status_name))) {
-            $_REQUEST['form-errors']['label'] = __(
+            $form_errors['label'] = __(
                 'Status name is restricted. Please choose another name.',
                 'publishpress-statuses'
             );
         }
 
         // If there were any form errors, kick out and return them
-        if (count($_REQUEST['form-errors'])) {
-            $_REQUEST['error'] = 'form-error';
-
+        if (count($form_errors)) {
+            \PublishPress_Statuses::instance()->form_errors = $form_errors;
+            \PublishPress_Statuses::instance()->last_error = 'form-error';
             return;
         }
 
@@ -182,32 +183,31 @@ class StatusHandler {
 
         $name = sanitize_text_field(trim($_POST['name']));
 
-        if (isset($_REQUEST['status_label'])) {
-            $label = sanitize_text_field(trim($_POST['status_label']));
-        }
+        $form_errors = [];
 
         if (isset($_REQUEST['description'])) {
-            $description = stripslashes(wp_filter_nohtml_kses(trim($_POST['description'])));
+            $description = stripslashes(wp_filter_nohtml_kses(trim($_REQUEST['description'])));
         }
 
-        /**
-         * Form validation for editing custom status
-         *
-         * Details
-         * - 'name' is a required field and can't conflict with existing name or slug
-         * - 'description' is optional
-         */
-        $_REQUEST['form-errors'] = [];
-
         if (isset($_REQUEST['status_label'])) {
+            /**
+             * Form validation for editing custom status
+             *
+             * Details
+             * - 'name' is a required field and can't conflict with existing name or slug
+             * - 'description' is optional
+             */
+
+            $label = sanitize_text_field(trim($_POST['status_label']));
+
             // Check if name field was filled in
             if (empty($label)) {
-                $_REQUEST['form-errors']['status_label'] = __('Please enter a name for the status', 'publishpress-statuses');
+                $form_errors['status_label'] = __('Please enter a name for the status', 'publishpress-statuses');
             }
 
             // Check that the name isn't numeric
             if (is_numeric($label)) {
-                $_REQUEST['form-errors']['status_label'] = __(
+                $form_errors['status_label'] = __(
                     'Please enter a valid, non-numeric name for the status.',
                     'publishpress-statuses'
                 );
@@ -226,51 +226,16 @@ class StatusHandler {
             }
 
             if (! $name_is_valid) {
-                $_REQUEST['form-errors']['status_label'] = __(
+                $form_errors['status_label'] = __(
                     'Status name cannot exceed 20 characters. Please try a shorter name.',
                     'publishpress-statuses'
                 );
             }
-        }
 
-        /*
-        // Check to make sure the status doesn't already exist as another term because otherwise we'd get a weird slug
-        $term_exists = term_exists(sanitize_title($name), 'post_status');
-
-        if (is_array($term_exists)) {
-            $term_exists = (int)$term_exists['slug'];
+            if (!empty($form_errors)) {
+                \PublishPress_Statuses::instance()->form_errors = $form_errors;
+            }
         }
-
-        if ($term_exists && $term_exists != $existing_status->name) {
-            $_REQUEST['form-errors']['status_label'] = __(
-                'Status name conflicts with existing term. Please choose another.',
-                'publishpress-statuses'
-            );
-        }
-        // Check to make sure the status doesn't already exist
-        $search_status = \PublishPress_Statuses::getStatusBy('slug', sanitize_title($label));
-
-        if ($search_status && $search_status->name != $existing_status->name) {
-            $_REQUEST['form-errors']['status_label'] = __(
-                'Status name conflicts with existing status. Please choose another.',
-                'publishpress-statuses'
-            );
-        }
-        // Check to make sure the name is not restricted
-        if (self::is_restricted_status(strtolower(sanitize_title($label)))) {
-            $_REQUEST['form-errors']['status_label'] = __(
-                'Status name is restricted. Please choose another name.',
-                'publishpress-statuses'
-            );
-        }
-
-        // Kick out if there are any errors
-        if (count($_REQUEST['form-errors'])) {
-            $_REQUEST['error'] = 'form-error';
-
-            return;
-        }
-        */
 
         // Try to edit the post status
         $args = [
@@ -300,14 +265,14 @@ class StatusHandler {
             $args['post_type'] = [];
 
         } else {
-            $set_post_types = !empty($_REQUEST['pp_status_post_types']) ? $_REQUEST['pp_status_post_types'] : false;
+            $set_post_types = !empty($_REQUEST['pp_status_post_types']) ? array_map('intval', $_REQUEST['pp_status_post_types']) : false;
 
             if ($set_post_types) {
-                if ($add_types = array_filter(array_map('intval', $set_post_types))) {
+                if ($add_types = array_filter($set_post_types)) {
                     $status_post_types = array_unique(array_merge($status_post_types, array_map('sanitize_key', array_keys($add_types))));
                 }
 
-                if ($remove_types = array_diff(array_map('intval', $set_post_types), ['1', true, 1])) {
+                if ($remove_types = array_diff($set_post_types, ['1', true, 1])) {
                     $status_post_types = array_diff($status_post_types, array_keys($remove_types));
                 }
 
@@ -321,6 +286,9 @@ class StatusHandler {
             $roles_set_status = array_map('intval', $_REQUEST['roles_set_status']);
 
             foreach ($roles_set_status as $role_name => $set_val) {
+                $role_name = sanitize_key($role_name);
+                $set_val = boolval($set_val);
+
                 if (!\PublishPress_Functions::isEditableRole($role_name)) {
                     continue;
                 }
@@ -345,6 +313,8 @@ class StatusHandler {
 
         if (isset($_REQUEST['status_caps'])) {
             foreach ($_REQUEST['status_caps'] as $role_name => $set_status_caps) {
+                $role_name = sanitize_key($role_name);
+
                 if (!\PublishPress_Functions::isEditableRole($role_name)) {
                     continue;
                 }
@@ -372,10 +342,10 @@ class StatusHandler {
 
         $status_obj = get_post_status_object($name);
 
-        if (!empty($_REQUEST['return_module'])) {
+        if (!\PublishPress_Functions::empty_REQUEST('return_module')) {
             $arr = ['message' => 'status-updated'];
             $arr['page'] = 'pp-modules-settings';
-            $arr['settings_module'] = $_REQUEST['return_module'];
+            $arr['settings_module'] = \PublishPress_Functions::REQUEST_key('return_module');
 
             $redirect_url = \PublishPress_Statuses::getLink($arr);
         } else {
@@ -436,24 +406,6 @@ class StatusHandler {
 
         // Reset our internal object cache
         \PublishPress_Statuses::instance()->clearStatusCache();
-
-        /*
-            $name = sanitize_title($name);
-
-            // If the slug is empty we need to define one
-            if (empty($name)) {
-                $name = sanitize_title($args['label']);
-            }
-        */
-
-        // Reassign posts to new status slug if the slug changed and isn't restricted
-        /*
-        if ($name && $name != $old_status->name && ! self::is_restricted_status($old_status->name)) {
-            self::reassign_post_status($old_status->name, $name);
-        }
-
-        $name = !empty($name) ? $name : $old_status->name;
-        */
 
         $updatedStatusId = $name;
 
@@ -652,13 +604,13 @@ class StatusHandler {
             return;
         }
 
-        if (!empty($_REQUEST['status_section'])) {
+        if ($status_section = \PublishPress_Functions::REQUEST_key('status_section')) {
             if (!$collapsed_sections = \get_user_meta($current_user->ID, 'publishpress_statuses_collapsed_sections', true)) {
                 $collapsed_sections = [];
             }
 
-            $section = str_replace('status_row_', '', sanitize_key($_REQUEST['status_section']));
-            $is_collapsed = !empty($_REQUEST['collapse']);
+            $section = str_replace('status_row_', '', $status_section);
+            $is_collapsed = !\PublishPress_Functions::empty_REQUEST('collapse');
             
             if ($is_collapsed) {
                 $collapsed_sections[$section] = true;
@@ -671,12 +623,10 @@ class StatusHandler {
     }
 
     public static function handleAjaxDeleteStatus() {
-        if (!empty($_REQUEST['delete_status'])) {
+        if ($status_name = \PublishPress_Functions::REQUEST_key('delete_status')) {
             if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
                 self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
             }
-
-            $status_name = sanitize_key($_REQUEST['delete_status']);
 
             if ($status = \PublishPress_Statuses::getStatusBy('slug', $status_name)) {
                 if (!empty($status->_builtin) || !empty($status->pp_builtin)) {
@@ -710,7 +660,7 @@ class StatusHandler {
             self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
-        if (! isset($_POST['status_positions']) || ! is_array($_POST['status_positions'])) {
+        if (!isset($_POST['status_positions']) || !is_array($_POST['status_positions'])) {
             self::printAjaxResponse('error', __('Status positions were not sent.', 'publishpress-statuses'));
         }
 
@@ -721,14 +671,14 @@ class StatusHandler {
         if (!empty($_REQUEST['status_hierarchy'])) {
             $status_parents = [];
 
-            foreach ($_REQUEST['status_hierarchy'] as $position => $arr) {
-                $status_name = str_replace('status_row_', '', $arr['id']);
+            foreach ($_REQUEST['status_hierarchy'] as $arr) {
+                $status_name = str_replace('status_row_', '', sanitize_key($arr['id']));
                 
                 $status_parents[$status_name] = '';
                 
                 if (!empty($arr['children']) && !empty($status_name)) {
                     foreach ($arr['children'] as $child_arr) {
-                        $child_status_name = str_replace('status_row_', '', $child_arr['id']);
+                        $child_status_name = str_replace('status_row_', '', sanitize_key($child_arr['id']));
 
                         $status_obj = get_post_status_object($child_status_name);
                         if (!empty($status_obj) && !empty($status_obj->private)) {

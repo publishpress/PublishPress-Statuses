@@ -61,57 +61,15 @@ if (!class_exists('PublishPress\PPP_Module_Base')) {
             );
         }
 
-        /**
-         * Checks for the current post type
-         *
-         * @return string|null $post_type The post type we've found, or null if no post type
-         */
-        public function get_current_post_type()
-        {
-            global $post, $typenow, $pagenow, $current_screen;
-
-            // get_post() needs a variable
-            $post_id = isset($_REQUEST['post']) ? (int)$_REQUEST['post'] : false;
-
-            if ($post && $post->post_type) {
-                $post_type = $post->post_type;
-            } elseif ($typenow) {
-                $post_type = $typenow;
-            } elseif ($current_screen && !empty($current_screen->post_type)) {
-                $post_type = $current_screen->post_type;
-            } elseif (isset($_REQUEST['post_type'])) {
-                $post_type = sanitize_key($_REQUEST['post_type']);
-            } elseif ('post.php' == $pagenow
-                && $post_id
-                && !empty(get_post($post_id)->post_type)) {
-                $post_type = get_post($post_id)->post_type;
-            } elseif ('edit.php' == $pagenow && empty($_REQUEST['post_type'])) {
-                $post_type = 'post';
-            } else {
-                $post_type = null;
-            }
-
-            return $post_type;
-        }
-
         function actLoadPluginScreen($module) {
             require_once(__DIR__ . '/ModuleAdminUI_Base.php');
             ModuleAdminUI_Base::instance($module);
-        }
-
-        public static function isAjax($action)
-        {
-            return defined('DOING_AJAX') && DOING_AJAX && $action && in_array(\PublishPress_Functions::REQUEST_var('action'), (array)$action);
         }
 
         // Wrapper to prevent poEdit from adding core WordPress strings to the plugin .po
         public static function __wp($string, $unused = '')
         {
             return __($string);
-        }
-
-        function REQUEST_var($var) {
-            return (!empty($_REQUEST) && !empty($_REQUEST[$var])) ? $_REQUEST[$var] : '';
         }
     }
 }

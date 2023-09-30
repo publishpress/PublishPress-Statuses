@@ -35,9 +35,11 @@ class StatusListTable extends \WP_List_Table
 
         add_action('admin_footer', [$this, 'adminFooterScripts']);
 
+        /*
         if (!empty($_REQUEST['pp_refresh_role_counts'])) {
             delete_option('publishpress_statuses_num_roles');
         }
+        */
 
         if (!$this->status_roles = get_option('publishpress_statuses_num_roles')) {
             $this->status_roles = [];
@@ -331,7 +333,8 @@ do_action('publishpress_statuses_admin_row', $key, []);
             $this->display_section_row('_disabled', 
             [
                 'label' => sprintf(
-                    __('Disabled Statuses %s(drag to re-enable)%s:', 'publishpress-statuses'),
+                        // translators: %s is the opening and closing <span> tags
+                    __('Disabled Statuses %1$s(drag to re-enable)%2$s:', 'publishpress-statuses'),
                     '<span class="pp-status-ordering-note">',
                     '</span>'
                 ),
@@ -469,6 +472,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
                         $types_caption = implode(', ', array_slice($arr_captions, 0, 7));
 
                         if (count($arr_captions) > 7) {
+                            // translators: %s is the list of post types
                             $types_caption = sprintf(esc_html__('%s, more...', 'publishpress-statuses'), esc_html($types_caption));
                         } else {
                             $types_caption = esc_html($types_caption);
@@ -524,6 +528,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
                         } else {
                             if (!empty($status_obj->capability_status) && ($status_obj->capability_status != $status_obj->name)) {
                                 if ($cap_status_obj = get_post_status_object($status_obj->capability_status)) {
+                                    // translators: %s is the name of the status that has the same capabilities
                                     $caption = sprintf(esc_html__('(same as %s)', 'publishpress-statuses'), esc_html($cap_status_obj->label));
                                 } else {
                                     $caption = esc_html('Custom', 'publishpress-statuses');
@@ -683,11 +688,6 @@ do_action('publishpress_statuses_admin_row', $key, []);
         }
         $output .= '</strong>';
 
-        // Don't allow for any of these status actions when adding a new custom status
-        if (isset($_GET['action']) && $_GET['action'] == 'add') {
-            return $output;
-        }
-
         $actions = [];
         //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress-statuses') . "</a>";
 
@@ -700,16 +700,6 @@ do_action('publishpress_statuses_admin_row', $key, []);
         if (empty($status_obj) || (empty($status_obj->_builtin) && empty($status_obj->pp_builtin))) {
             $actions['delete'] = '<a href="#">' . __('X', 'publishpress-statuses') . '</a>';
         }
-
-        // @todo
-        /*
-        if (empty($status_obj) || (empty($status_obj->_builtin) && empty($status_obj->pp_builtin))) {
-            $actions['delete-status'] = sprintf(
-                '<a href="%1$s">' . __('Delete', 'publishpress-statuses') . '</a>',
-                \PublishPress_Statuses::getLink(['action' => 'delete-status', 'name' => $item->name])
-            );
-        }
-        */
 
         $actions = apply_filters('publishpress_statuses_row_actions', $actions, $item);
         

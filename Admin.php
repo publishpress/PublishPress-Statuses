@@ -13,9 +13,9 @@ class Admin
     }
 
     function add_admin_styles() {
-        global $pagenow;
+        $plugin_page = \PublishPress_Functions::getPluginPage();
 
-        if ('admin.php' === $pagenow && isset($_GET['page']) && 0 === strpos($_GET['page'], 'publishpress-statuses')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if (0 === strpos($plugin_page, 'publishpress-statuses')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             wp_enqueue_style(
                 'publishpress-status-admin-css',
                 PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-admin.css',
@@ -41,9 +41,10 @@ class Admin
             return;
         }
 
-        if (!empty($pagenow) && ('admin.php' == $pagenow) 
-        && (!empty($_REQUEST['page']) && 0 === strpos($_REQUEST['page'], 'publishpress-statuses'))
-        ) {
+        $plugin_page = \PublishPress_Functions::getPluginPage();
+
+        // Scripts and styles needed for Add Status, Edit Status, and possibly Statuses
+        if (0 === strpos($plugin_page, 'publishpress-statuses')) {
             wp_enqueue_script(
                 'publishpress-icon-preview',
                 PUBLISHPRESS_STATUSES_URL . 'common/libs/icon-picker/icon-picker.js',
@@ -70,15 +71,13 @@ class Admin
             );
         }
 
-        // Load Javascript we need to use on the configuration views (jQuery Sortable)
-        if (!empty($pagenow) && ('admin.php' == $pagenow) 
-        && (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']))
+        // Scripts and styles for Statuses screen
+        if ('publishpress-statuses' == $plugin_page
+        && in_array(\PublishPress_Functions::REQUEST_key('action'), ['', 'statuses'])
         ) {
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-sortable');
             wp_enqueue_script('jquery-ui-datepicker');
-
-            global $wp_post_statuses;
 
             $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 
@@ -153,33 +152,9 @@ class Admin
 
     function act_admin_menu()
     {
-        //$this->menu_slug = 'publishpress-hub';
         $this->menu_slug = 'publishpress-statuses';
 
         $this->using_permissions_menu = true;
-
-        /*
-        add_menu_page(
-            esc_html__('PublishPress Hub', 'publishpress-statuses'),
-            esc_html__('PublishPress Hub', 'publishpress-statuses'),
-            'read',
-            'publishpress-hub',
-            [$this, 'render_dashboard_page'],
-            'dashicons-format-status',
-            70
-        );
-
-        // If we are disabling native custom statuses in favor of PublishPress, 
-        // but PP Collaborative Editing is not active, hide this menu item.
-        add_submenu_page(
-            'publishpress-hub',
-            esc_html__('Post Statuses', 'publishpress-statuses'), 
-            esc_html__('Post Statuses', 'publishpress-statuses'), 
-            'manage_options',   // @todo: custom capability
-            'publishpress-statuses', 
-            [$this, 'render_admin_page']
-        );
-        */
 
         $check_cap = (current_user_can('manage_options')) ? 'read' : 'pp_manage_statuses';
 
@@ -197,7 +172,7 @@ class Admin
             'publishpress-statuses',
             esc_html__('Add New', 'publishpress-statuses'), 
             esc_html__('Add New', 'publishpress-statuses'), 
-            $check_cap,   // @todo: custom capability
+            $check_cap,
             'publishpress-statuses-add-new', 
             [$this, 'render_admin_page']
         );
@@ -206,7 +181,7 @@ class Admin
             'publishpress-statuses',
             esc_html__('Settings', 'publishpress-statuses'), 
             esc_html__('Settings', 'publishpress-statuses'), 
-            'manage_options',   // @todo: custom capability
+            'manage_options',   // @todo: custom capability?
             'publishpress-statuses-settings', 
             [$this, 'render_admin_page']
         );
@@ -232,7 +207,7 @@ class Admin
         }
 
         // Disable the scripts for the post page if the plugin Visual Composer is enabled.
-        if (isset($_GET['vcv-action']) && $_GET['vcv-action'] === 'frontend') {
+        if ('frontend' === \PublishPress_Functions::GET_key('vcv-action')) {
             return false;
         }
 
@@ -270,6 +245,7 @@ class Admin
         }
 
         if (empty($status->label_count)) {
+            // translators: %s: post count
             $sing = sprintf(__('%s <span class="count">()</span>', 'publishpress-statuses'), $status->label);
             $plur = sprintf(__('%s <span class="count">()</span>', 'publishpress-statuses'), $status->label);
 
@@ -297,8 +273,10 @@ class Admin
                 if (strlen($status->label) > 16) {
                     $status->labels->publish = __('Submit', 'publishpress-statuses');
                 } elseif (strlen($status->label) > 13) {
+                    // translators: %s: post status
                     $status->labels->publish = esc_attr(sprintf(__('Set to %s', 'publishpress-statuses'), $status->label));
                 } else {
+                    // translators: %s: post status
                     $status->labels->publish = esc_attr(sprintf(__('Submit as %s', 'publishpress-statuses'), $status->label));
                 }
             }
