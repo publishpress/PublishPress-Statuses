@@ -142,7 +142,7 @@ if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
         new \PublishPress\PPP_Module_Base();
 
         require_once(__DIR__ . '/PublishPress_Statuses.php');
-        new \PublishPress_Statuses();
+        PublishPress_Statuses::instance();
 
         add_action('plugins_loaded', function() {
             if (defined('PRESSPERMIT_VERSION')) {
