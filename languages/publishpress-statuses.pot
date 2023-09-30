@@ -1,162 +1,131 @@
 # Copyright (C) 2023 PublishPress
 # This file is distributed under the same license as the PublishPress Statuses plugin.
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PublishPress Statuses 1.0-beta8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
+"POT-Creation-Date: 2023-09-29 23:02-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-09-27T14:21:52+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.8.1\n"
+"X-Generator: Poedit 3.0.1\n"
 "X-Domain: publishpress-statuses\n"
-
-#. Plugin Name of the plugin
-#: PublishPress_Statuses.php:129
-#: StatusesUI.php:27
-msgid "PublishPress Statuses"
-msgstr ""
-
-#. Plugin URI of the plugin
-msgid "https://publishpress.com/statuses"
-msgstr ""
-
-#. Description of the plugin
-msgid "Manage and create post statuses to customize your editorial workflow"
-msgstr ""
-
-#. Author of the plugin
-msgid "PublishPress"
-msgstr ""
-
-#. Author URI of the plugin
-msgid "https://publishpress.com/"
-msgstr ""
+"X-Poedit-KeywordsList: __;_e;esc_attr__;esc_attr_e;esc_html__;esc_html_e;_x;_n;_c\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: common\n"
+"X-Poedit-SearchPathExcluded-1: dev-workspace\n"
+"X-Poedit-SearchPathExcluded-2: dist\n"
+"X-Poedit-SearchPathExcluded-3: languages\n"
+"X-Poedit-SearchPathExcluded-4: lib\n"
 
 #: Admin.php:110
 msgid "Are you sure you want to delete the post status? All posts with this status will be assigned to the default status."
 msgstr ""
 
-#: Admin.php:187
-#: Admin.php:188
-#: StatusesUI.php:414
+#: Admin.php:162 Admin.php:163
 msgid "Statuses"
 msgstr ""
 
-#: Admin.php:198
-#: Admin.php:199
-#: StatusesUI.php:422
+#: Admin.php:173 Admin.php:174
 msgid "Add New"
 msgstr ""
 
-#: Admin.php:207
-#: Admin.php:208
-#: StatusesUI.php:430
+#: Admin.php:182 Admin.php:183
 msgid "Settings"
 msgstr ""
 
-#. translators: %s: post count
-#: Admin.php:274
-#: Admin.php:275
+#: Admin.php:248 Admin.php:249
+#, php-format
 msgid "%s <span class=\"count\">()</span>"
 msgstr ""
 
-#: Admin.php:286
+#: Admin.php:260
 msgid "Submit for Review"
 msgstr ""
 
-#: Admin.php:288
-#: PublishPress_Statuses.php:467
+#: Admin.php:262 PublishPress_Statuses.php:501
 msgid "Approve"
 msgstr ""
 
-#: Admin.php:290
-#: PublishPress_Statuses.php:443
+#: Admin.php:264 PublishPress_Statuses.php:477
 msgid "Assign"
 msgstr ""
 
-#: Admin.php:292
+#: Admin.php:266
 msgid "Mark In Progress"
 msgstr ""
 
-#: Admin.php:294
-#: Admin.php:368
-#: PostEditClassic.php:160
+#: Admin.php:268 Admin.php:340 PostEditClassic.php:160 PostEditClassic.php:188
 #: PostEditGutenberg.php:62
 msgid "Publish"
 msgstr ""
 
-#: Admin.php:296
-#: PostEditGutenberg.php:63
+#: Admin.php:270 PostEditClassic.php:185 PostEditGutenberg.php:63
 msgid "Schedule"
 msgstr ""
 
-#: Admin.php:299
+#: Admin.php:273
 msgid "Submit"
 msgstr ""
 
-#. translators: %s: post status
-#: Admin.php:302
+#: Admin.php:275
+#, php-format
 msgid "Set to %s"
 msgstr ""
 
-#. translators: %s: post status
-#: Admin.php:305
-#: PostEditClassic.php:204
+#: Admin.php:277 PostEditClassic.php:204
+#, php-format
 msgid "Submit as %s"
 msgstr ""
 
-#: Admin.php:312
+#: Admin.php:284
 msgid "Save as Pending"
 msgstr ""
 
-#: Admin.php:369
-#: PostEditClassic.php:161
-#: PostEditGutenberg.php:64
-#: PostEditGutenberg.php:173
-#: PostEditGutenbergStatuses.php:39
-#: PostEditGutenbergStatuses.php:59
-#: PostEditGutenbergStatuses.php:67
+#: Admin.php:286 PostEditGutenberg.php:66
+#, php-format
+msgid "Save as %s"
+msgstr ""
+
+#: Admin.php:294
+msgid "Public"
+msgstr ""
+
+#: Admin.php:298
+#, php-format
+msgid "Public (%s)"
+msgstr ""
+
+#: Admin.php:341 PostEditClassic.php:161 PostEditGutenberg.php:64
+#: PostEditGutenberg.php:173 PostEditGutenbergStatuses.php:39
+#: PostEditGutenbergStatuses.php:59 PostEditGutenbergStatuses.php:67
 msgid "Advance Status"
 msgstr ""
 
-#. translators: %1$s is the plugin name, %2$s is the rating stars
-#: library/PublishPress_Functions.php:298
-msgid "If you like %1$s, please leave us a %2$s rating. Thank you!"
+#: PostEdit.php:171 PostEditGutenberg.php:146 PostsListing.php:88
+#: PublishPress_Statuses.php:2243
+msgid "Pending"
 msgstr ""
 
-#: library/PublishPress_Functions.php:309
-msgid "About PublishPress Statuses"
-msgstr ""
-
-#: library/PublishPress_Functions.php:309
-msgid "About"
-msgstr ""
-
-#: library/PublishPress_Functions.php:311
-msgid "Statuses Documentation"
-msgstr ""
-
-#: library/PublishPress_Functions.php:311
-msgid "Documentation"
-msgstr ""
-
-#: library/PublishPress_Functions.php:313
-msgid "Contact the PublishPress team"
-msgstr ""
-
-#: library/PublishPress_Functions.php:313
-msgid "Contact"
-msgstr ""
-
-#: PostEditClassic.php:56
+#: PostEditClassic.php:56 PostEditGutenberg.php:106
 msgid "Draft"
 msgstr ""
 
-#: PostEditClassic.php:159
+#: PostEditClassic.php:107
+msgid "&mdash; No Change &mdash;"
+msgstr ""
+
+#: PostEditClassic.php:108 PostEditClassicSubmitMetabox.php:139
+#: PostEditGutenberg.php:172
+msgid "Save"
+msgstr ""
+
+#: PostEditClassic.php:159 PostEditClassic.php:186 PostEditGutenberg.php:113
 msgid "Published"
 msgstr ""
 
@@ -164,17 +133,65 @@ msgstr ""
 msgid "Current Time"
 msgstr ""
 
+#: PostEditClassic.php:184 PostEditGutenbergStatuses.php:47
+#: PostEditGutenbergStatuses.php:63
+msgid "Update"
+msgstr ""
+
+#: PostEditClassic.php:187
+msgid "Privately Published"
+msgstr ""
+
+#: PostEditClassic.php:189
+msgid "Published, Sticky"
+msgstr ""
+
+#: PostEditClassic.php:251
+#, php-format
+msgid "%s, Sticky"
+msgstr ""
+
+#: PostEditClassicSubmitMetabox.php:56
+#, php-format
+msgid "Your site is configured to keep only the last %s revisions."
+msgstr ""
+
+#: PostEditClassicSubmitMetabox.php:58 PostEditClassicSubmitMetabox.php:61
+#, php-format
+msgid "Revisions: %s"
+msgstr ""
+
 #: PostEditClassicSubmitMetabox.php:262
 msgid "add workflow status"
 msgstr ""
 
-#: PostEditGutenberg.php:61
-msgid "Publication Workflow"
+#: PostEditClassicSubmitMetabox.php:295
+#, php-format
+msgid "Scheduled for: %s%s%s"
 msgstr ""
 
-#. translators: %s is the status label
-#: PostEditGutenberg.php:66
-msgid "Save as %s"
+#: PostEditClassicSubmitMetabox.php:298
+#, php-format
+msgid "Published on: %s%s%s"
+msgstr ""
+
+#: PostEditClassicSubmitMetabox.php:304 PostEditClassicSubmitMetabox.php:319
+#, php-format
+msgid "Publish %simmediately%s"
+msgstr ""
+
+#: PostEditClassicSubmitMetabox.php:312
+#, php-format
+msgid "Schedule for: %s%s%s"
+msgstr ""
+
+#: PostEditClassicSubmitMetabox.php:315
+#, php-format
+msgid "Publish on: %s%s%s"
+msgstr ""
+
+#: PostEditGutenberg.php:61
+msgid "Publication Workflow"
 msgstr ""
 
 #: PostEditGutenberg.php:67
@@ -201,12 +218,12 @@ msgstr ""
 msgid "This post is currently scheduled"
 msgstr ""
 
-#: PostEditGutenberg.php:169
-msgid "Save Draft"
+#: PostEditGutenberg.php:114
+msgid "Scheduled"
 msgstr ""
 
-#: PostEditGutenberg.php:172
-msgid "Save"
+#: PostEditGutenberg.php:169 PostEditGutenbergStatuses.php:109
+msgid "Save Draft"
 msgstr ""
 
 #: PostEditGutenbergStatuses.php:106
@@ -221,402 +238,463 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: PublishPress_Statuses.php:198
+#: PublishPress_Statuses.php:138 StatusesUI.php:29
+msgid "PublishPress Statuses"
+msgstr ""
+
+#: PublishPress_Statuses.php:173
+msgid "PublishPress Statues"
+msgstr ""
+
+#: PublishPress_Statuses.php:205
 msgid "Pre-Publication Statuses"
 msgstr ""
 
-#: PublishPress_Statuses.php:213
+#: PublishPress_Statuses.php:220
 msgid "Core Post Statuses"
 msgstr ""
 
-#: PublishPress_Statuses.php:229
+#: PublishPress_Statuses.php:236
 msgid "Pseudo Statuses"
 msgstr ""
 
-#: PublishPress_Statuses.php:430
+#: PublishPress_Statuses.php:415
+msgid "Pending Review"
+msgstr ""
+
+#: PublishPress_Statuses.php:464
 msgid "Pitch"
 msgstr ""
 
-#: PublishPress_Statuses.php:431
+#: PublishPress_Statuses.php:465
 msgid "Throw Pitch"
 msgstr ""
 
-#: PublishPress_Statuses.php:432
+#: PublishPress_Statuses.php:466
 msgid "Idea proposed; waiting for acceptance."
 msgstr ""
 
-#: PublishPress_Statuses.php:442
+#: PublishPress_Statuses.php:476
 msgid "Assigned"
 msgstr ""
 
-#: PublishPress_Statuses.php:444
+#: PublishPress_Statuses.php:478
 msgid "Post idea assigned to writer."
 msgstr ""
 
-#: PublishPress_Statuses.php:454
+#: PublishPress_Statuses.php:488
 msgid "In Progress"
 msgstr ""
 
-#: PublishPress_Statuses.php:455
+#: PublishPress_Statuses.php:489
 msgid "Mark in Progress"
 msgstr ""
 
-#: PublishPress_Statuses.php:456
+#: PublishPress_Statuses.php:490
 msgid "Writer is working on the post."
 msgstr ""
 
-#: PublishPress_Statuses.php:466
+#: PublishPress_Statuses.php:500
 msgid "Approved"
 msgstr ""
 
-#: PublishPress_Statuses.php:484
+#: PublishPress_Statuses.php:518
 msgid "Alternate Pre-Publication Workflow:"
 msgstr ""
 
-#: PublishPress_Statuses.php:497
+#: PublishPress_Statuses.php:531
 msgid "Disabled Statuses:"
 msgstr ""
 
-#: StatusEditUI.php:21
-msgid "Back to Statuses"
-msgstr ""
-
-#: StatusEditUI.php:39
-#: StatusListTable.php:131
-msgid "Name"
-msgstr ""
-
-#: StatusEditUI.php:42
-msgid "Labels"
-msgstr ""
-
-#: StatusEditUI.php:44
-#: StatusListTable.php:133
-msgid "Roles"
-msgstr ""
-
-#: StatusEditUI.php:47
-#: StatusEditUI.php:319
-#: StatusListTable.php:134
-msgid "Post Types"
-msgstr ""
-
-#: StatusEditUI.php:129
-msgid "Update Status"
-msgstr ""
-
-#: StatusEditUI.php:148
-msgid "Status Label"
-msgstr ""
-
-#: StatusEditUI.php:162
-msgid "The name is used to identify the status. (Max: 20 characters)"
-msgstr ""
-
-#: StatusEditUI.php:173
-msgid "Slug"
-msgstr ""
-
-#: StatusEditUI.php:185
-msgid "The slug is the unique ID for the status and is changed when the name is changed."
-msgstr ""
-
-#: StatusEditUI.php:196
-#: StatusListTable.php:135
-msgid "Description"
-msgstr ""
-
-#: StatusEditUI.php:208
-msgid "The description is primarily for administrative use, to give you some context on what the custom status is to be used for."
-msgstr ""
-
-#: StatusEditUI.php:217
-msgid "Color"
-msgstr ""
-
-#: StatusEditUI.php:229
-msgid "The color is used to identify the status."
-msgstr ""
-
-#: StatusEditUI.php:235
-#: StatusListTable.php:132
-msgid "Icon"
-msgstr ""
-
-#: StatusEditUI.php:249
-msgid "Select Icon"
-msgstr ""
-
-#: StatusEditUI.php:255
-msgid "The icon is used to visually represent the status."
-msgstr ""
-
-#: StatusEditUI.php:283
-msgid "Assign Status"
-msgstr ""
-
-#: StatusEditUI.php:286
-msgid "Choose which user roles can assign this status to a post."
-msgstr ""
-
-#: StatusEditUI.php:355
-msgid "All Post Types"
-msgstr ""
-
-#: StatusEditUI.php:402
-msgid "Save As Label"
-msgstr ""
-
-#: StatusEditUI.php:410
-msgid "Submit Button Label"
-msgstr ""
-
-#. translators: %s is the status label
-#: StatusesUI.php:57
-msgid "Edit Post Status: %s"
-msgstr ""
-
-#: StatusesUI.php:63
-msgid "Edit Post Status"
-msgstr ""
-
-#: StatusesUI.php:76
-msgid "Add Post Status"
-msgstr ""
-
-#: StatusesUI.php:79
-msgid "PublishPress Hub"
-msgstr ""
-
-#: StatusesUI.php:81
-msgid "Post Statuses"
-msgstr ""
-
-#: StatusesUI.php:213
-msgid "Post status created. Select a tab for further configuration."
-msgstr ""
-
-#. translators: %1$s is the status name, %2$s is the edit link
-#: StatusesUI.php:215
-msgid "Post status %1$s updated. %2$s"
-msgstr ""
-
-#: StatusesUI.php:216
-#: StatusHandler.php:173
-msgid "Post status doesn't exist."
-msgstr ""
-
-#: StatusesUI.php:217
-msgid "Default post status has been changed."
-msgstr ""
-
-#. translators: %1$s is the status name, %2$s is the edit link
-#: StatusesUI.php:219
-msgid "Post status%1$s updated. %2$s"
-msgstr ""
-
-#: StatusesUI.php:220
-msgid "Post status deleted."
-msgstr ""
-
-#: StatusesUI.php:221
-msgid "Status order updated."
-msgstr ""
-
-#: StatusesUI.php:244
-msgid "Use on these post types:"
-msgstr ""
-
-#: StatusesUI.php:252
-msgid "Workflow sequence:"
-msgstr ""
-
-#: StatusesUI.php:261
-msgid "Editor capabilities:"
-msgstr ""
-
-#: StatusesUI.php:286
-msgid "Supplemental Role of Editor for \"standard statuses\" also covers Custom Statuses"
-msgstr ""
-
-#: StatusesUI.php:309
-msgid "Publish button defaults to highest status available to user"
-msgstr ""
-
-#: StatusesUI.php:319
-msgid "Publish button defaults to next status in publication workflow"
-msgstr ""
-
-#. translators: %1$s is the post type name, %2$s is the pp_custom_statuses feature
-#: StatusesUI.php:363
-msgid "Disabled because add_post_type_support('%1$s', '%2$s') is included in a loaded file."
-msgstr ""
-
-#: StatusesUI.php:394
-msgid "Edit Status"
-msgstr ""
-
-#: StatusesUI.php:402
-msgid "Click any status property to edit. Drag to re-order, nest, or move to a different section."
-msgstr ""
-
-#: StatusesUI.php:451
-msgid "Add New Visibility Status"
-msgstr ""
-
-#: StatusesUI.php:452
-#: StatusListTable.php:268
-msgid "Add New Pre-Publication Status"
-msgstr ""
-
-#: StatusesUI.php:455
-msgid "This status can be assigned to a post as a different form of Private Publication with its own capability requirements."
-msgstr ""
-
-#: StatusesUI.php:456
-msgid "This status can be assigned to an unpublished post using the Post Status dropdown."
-msgstr ""
-
-#: StatusesUI.php:462
-msgid "PublishPress Statuses Settings"
-msgstr ""
-
-#: StatusesUI.php:463
-msgid "Note: Post types can also be specified for each individual status."
-msgstr ""
-
-#: StatusesUI.php:492
+#: StatusAddNewUI.php:23
 msgid "Add New Status"
 msgstr ""
 
-#: StatusHandler.php:17
-#: StatusHandler.php:138
+#: StatusEditUI.php:20
+msgid "Back to Statuses"
+msgstr ""
+
+#: StatusEditUI.php:33 StatusListTable.php:133
+msgid "Name"
+msgstr ""
+
+#: StatusEditUI.php:36
+msgid "Labels"
+msgstr ""
+
+#: StatusEditUI.php:38 StatusListTable.php:135
+msgid "Roles"
+msgstr ""
+
+#: StatusEditUI.php:41 StatusEditUI.php:316 StatusListTable.php:136
+msgid "Post Types"
+msgstr ""
+
+#: StatusEditUI.php:126
+msgid "Update Status"
+msgstr ""
+
+#: StatusEditUI.php:146
+msgid "Status Label"
+msgstr ""
+
+#: StatusEditUI.php:160
+msgid "The name is used to identify the status. (Max: 20 characters)"
+msgstr ""
+
+#: StatusEditUI.php:170
+msgid "Slug"
+msgstr ""
+
+#: StatusEditUI.php:183
+msgid "The slug is the unique ID for the status and is changed when the name is changed."
+msgstr ""
+
+#: StatusEditUI.php:194 StatusListTable.php:137
+msgid "Description"
+msgstr ""
+
+#: StatusEditUI.php:206
+msgid "The description is primarily for administrative use, to give you some context on what the custom status is to be used for."
+msgstr ""
+
+#: StatusEditUI.php:215
+msgid "Color"
+msgstr ""
+
+#: StatusEditUI.php:226
+msgid "The color is used to identify the status."
+msgstr ""
+
+#: StatusEditUI.php:232 StatusListTable.php:134
+msgid "Icon"
+msgstr ""
+
+#: StatusEditUI.php:246
+msgid "Select Icon"
+msgstr ""
+
+#: StatusEditUI.php:252
+msgid "The icon is used to visually represent the status."
+msgstr ""
+
+#: StatusEditUI.php:280
+msgid "Assign Status"
+msgstr ""
+
+#: StatusEditUI.php:283
+msgid "Choose which user roles can assign this status to a post."
+msgstr ""
+
+#: StatusEditUI.php:352
+msgid "All Post Types"
+msgstr ""
+
+#: StatusEditUI.php:399
+msgid "Save As Label"
+msgstr ""
+
+#: StatusEditUI.php:407
+msgid "Submit Button Label"
+msgstr ""
+
+#: StatusHandler.php:17 StatusHandler.php:139
 msgid "Sorry, you do not have permission to edit custom statuses."
 msgstr ""
 
-#: StatusHandler.php:41
-#: StatusHandler.php:205
+#: StatusHandler.php:42 StatusHandler.php:205
 msgid "Please enter a name for the status"
 msgstr ""
 
-#: StatusHandler.php:45
-#: StatusHandler.php:210
+#: StatusHandler.php:47 StatusHandler.php:211
 msgid "Please enter a valid, non-numeric name for the status."
 msgstr ""
 
-#: StatusHandler.php:62
-#: StatusHandler.php:229
+#: StatusHandler.php:64 StatusHandler.php:230
 msgid "Status name cannot exceed 20 characters. Please try a shorter name."
 msgstr ""
 
-#: StatusHandler.php:72
-msgid "Status name conflicts with existing term. Please choose another."
+#: StatusHandler.php:74
+msgid "Name conflicts with existing status. Please choose another."
 msgstr ""
 
-#: StatusHandler.php:79
+#: StatusHandler.php:81
 msgid "Status name is restricted. Please choose another name."
 msgstr ""
 
-#: StatusHandler.php:103
+#: StatusHandler.php:104
 msgid "Could not add status: "
 msgstr ""
 
-#: StatusHandler.php:145
-#: StatusHandler.php:695
+#: StatusHandler.php:146 StatusHandler.php:645
 msgid "Status does not exist."
 msgstr ""
 
-#: StatusHandler.php:150
-#: StatusHandler.php:690
+#: StatusHandler.php:151 StatusHandler.php:640
 msgid "Could not delete the status: "
 msgstr ""
 
-#: StatusHandler.php:169
-#: StatusHandler.php:676
-#: StatusHandler.php:683
-#: StatusHandler.php:710
+#: StatusHandler.php:170 StatusHandler.php:628 StatusHandler.php:633
+#: StatusHandler.php:660
 msgid "You are not permitted to do that."
 msgstr ""
 
-#: StatusHandler.php:401
+#: StatusHandler.php:174 StatusesUI.php:194
+msgid "Post status doesn't exist."
+msgstr ""
+
+#: StatusHandler.php:371
 msgid "Error updating post status."
 msgstr ""
 
-#: StatusHandler.php:594
+#: StatusHandler.php:546
 msgid "Cannot reassign to the status you want to delete"
 msgstr ""
 
-#: StatusHandler.php:639
+#: StatusHandler.php:591
 msgid "Restricted status "
 msgstr ""
 
-#: StatusHandler.php:692
+#: StatusHandler.php:642
 msgid "Status deleted"
 msgstr ""
 
-#: StatusHandler.php:714
+#: StatusHandler.php:664
 msgid "Status positions were not sent."
 msgstr ""
 
-#: StatusHandler.php:766
+#: StatusHandler.php:716
 msgid "Status order updated"
 msgstr ""
 
-#: StatusListTable.php:129
+#: StatusHandler.php:820
+msgid "Cheatin&#8217; uh?"
+msgstr ""
+
+#: StatusListTable.php:131
 msgid "Position"
 msgstr ""
 
-#: StatusListTable.php:130
+#: StatusListTable.php:132
 msgid "Status Name"
 msgstr ""
 
-#: StatusListTable.php:223
+#: StatusListTable.php:225
 msgid "Pre-Publication Workflow Sequence:"
 msgstr ""
 
-#: StatusListTable.php:310
+#: StatusListTable.php:270 StatusesUI.php:428
+msgid "Add New Pre-Publication Status"
+msgstr ""
+
+#: StatusListTable.php:312
 msgid "Standard Publication:"
 msgstr ""
 
-#: StatusListTable.php:317
+#: StatusListTable.php:319
 msgid "Visibility Statuses for Private Publication:"
 msgstr ""
 
-#: StatusListTable.php:324
+#: StatusListTable.php:326
 msgid "Manually Selectable Pre-Publication Statuses (may be dragged to desired sequence position):"
 msgstr ""
 
-#. translators: %s is the opening and closing <span> tags
-#: StatusListTable.php:335
+#: StatusListTable.php:337
+#, php-format
 msgid "Disabled Statuses %1$s(drag to re-enable)%2$s:"
 msgstr ""
 
-#. translators: %s is the list of post types
-#: StatusListTable.php:474
+#: StatusListTable.php:476
+#, php-format
 msgid "%s, more..."
 msgstr ""
 
-#: StatusListTable.php:515
+#: StatusListTable.php:489
+msgid "All"
+msgstr ""
+
+#: StatusListTable.php:517
 msgid "(Standard)"
 msgstr ""
 
-#. translators: %s is the name of the status that has the same capabilities
-#: StatusListTable.php:530
+#: StatusListTable.php:532
+#, php-format
 msgid "(same as %s)"
 msgstr ""
 
-#: StatusListTable.php:608
+#: StatusListTable.php:610
 msgid "No custom statuses found."
 msgstr ""
 
-#: StatusListTable.php:682
+#: StatusListTable.php:684
 msgid "Default"
 msgstr ""
 
-#: StatusListTable.php:700
+#: StatusListTable.php:697
 msgid "Disable"
 msgstr ""
 
-#: StatusListTable.php:704
+#: StatusListTable.php:701
 msgid "X"
+msgstr ""
+
+#: StatusesUI.php:61
+#, php-format
+msgid "Edit Post Status: %s"
+msgstr ""
+
+#: StatusesUI.php:68
+#, php-format
+msgid "Add %s Status"
+msgstr ""
+
+#: StatusesUI.php:75
+msgid "Add Post Status"
+msgstr ""
+
+#: StatusesUI.php:78
+msgid "Post Statuses"
+msgstr ""
+
+#: StatusesUI.php:191
+msgid "Post status created. Select a tab for further configuration."
+msgstr ""
+
+#: StatusesUI.php:193
+#, php-format
+msgid "Post status %1$s updated. %2$s"
+msgstr ""
+
+#: StatusesUI.php:195
+msgid "Default post status has been changed."
+msgstr ""
+
+#: StatusesUI.php:197
+#, php-format
+msgid "Post status%1$s updated. %2$s"
+msgstr ""
+
+#: StatusesUI.php:198
+msgid "Post status deleted."
+msgstr ""
+
+#: StatusesUI.php:199
+msgid "Status order updated."
+msgstr ""
+
+#: StatusesUI.php:222
+msgid "Use on these post types:"
+msgstr ""
+
+#: StatusesUI.php:230
+msgid "Workflow sequence:"
+msgstr ""
+
+#: StatusesUI.php:239
+msgid "Editor capabilities:"
+msgstr ""
+
+#: StatusesUI.php:264
+msgid "Supplemental Role of Editor for \"standard statuses\" also covers Custom Statuses"
+msgstr ""
+
+#: StatusesUI.php:287
+msgid "Publish button defaults to highest status available to user"
+msgstr ""
+
+#: StatusesUI.php:297
+msgid "Publish button defaults to next status in publication workflow"
+msgstr ""
+
+#: StatusesUI.php:312
+msgid "Posts"
+msgstr ""
+
+#: StatusesUI.php:313
+msgid "Pages"
+msgstr ""
+
+#: StatusesUI.php:341
+#, php-format
+msgid "Disabled because add_post_type_support('%1$s', '%2$s') is included in a loaded file."
+msgstr ""
+
+#: StatusesUI.php:368
+msgid "Edit Status"
+msgstr ""
+
+#: StatusesUI.php:377
+msgid "Click any status property to edit. Drag to re-order, nest, or move to a different section."
+msgstr ""
+
+#: StatusesUI.php:389
+msgid "Pre-Publication"
+msgstr ""
+
+#: StatusesUI.php:397
+msgid "Visibility"
+msgstr ""
+
+#: StatusesUI.php:405
+msgid "Revision"
+msgstr ""
+
+#: StatusesUI.php:427
+msgid "Add New Visibility Status"
+msgstr ""
+
+#: StatusesUI.php:431
+msgid "This status can be assigned to a post as a different form of Private Publication with its own capability requirements."
+msgstr ""
+
+#: StatusesUI.php:432
+msgid "This status can be assigned to an unpublished post using the Post Status dropdown."
+msgstr ""
+
+#: StatusesUI.php:441
+msgid "PublishPress Statuses Settings"
+msgstr ""
+
+#: StatusesUI.php:442
+msgid "Note: Post types can also be specified for each individual status."
+msgstr ""
+
+#: Workarounds.php:276 Workarounds.php:313
+msgid "Permalink:"
+msgstr ""
+
+#: Workarounds.php:292
+msgid "Change Permalinks"
+msgstr ""
+
+#: Workarounds.php:319
+msgid "Edit permalink"
+msgstr ""
+
+#: Workarounds.php:320
+msgid "Edit"
+msgstr ""
+
+#: Workarounds.php:372
+#, php-format
+msgid "Preview &#8220;%s&#8221;"
+msgstr ""
+
+#: Workarounds.php:375
+msgid "Preview"
+msgstr ""
+
+#: publishpress-statuses.php:90
+#, php-format
+msgid "To use PublishPress Statuses, please upgrade PublishPress Plannner to version %s or higher."
+msgstr ""
+
+#: publishpress-statuses.php:106
+#, php-format
+msgid "To use PublishPress Statuses, please upgrade PublishPress Permissions to version %s or higher."
+msgstr ""
+
+#: publishpress-statuses.php:122
+#, php-format
+msgid "To use PublishPress Statuses, please upgrade PublishPress Capabilities to version %s or higher."
 msgstr ""
