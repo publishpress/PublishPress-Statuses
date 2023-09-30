@@ -712,7 +712,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public static function getCurrentPostType() {
-        return self::instance()->get_current_post_type();
+        return \PublishPress_Functions::getPostType();
     }
 
     public static function DisabledForPostType($post_type = null) {
