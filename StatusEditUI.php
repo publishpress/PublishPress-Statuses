@@ -7,9 +7,9 @@ class StatusEditUI
     public static function display() {
 
 // Check whether the term exists
-$name = sanitize_text_field($_GET['name']);
-$status = \PublishPress_Statuses::getStatusBy('id', $name);
-if (! $status) {
+$name = \PublishPress_Functions::REQUEST_key('name');
+
+if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
     echo '<div class="error"><p>' . $module->messages['status-missing'] . '</p></div>';
 
     return;
@@ -24,12 +24,7 @@ $url = \PublishPress_Statuses::getLink(['action' => 'statuses']);
 
 $edit_status_link = \PublishPress_Statuses::getLink(['action' => 'edit-status', 'name' => $name]);
 
-$label = (isset($_POST['label'])) ? sanitize_text_field($_POST['label']) : $status->label;
-$description = (isset($_POST['description'])) ? sanitize_textarea_field($_POST['description'])
-    : $status->description;
-$color = (isset($_POST['color'])) ? sanitize_text_field($_POST['color']) : $status->color;
-$icon = (isset($_POST['icon'])) ? sanitize_text_field($_POST['icon']) : $status->icon;
-$icon = str_replace('dashicons|', '', $icon);
+$status->icon = str_replace('dashicons|', '', $status->icon);
 
 echo "<ul class='nav-tab-wrapper' style='margin-bottom:-0.1em'>";
 
@@ -50,7 +45,7 @@ if (empty($status->publish) && empty($status->private) && !in_array($name, ['dra
 
 $tabs = apply_filters('publishpress_statuses_edit_status_tabs', $tabs, $status->name);
 
-$pp_tab = (!empty($_REQUEST['pp_tab'])) ? sanitize_key($_REQUEST['pp_tab']) : 'name';
+$pp_tab = (!\PublishPress_Functions::empty_REQUEST('pp_tab')) ? \PublishPress_Functions::REQUEST_key('pp_tab') : 'name';
 
 $default_tab = apply_filters('presspermit_edit_status_default_tab', $pp_tab);
 
@@ -104,7 +99,10 @@ echo esc_attr($edit_status_link); ?>">
     wp_nonce_field('edit-status');
     
     self::mainTabContent(
-        compact(['name', 'label', 'description', 'color', 'icon']),
+        array_intersect_key(
+            (array) $status,
+            array_fill_keys(['name', 'label', 'description', 'color', 'icon'], true)
+        ),
         $default_tab
     );
 
@@ -122,8 +120,8 @@ echo esc_attr($edit_status_link); ?>">
         <input type="hidden" name="action" value="edit-status" />
         <input type="hidden" name="pp_tab" value="<?php echo '#pp-' . esc_attr($default_tab);?>" />
         <?php
-        if (!empty($_REQUEST['return_module'])) :?>
-            <input type="hidden" name="return_module" value="<?php echo esc_attr($_REQUEST['return_module']);?>" />
+        if (!\PublishPress_Functions::empty_REQUEST('return_module')) :?>
+            <input type="hidden" name="return_module" value="<?php echo esc_attr(\PublishPress_Functions::REQUEST_key('return_module'));?>" />
         <?php endif;
 
         submit_button(__('Update Status', 'publishpress-statuses'), 'primary pp-statuses', 'submit', false); ?>

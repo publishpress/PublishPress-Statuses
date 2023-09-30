@@ -182,14 +182,11 @@ class StatusHandler {
 
         $name = sanitize_text_field(trim($_POST['name']));
 
-        if (isset($_REQUEST['status_label'])) {
-            $label = sanitize_text_field(trim($_POST['status_label']));
-        }
-
         if (isset($_REQUEST['description'])) {
-            $description = stripslashes(wp_filter_nohtml_kses(trim($_POST['description'])));
+            $description = stripslashes(wp_filter_nohtml_kses(trim($_REQUEST['description'])));
         }
 
+        if (isset($_REQUEST['status_label'])) {
         /**
          * Form validation for editing custom status
          *
@@ -199,7 +196,8 @@ class StatusHandler {
          */
         $_REQUEST['form-errors'] = [];
 
-        if (isset($_REQUEST['status_label'])) {
+            $label = sanitize_text_field(trim($_POST['status_label']));
+
             // Check if name field was filled in
             if (empty($label)) {
                 $_REQUEST['form-errors']['status_label'] = __('Please enter a name for the status', 'publishpress-statuses');
@@ -300,14 +298,14 @@ class StatusHandler {
             $args['post_type'] = [];
 
         } else {
-            $set_post_types = !empty($_REQUEST['pp_status_post_types']) ? $_REQUEST['pp_status_post_types'] : false;
+            $set_post_types = !empty($_REQUEST['pp_status_post_types']) ? array_map('intval', $_REQUEST['pp_status_post_types']) : false;
 
             if ($set_post_types) {
-                if ($add_types = array_filter(array_map('intval', $set_post_types))) {
+                if ($add_types = array_filter($set_post_types)) {
                     $status_post_types = array_unique(array_merge($status_post_types, array_map('sanitize_key', array_keys($add_types))));
                 }
 
-                if ($remove_types = array_diff(array_map('intval', $set_post_types), ['1', true, 1])) {
+                if ($remove_types = array_diff($set_post_types, ['1', true, 1])) {
                     $status_post_types = array_diff($status_post_types, array_keys($remove_types));
                 }
 
@@ -372,10 +370,10 @@ class StatusHandler {
 
         $status_obj = get_post_status_object($name);
 
-        if (!empty($_REQUEST['return_module'])) {
+        if (!\PublishPress_Functions::empty_REQUEST('return_module')) {
             $arr = ['message' => 'status-updated'];
             $arr['page'] = 'pp-modules-settings';
-            $arr['settings_module'] = $_REQUEST['return_module'];
+            $arr['settings_module'] = \PublishPress_Functions::REQUEST_key('return_module');
 
             $redirect_url = \PublishPress_Statuses::getLink($arr);
         } else {
@@ -652,13 +650,13 @@ class StatusHandler {
             return;
         }
 
-        if (!empty($_REQUEST['status_section'])) {
+        if ($status_section = \PublishPress_Functions::REQUEST_key('status_section')) {
             if (!$collapsed_sections = \get_user_meta($current_user->ID, 'publishpress_statuses_collapsed_sections', true)) {
                 $collapsed_sections = [];
             }
 
-            $section = str_replace('status_row_', '', sanitize_key($_REQUEST['status_section']));
-            $is_collapsed = !empty($_REQUEST['collapse']);
+            $section = str_replace('status_row_', '', $status_section);
+            $is_collapsed = !\PublishPress_Functions::empty_REQUEST('collapse');
             
             if ($is_collapsed) {
                 $collapsed_sections[$section] = true;
@@ -671,7 +669,7 @@ class StatusHandler {
     }
 
     public static function handleAjaxDeleteStatus() {
-        if (!empty($_REQUEST['delete_status'])) {
+        if ($status_name = \PublishPress_Functions::REQUEST_key('delete_status')) {
             if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
                 self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
             }

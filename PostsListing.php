@@ -187,7 +187,9 @@ class PostsListing
                         $post_states[] = $_scheduled_status_obj->label;
                 }
             }
-        } elseif (\PublishPress_Functions::empty_GET('post_status') || (\PublishPress_Functions::GET_key('post_status') != $post->post_status)) {  // if filtering for this status, don't display caption in result rows
+        } elseif (\PublishPress_Functions::empty_REQUEST('post_status') 
+        || (\PublishPress_Functions::REQUEST_key('post_status') != $post->post_status)
+        ) {  // if filtering for this status, don't display caption in result rows
             $status_obj = (!empty($wp_post_statuses[$post->post_status])) ? $wp_post_statuses[$post->post_status] : false;
             if ($status_obj) {
                 if ($status_obj->private || (!empty($status_obj->moderation)))

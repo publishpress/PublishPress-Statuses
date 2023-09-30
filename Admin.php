@@ -13,9 +13,9 @@ class Admin
     }
 
     function add_admin_styles() {
-        global $pagenow;
+        $plugin_page = \PublishPress_Functions::getPluginPage();
 
-        if ('admin.php' === $pagenow && isset($_GET['page']) && 0 === strpos($_GET['page'], 'publishpress-statuses')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if (0 === strpos($plugin_page, 'publishpress-statuses')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             wp_enqueue_style(
                 'publishpress-status-admin-css',
                 PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-admin.css',
@@ -41,9 +41,10 @@ class Admin
             return;
         }
 
-        if (!empty($pagenow) && ('admin.php' == $pagenow) 
-        && (!empty($_REQUEST['page']) && 0 === strpos($_REQUEST['page'], 'publishpress-statuses'))
-        ) {
+        $plugin_page = \PublishPress_Functions::getPluginPage();
+
+        // Scripts and styles needed for Add Status, Edit Status, and possibly Statuses
+        if (0 === strpos($plugin_page, 'publishpress-statuses')) {
             wp_enqueue_script(
                 'publishpress-icon-preview',
                 PUBLISHPRESS_STATUSES_URL . 'common/libs/icon-picker/icon-picker.js',
@@ -70,9 +71,9 @@ class Admin
             );
         }
 
-        // Load Javascript we need to use on the configuration views (jQuery Sortable)
-        if (!empty($pagenow) && ('admin.php' == $pagenow) 
-        && (!empty($_REQUEST['page']) && ('publishpress-statuses' == $_REQUEST['page']))
+        // Scripts and styles for Statuses screen
+        if ('publishpress-statuses' == $plugin_page
+        && in_array(\PublishPress_Functions::REQUEST_key('action'), ['', 'statuses'])
         ) {
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-sortable');
@@ -232,7 +233,7 @@ class Admin
         }
 
         // Disable the scripts for the post page if the plugin Visual Composer is enabled.
-        if (isset($_GET['vcv-action']) && $_GET['vcv-action'] === 'frontend') {
+        if ('frontend' === \PublishPress_Functions::GET_key('vcv-action')) {
             return false;
         }
 

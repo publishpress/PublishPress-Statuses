@@ -123,13 +123,13 @@ class Workarounds {
         }
 
         //Are we overriding the permalink? Don't do anything
-        if (isset($_POST['action']) && $_POST['action'] == 'sample-permalink') {
+        if ('sample-permalink' === \PublishPress_Functions::POST_key('action')) {
             return $permalink;
         }
 
         //Are we previewing the post from the normal post screen?
         if (($pagenow == 'post.php' || $pagenow == 'post-new.php')
-            && ! isset($_POST['wp-preview'])) {
+        && !\PublishPress_Functions::is_POST('wp-preview')) {
             return $permalink;
         }
 
@@ -178,7 +178,7 @@ class Workarounds {
         }
 
         //Are we overriding the permalink? Don't do anything
-        if (isset($_POST['action']) && $_POST['action'] == 'sample-permalink') {
+        if ('sample-permalink' === \PublishPress_Functions::POST_key('action')) {
             return $permalink;
         }
 
