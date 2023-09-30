@@ -148,7 +148,7 @@ class PublishPress_Functions
                 }
             }
         } elseif (in_array($pagenow, ['post-new.php', 'edit.php'])) {
-            $object_type = self::is_GET('post_type') ? self::GET_key('post_type') : 'post';
+            $object_type = self::GET_key('post_type') ? self::GET_key('post_type') : 'post';
 
         } elseif (in_array($pagenow, ['edit-tags.php'])) {
             $object_type = !self::empty_REQUEST('taxonomy') ? self::REQUEST_key('taxonomy') : 'category';
@@ -156,13 +156,17 @@ class PublishPress_Functions
         } elseif (in_array($pagenow, ['admin-ajax.php']) && !self::empty_REQUEST('taxonomy')) {
             $object_type = self::REQUEST_key('taxonomy');
 
-        } elseif ($_post_id = self::POST_int('post_ID')) {
-            if ($_post = get_post($_post_id)) {
-                $object_type = $_post->post_type;
-            }
-        } elseif ($id = self::GET_int('post')) {  // post.php
-            if ($_post = get_post($id)) {
-                $object_type = $_post->post_type;
+        } else {
+            if ($_post_id = !self::empty_REQUEST('post_ID')) {
+                $_post_id = self::REQUEST_int('post_ID');
+
+                if ($_post = get_post($_post_id)) {
+                    $object_type = $_post->post_type;
+                }
+            } elseif ($id = self::GET_int('post')) {  // post.php
+                if ($_post = get_post($id)) {
+                    $object_type = $_post->post_type;
+                }
             }
         }
 
@@ -195,8 +199,10 @@ class PublishPress_Functions
             if (!empty($wp_query)) {
                 if (!empty($wp_query->query_vars) && !empty($wp_query->query_vars['p'])) {
                     return (int) $wp_query->query_vars['p'];
+                
                 } elseif (!empty($wp_query->query['post_type']) && !empty($wp_query->query['name'])) {
                     global $wpdb;
+                    
                     return $wpdb->get_var(
                         $wpdb->prepare(
                             "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND post_name = %s LIMIT 1",
@@ -218,6 +224,45 @@ class PublishPress_Functions
         } elseif (defined('WOOCOMMERCE_VERSION') && !self::empty_REQUEST('product_id')) {
             return self::REQUEST_int('product_id');
         }
+    }
+
+    /**
+     * Checks for the current post type
+     *
+     * @return string|null $post_type The post type we've found, or null if no post type
+     */
+    public static function getPostType()
+    {
+        global $post, $typenow, $pagenow, $current_screen;
+
+        if ($post && $post->post_type) {
+            $post_type = $post->post_type;
+
+        } elseif (!empty($typenow)) {
+            $post_type = $typenow;
+
+        } elseif ($current_screen && !empty($current_screen->post_type)) {
+            $post_type = $current_screen->post_type;
+
+        } elseif (!self::empty_REQUEST('post_type')) {
+            $post_type = self::REQUEST_key('post_type');
+
+        } else {
+            // get_post() needs a variable
+            $post_id = self::getPostID();
+
+            if (!empty($pagenow) && ('post.php' == $pagenow) && $post_id && !empty(get_post($post_id)->post_type)) {
+                $post_type = get_post($post_id)->post_type;
+
+            } elseif (!empty($pagenow) && ('edit.php' == $pagenow)) {
+                $post_type = 'post';
+
+            } else {
+                $post_type = null;
+            }
+        }
+
+        return $post_type;
     }
 
     public static function isPluginActive($plugin) {
@@ -287,48 +332,6 @@ class PublishPress_Functions
         return $ordered_types;
     }
 
-    public static function publishpressFooter() {
-    ?>
-        <footer>
-
-        <div class="pp-rating">
-        <a href="https://wordpress.org/support/plugin/publishpress-statuses/reviews/#new-post" target="_blank" rel="noopener noreferrer">
-        <?php printf(
-                // translators: %1$s is the plugin name, %2$s is the rating stars
-            esc_html__('If you like %1$s, please leave us a %2$s rating. Thank you!', 'publishpress-statuses'),
-            '<strong>PublishPress Statuses</strong>',
-            '<span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span>'
-            );
-        ?>
-        </a>
-        </div>
-
-        <hr>
-        <nav>
-        <ul>
-        <li><a href="https://publishpress.com/statuses" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('About PublishPress Statuses', 'publishpress-statuses');?>"><?php esc_html_e('About', 'publishpress-statuses');?>
-        </a></li>
-        <li><a href="https://publishpress.com/documentation/statuses-start/" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Statuses Documentation', 'publishpress-statuses');?>"><?php esc_html_e('Documentation', 'publishpress-statuses');?>
-        </a></li>
-        <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'publishpress-statuses');?>"><?php esc_html_e('Contact', 'publishpress-statuses');?>
-        </a></li>
-        <li><a href="https://twitter.com/publishpresscom" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-twitter"></span>
-        </a></li>
-        <li><a href="https://facebook.com/publishpress" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-facebook"></span>
-        </a></li>
-        </ul>
-        </nav>
-
-        <div class="pp-publishpress-logo">
-        <a href="//publishpress.com" target="_blank" rel="noopener noreferrer">
-        <img src="<?php echo esc_url(PUBLISHPRESS_STATUSES_URL . '/common/assets/publishpress-logo.png');?>" />
-        </a>
-        </div>
-
-        </footer>
-    <?php
-    }
-
     /**
      * Take a status and a message, JSON encode and print
      *
@@ -356,7 +359,7 @@ class PublishPress_Functions
             $result['params'] = $params;
         }
 
-        echo json_encode($result);
+        echo wp_json_encode($result);
 
         exit;
     }
@@ -378,6 +381,23 @@ class PublishPress_Functions
         }
     }
 
+    public static function getPluginPage() {
+        global $plugin_page, $pagenow;
+
+        if (!is_admin()) {
+            return false;
+
+        } elseif (!empty($plugin_page)) {
+            return $plugin_page;
+
+        } elseif (empty($pagenow) || ('admin.php' != $pagenow)) {
+            return false;
+
+        } else {
+            return self::REQUEST_key('page');
+        }
+    }
+
     public static function isEditableRole($role_name, $args = []) {
         static $editable_roles;
     
@@ -393,6 +413,16 @@ class PublishPress_Functions
         return apply_filters('publishpress_statuses_editable_role', isset($editable_roles[$role_name]), $role_name);
     }
 
+
+    /**** $_REQUEST / $_POST / $_GET Analysis Functions for URL qualification ***
+     *
+     *  These are used for convenience and code clarity, mostly by controller files to select and load the proper CRUD handler.
+     *  Nonce checks, where applicable, are included at the top of that request-specific file.
+     * 
+     *  A secondary use is for determination of basic request parameters like post ID or status name (not nonce scenarios).
+     * 
+     *  For actions that require nonce verifications, the subsequent input values are taken directly from $_REQUEST, $_POST or $_GET.
+     */
     public static function empty_REQUEST($var = false) {
         if (false === $var) {
             return empty($_REQUEST);
@@ -406,9 +436,9 @@ class PublishPress_Functions
             return isset($_REQUEST[$var]);
             
         } elseif (is_array($match)) {
-            return (isset($_REQUEST[$var]) && in_array($_REQUEST[$var], $match));
+            return isset($_REQUEST[$var]) && in_array($_REQUEST[$var], $match);
         } else {
-            return (isset($_REQUEST[$var]) && ($_REQUEST[$var] == $match));
+            return isset($_REQUEST[$var]) && ($_REQUEST[$var] == $match);
         }
     }
     
@@ -423,9 +453,17 @@ class PublishPress_Functions
     public static function REQUEST_int($var) {
         return (!empty($_REQUEST[$var])) ? intval($_REQUEST[$var]) : 0;
     }
+
+    public static function GET_key($var) {
+        if (empty($_GET[$var])) {
+            return '';
+        }
     
-    public static function REQUEST_var($var) {
-        return (!empty($_REQUEST) && !empty($_REQUEST[$var])) ? $_REQUEST[$var] : '';
+        return (is_array($_GET[$var])) ? array_map('sanitize_key', $_GET[$var]) : sanitize_key($_GET[$var]);
+    }
+    
+    public static function GET_int($var) {
+        return (!empty($_GET[$var])) ? intval($_GET[$var]) : 0;
     }
     
     public static function empty_POST($var = false) {
@@ -435,7 +473,15 @@ class PublishPress_Functions
             return empty($_POST[$var]);
         }
     }
+
+    public static function POST_key($var) {
+        if (empty($_POST) || empty($_POST[$var])) {
+            return '';
+        }
     
+        return (is_array($_POST[$var])) ? array_map('sanitize_key', $_POST[$var]) : sanitize_key($_POST[$var]);
+    }
+
     public static function is_POST($var, $match = false) {
         if (empty($_POST)) {
             return false;
@@ -451,22 +497,13 @@ class PublishPress_Functions
         }
     }
     
-    public static function POST_key($var) {
-        if (empty($_POST) || empty($_POST[$var])) {
-            return '';
-        }
-    
-        return (is_array($_POST[$var])) ? array_map('sanitize_key', $_POST[$var]) : sanitize_key($_POST[$var]);
-    }
-    
+    /*
     public static function POST_int($var) {
         return (!empty($_POST) && !empty($_POST[$var])) ? intval($_POST[$var]) : 0;
     }
+    */
     
-    public static function POST_var($var) {
-        return (!empty($_POST) && !empty($_POST[$var])) ? $_POST[$var] : '';
-    }
-    
+    /*
     public static function empty_GET($var = false) {
         if (false === $var) {
             return empty($_GET);
@@ -474,32 +511,19 @@ class PublishPress_Functions
             return empty($_GET[$var]);
         }
     }
-    
+    */
+
+    /*
     public static function is_GET($var, $match = false) {
         if (false === $match) {
             return isset($_GET[$var]);
     
         } elseif (is_array($match)) {
-            return (isset($_GET[$var]) && in_array($_GET[$var], $match));
+            return isset($_GET[$var]) && in_array($_GET[$var], $match);
         } else {
-            return (!empty($_GET[$var]) && ($_GET[$var] == $match));
+            return !empty($_GET[$var]) && ($_GET[$var] == $match);
         }
     }
-    
-    public static function GET_key($var) {
-        if (empty($_GET[$var])) {
-            return '';
-        }
-    
-        return (is_array($_GET[$var])) ? array_map('sanitize_key', $_GET[$var]) : sanitize_key($_GET[$var]);
-    }
-    
-    public static function GET_int($var) {
-        return (!empty($_GET[$var])) ? intval($_GET[$var]) : 0;
-    }
-    
-    public static function GET_var($var) {
-        return (!empty($_GET[$var])) ? $_GET[$var] : '';
-    }
+    */
 }
 }

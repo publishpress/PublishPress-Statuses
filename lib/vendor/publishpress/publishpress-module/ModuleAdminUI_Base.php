@@ -21,36 +21,6 @@ class ModuleAdminUI_Base {
         }
     }
 
-    /**
-     * Given a form field and a description, prints either the error associated with the field or the description.
-     *
-     * @param string $field The form field for which to check for an error
-     * @param string $description Unlocalized string to display if there was no error with the given field
-     *
-     *@since 0.7
-        *
-        */
-    public static function print_error_or_description($field, $description)
-    {
-        if (isset($_REQUEST['form-errors'][$field])): ?>
-            <div class="form-error">
-                <p><?php echo esc_html($_REQUEST['form-errors'][$field]); ?></p>
-            </div>
-        <?php else: ?>
-            <p class="description"><?php echo esc_html($description); ?></p>
-        <?php endif;
-    }
-
-    public function helper_print_error_or_description($field, $description)
-    {
-        self::print_error_or_description($field, $description);
-    }
-
-    public function print_default_header($current_module, $custom_text = null)
-    {
-        self::default_header($current_module, $custom_text);
-    }
-
     public static function defaultHeader() {
         return self::instance()->default_header();
     }
@@ -74,13 +44,13 @@ class ModuleAdminUI_Base {
             $display_text .= '<div class="is-dismissible notice notice-info"><p>' . esc_html($this->module->messages[$message]) . '</p></div>';
         }
 
+        if (!empty($form_errors)) {
+            \PublishPress_Statuses::instance()->form_errors = $form_errors;
+        }
+
         // If there's been an error, let's display it
-        if (isset($_GET['error'])) {
-            $error = sanitize_text_field($_GET['error']);
-        } elseif (isset($_REQUEST['error'])) {
-            $error = sanitize_text_field($_REQUEST['error']);
-        } elseif (isset($_POST['error'])) {
-            $error = sanitize_text_field($_POST['error']);
+        if ($error = \PublishPress_Statuses::instance()->last_error) {
+            $error = sanitize_text_field($error);
         } else {
             $error = false;
         }
@@ -92,11 +62,9 @@ class ModuleAdminUI_Base {
 
         <div class="publishpress-admin publishpress-admin-wrapper wrap">
             <header>
-                <!--
                 <div class="pp-icon">
                 <img src="<?php echo PUBLISHPRESS_STATUSES_URL . 'common/assets/publishpress-logo-icon.png';?>" alt="" class="logo-header" />
                 </div>
-                -->
 
                 <h1 class="wp-heading-inline"><?php echo $this->module->title; ?></h1>
 
@@ -111,7 +79,7 @@ class ModuleAdminUI_Base {
                         <?php echo $custom_text; ?>
                     <?php endif; ?>
                 </h2>
-
+                
                 <?php 
                 do_action('publishpress_default_header');
                 ?>
@@ -119,4 +87,45 @@ class ModuleAdminUI_Base {
         <?php
     }
 
+    public static function defaultFooter($plugin_wp_slug, $plugin_title, $ppcom_url, $ppcom_doc_url, $local_img_url, $args = []) {
+    ?>
+        <footer>
+
+        <div class="pp-rating">
+        <a href="https://wordpress.org/support/plugin/<?php echo esc_url($plugin_wp_slug);?>/reviews/#new-post" target="_blank" rel="noopener noreferrer">
+        <?php printf(
+                // translators: %1$s is the plugin name, %2$s is the rating stars
+            esc_html__('If you like %1$s, please leave us a %2$s rating. Thank you!', 'publishpress-statuses'),
+            esc_html($plugin_title),
+            '<span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span>'
+            );
+        ?>
+        </a>
+        </div>
+
+        <hr>
+        <nav>
+        <ul>
+        <li><a href="<?php echo esc_url($ppcom_url);?>" target="_blank" rel="noopener noreferrer" title="<?php printf(esc_attr__('About %s', 'publishpress-functions'), $plugin_title);?>"><?php esc_html_e('About', 'publishpress-functions');?>
+        </a></li>
+        <li><a href="<?php echo esc_url($ppcom_doc_url);?>" target="_blank" rel="noopener noreferrer" title="<?php printf(esc_attr__('%s Documentation', 'publishpress-functions'), $plugin_title);?>"><?php esc_html_e('Documentation', 'publishpress-functions');?>
+        </a></li>
+        <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'publishpress-functions');?>"><?php esc_html_e('Contact', 'publishpress-functions');?>
+        </a></li>
+        <li><a href="https://twitter.com/publishpresscom" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-twitter"></span>
+        </a></li>
+        <li><a href="https://facebook.com/publishpress" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-facebook"></span>
+        </a></li>
+        </ul>
+        </nav>
+
+        <div class="pp-publishpress-logo">
+        <a href="//publishpress.com" target="_blank" rel="noopener noreferrer">
+        <img src="<?php echo esc_url($local_img_url);?>" />
+        </a>
+        </div>
+
+        </footer>
+    <?php
+    }
 }
