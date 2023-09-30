@@ -690,7 +690,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             'protected' => true,
             'date_floating' => true,
             '_builtin' => false,
-            'pp_builtin' => true,
+            'pp_builtin' => false,
             'private' => true,
             'post_type' => (!empty($status->post_type)) ? $status->post_type : [],
             'labels' => (!empty($status->labels)) ? $status->labels : (object) ['publish' => '', 'save_as' => '', 'name' => $label],
