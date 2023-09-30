@@ -369,7 +369,6 @@ class StatusesUI {
 
             require_once(__DIR__ . '/StatusEditUI.php');
             \PublishPress_Statuses\StatusEditUI::display();
-        else: 
 
         /** Statuses screen **/
         } elseif (('publishpress-statuses' === $plugin_page) && (!$action || ('statuses' == $action))) {
