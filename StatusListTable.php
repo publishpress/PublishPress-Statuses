@@ -686,11 +686,6 @@ do_action('publishpress_statuses_admin_row', $key, []);
         }
         $output .= '</strong>';
 
-        // Don't allow for any of these status actions when adding a new custom status
-        if (isset($_GET['action']) && $_GET['action'] == 'add') {
-            return $output;
-        }
-
         $actions = [];
         //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress-statuses') . "</a>";
 
