@@ -280,6 +280,9 @@ class StatusHandler {
             $roles_set_status = array_map('intval', $_REQUEST['roles_set_status']);
 
             foreach ($roles_set_status as $role_name => $set_val) {
+                $role_name = sanitize_key($role_name);
+                $set_val = boolval($set_val);
+
                 if (!\PublishPress_Functions::isEditableRole($role_name)) {
                     continue;
                 }
@@ -304,6 +307,8 @@ class StatusHandler {
 
         if (isset($_REQUEST['status_caps'])) {
             foreach ($_REQUEST['status_caps'] as $role_name => $set_status_caps) {
+                $role_name = sanitize_key($role_name);
+
                 if (!\PublishPress_Functions::isEditableRole($role_name)) {
                     continue;
                 }
@@ -662,14 +667,14 @@ class StatusHandler {
         if (!empty($_REQUEST['status_hierarchy'])) {
             $status_parents = [];
 
-            foreach ($_REQUEST['status_hierarchy'] as $position => $arr) {
-                $status_name = str_replace('status_row_', '', $arr['id']);
+            foreach ($_REQUEST['status_hierarchy'] as $arr) {
+                $status_name = str_replace('status_row_', '', sanitize_key($arr['id']));
                 
                 $status_parents[$status_name] = '';
                 
                 if (!empty($arr['children']) && !empty($status_name)) {
                     foreach ($arr['children'] as $child_arr) {
-                        $child_status_name = str_replace('status_row_', '', $child_arr['id']);
+                        $child_status_name = str_replace('status_row_', '', sanitize_key($child_arr['id']));
 
                         $status_obj = get_post_status_object($child_status_name);
                         if (!empty($status_obj) && !empty($status_obj->private)) {
