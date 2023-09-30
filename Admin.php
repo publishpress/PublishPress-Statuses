@@ -154,33 +154,9 @@ class Admin
 
     function act_admin_menu()
     {
-        //$this->menu_slug = 'publishpress-hub';
         $this->menu_slug = 'publishpress-statuses';
 
         $this->using_permissions_menu = true;
-
-        /*
-        add_menu_page(
-            esc_html__('PublishPress Hub', 'publishpress-statuses'),
-            esc_html__('PublishPress Hub', 'publishpress-statuses'),
-            'read',
-            'publishpress-hub',
-            [$this, 'render_dashboard_page'],
-            'dashicons-format-status',
-            70
-        );
-
-        // If we are disabling native custom statuses in favor of PublishPress, 
-        // but PP Collaborative Editing is not active, hide this menu item.
-        add_submenu_page(
-            'publishpress-hub',
-            esc_html__('Post Statuses', 'publishpress-statuses'), 
-            esc_html__('Post Statuses', 'publishpress-statuses'), 
-            'manage_options',   // @todo: custom capability
-            'publishpress-statuses', 
-            [$this, 'render_admin_page']
-        );
-        */
 
         $check_cap = (current_user_can('manage_options')) ? 'read' : 'pp_manage_statuses';
 
@@ -198,7 +174,7 @@ class Admin
             'publishpress-statuses',
             esc_html__('Add New', 'publishpress-statuses'), 
             esc_html__('Add New', 'publishpress-statuses'), 
-            $check_cap,   // @todo: custom capability
+            $check_cap,
             'publishpress-statuses-add-new', 
             [$this, 'render_admin_page']
         );
@@ -207,7 +183,7 @@ class Admin
             'publishpress-statuses',
             esc_html__('Settings', 'publishpress-statuses'), 
             esc_html__('Settings', 'publishpress-statuses'), 
-            'manage_options',   // @todo: custom capability
+            'manage_options',   // @todo: custom capability?
             'publishpress-statuses-settings', 
             [$this, 'render_admin_page']
         );

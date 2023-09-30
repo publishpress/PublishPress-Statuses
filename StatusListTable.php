@@ -704,16 +704,6 @@ do_action('publishpress_statuses_admin_row', $key, []);
             $actions['delete'] = '<a href="#">' . __('X', 'publishpress-statuses') . '</a>';
         }
 
-        // @todo
-        /*
-        if (empty($status_obj) || (empty($status_obj->_builtin) && empty($status_obj->pp_builtin))) {
-            $actions['delete-status'] = sprintf(
-                '<a href="%1$s">' . __('Delete', 'publishpress-statuses') . '</a>',
-                \PublishPress_Statuses::getLink(['action' => 'delete-status', 'name' => $item->name])
-            );
-        }
-        */
-
         $actions = apply_filters('publishpress_statuses_row_actions', $actions, $item);
         
         $output .= $this->row_actions($actions, false);

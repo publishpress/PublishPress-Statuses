@@ -231,45 +231,6 @@ class StatusHandler {
             }
         }
 
-        /*
-        // Check to make sure the status doesn't already exist as another term because otherwise we'd get a weird slug
-        $term_exists = term_exists(sanitize_title($name), 'post_status');
-
-        if (is_array($term_exists)) {
-            $term_exists = (int)$term_exists['slug'];
-        }
-
-        if ($term_exists && $term_exists != $existing_status->name) {
-            $_REQUEST['form-errors']['status_label'] = __(
-                'Status name conflicts with existing term. Please choose another.',
-                'publishpress-statuses'
-            );
-        }
-        // Check to make sure the status doesn't already exist
-        $search_status = \PublishPress_Statuses::getStatusBy('slug', sanitize_title($label));
-
-        if ($search_status && $search_status->name != $existing_status->name) {
-            $_REQUEST['form-errors']['status_label'] = __(
-                'Status name conflicts with existing status. Please choose another.',
-                'publishpress-statuses'
-            );
-        }
-        // Check to make sure the name is not restricted
-        if (self::is_restricted_status(strtolower(sanitize_title($label)))) {
-            $_REQUEST['form-errors']['status_label'] = __(
-                'Status name is restricted. Please choose another name.',
-                'publishpress-statuses'
-            );
-        }
-
-        // Kick out if there are any errors
-        if (count($_REQUEST['form-errors'])) {
-            $_REQUEST['error'] = 'form-error';
-
-            return;
-        }
-        */
-
         // Try to edit the post status
         $args = [
             'name' => $name,
@@ -434,24 +395,6 @@ class StatusHandler {
 
         // Reset our internal object cache
         \PublishPress_Statuses::instance()->clearStatusCache();
-
-        /*
-            $name = sanitize_title($name);
-
-            // If the slug is empty we need to define one
-            if (empty($name)) {
-                $name = sanitize_title($args['label']);
-            }
-        */
-
-        // Reassign posts to new status slug if the slug changed and isn't restricted
-        /*
-        if ($name && $name != $old_status->name && ! self::is_restricted_status($old_status->name)) {
-            self::reassign_post_status($old_status->name, $name);
-        }
-
-        $name = !empty($name) ? $name : $old_status->name;
-        */
 
         $updatedStatusId = $name;
 
