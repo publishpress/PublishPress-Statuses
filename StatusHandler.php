@@ -190,13 +190,13 @@ class StatusHandler {
         }
 
         if (isset($_REQUEST['status_label'])) {
-        /**
-         * Form validation for editing custom status
-         *
-         * Details
-         * - 'name' is a required field and can't conflict with existing name or slug
-         * - 'description' is optional
-         */
+            /**
+             * Form validation for editing custom status
+             *
+             * Details
+             * - 'name' is a required field and can't conflict with existing name or slug
+             * - 'description' is optional
+             */
 
             $label = sanitize_text_field(trim($_POST['status_label']));
 
@@ -660,7 +660,7 @@ class StatusHandler {
             self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
-        if (! isset($_POST['status_positions']) || ! is_array($_POST['status_positions'])) {
+        if (!isset($_POST['status_positions']) || !is_array($_POST['status_positions'])) {
             self::printAjaxResponse('error', __('Status positions were not sent.', 'publishpress-statuses'));
         }
 

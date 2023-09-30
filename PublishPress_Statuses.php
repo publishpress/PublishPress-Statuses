@@ -155,8 +155,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             // Status Administration (@todo: separate modules for Add New, Settings)
             if (isset($plugin_page) && (0 === strpos($plugin_page, 'publishpress-statuses'))) {
                 add_action('pp_statuses_init', function() {
-                require_once(__DIR__ . '/StatusesUI.php');
-                \PublishPress_Statuses\StatusesUI::instance();
+                    require_once(__DIR__ . '/StatusesUI.php');
+                    \PublishPress_Statuses\StatusesUI::instance();
                 });
             }
         }

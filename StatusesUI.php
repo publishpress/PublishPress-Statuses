@@ -35,8 +35,8 @@ class StatusesUI {
             add_action('admin_init', [$this, 'register_settings']);
 
             if (!\PublishPress_Functions::empty_POST('submit')) {
-            add_action('admin_init', [$this, 'handle_settings'], 100);
-        }
+                add_action('admin_init', [$this, 'handle_settings'], 100);
+            }
         }
 
         // Methods for handling the actions of creating, making default, and deleting post stati
@@ -54,10 +54,10 @@ class StatusesUI {
         && ('edit-status' === \PublishPress_Functions::REQUEST_key('action'))) {
             $status_name = \PublishPress_Functions::REQUEST_key('name');
 
-                if ($status_obj = get_post_status_object($status_name)) {
-                    // translators: %s is the status label
-                    $title = sprintf(__('Edit Post Status: %s', 'publishpress-statuses'), $status_obj->label);
-                }
+            if ($status_obj = get_post_status_object($status_name)) {
+                // translators: %s is the status label
+                $title = sprintf(__('Edit Post Status: %s', 'publishpress-statuses'), $status_obj->label);
+            }
 
         } elseif ('publishpress-statuses-add-new' === $plugin_page) {
             if (!\PublishPress_Functions::empty_REQUEST('taxonomy')) {
@@ -373,75 +373,75 @@ class StatusesUI {
         /** Statuses screen **/
         } elseif (('publishpress-statuses' === $plugin_page) && (!$action || ('statuses' == $action))) {
 
-                \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));
-                
-                // @todo: adapt old nav tab for status types (Pre-publication, Publication & Privacy, Revision Statuses)
-                ?>
-                <!--
-                <div class='nav-tab-wrapper'>
-                <a href="<?php
+            \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));
+            
+            // @todo: adapt old nav tab for status types (Pre-publication, Publication & Privacy, Revision Statuses)
+            ?>
+            <!--
+            <div class='nav-tab-wrapper'>
+            <a href="<?php
                 echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'moderation'])); ?>"
-                        class="nav-tab<?php
+                    class="nav-tab<?php
                     if (!$action || ('moderation' == $status_type)) {
-                            echo ' nav-tab-active';
-                        } ?>"><?php
+                        echo ' nav-tab-active';
+                    } ?>"><?php
                     _e('Pre-Publication', 'publishpress-statuses'); ?></a>
-    
-                    <a href="<?php
-                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'visibility'])); ?>"
-                        class="nav-tab<?php
-                    if ('visibility' == $status_type) {
-                            echo ' nav-tab-active';
-                        } ?>"><?php
-                    _e('Visibility', 'publishpress-statuses'); ?></a>
-                    
-                    <a href="<?php
-                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'revision'])); ?>"
-                        class="nav-tab<?php
-                    if ('revision' == $status_type) {
-                            echo ' nav-tab-active';
-                        } ?>"><?php
-                    _e('Revision', 'publishpress-statuses'); ?></a>
-                </div>
-                -->
-                <?php
-                
-                require_once(__DIR__ . '/StatusListTable.php');
-                $wp_list_table = new \PublishPress_Statuses\StatusListTable();
-                $wp_list_table->prepare_items(); ?>
 
-                <div id='co-l-right' class='pp-statuses-co-l-right'>
-                    <div class='col-wrap' style="overflow: auto;">
-                        <?php
-                        $wp_list_table->display(); ?>
-                        <?php
-                        wp_nonce_field('custom-status-sortable', 'custom-status-sortable'); ?>
-                    </div>
+                <a href="<?php
+                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'visibility'])); ?>"
+                    class="nav-tab<?php
+                    if ('visibility' == $status_type) {
+                        echo ' nav-tab-active';
+                    } ?>"><?php
+                    _e('Visibility', 'publishpress-statuses'); ?></a>
+                
+                <a href="<?php
+                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'revision'])); ?>"
+                    class="nav-tab<?php
+                    if ('revision' == $status_type) {
+                        echo ' nav-tab-active';
+                    } ?>"><?php
+                    _e('Revision', 'publishpress-statuses'); ?></a>
+            </div>
+            -->
+            <?php
+            
+            require_once(__DIR__ . '/StatusListTable.php');
+            $wp_list_table = new \PublishPress_Statuses\StatusListTable();
+            $wp_list_table->prepare_items(); ?>
+
+            <div id='co-l-right' class='pp-statuses-co-l-right'>
+                <div class='col-wrap' style="overflow: auto;">
+                    <?php
+                    $wp_list_table->display(); ?>
+                    <?php
+                    wp_nonce_field('custom-status-sortable', 'custom-status-sortable'); ?>
                 </div>
+            </div>
             
         <?php 
         /** Add New Status **/
         } elseif (isset($plugin_page) && ('publishpress-statuses-add-new' === $plugin_page)) {
             $title = ('post_visibility_pp' == \PublishPress_Functions::REQUEST_key('taxonomy')) 
-                    ?  __('Add New Visibility Status', 'publishpress-statuses')
-                    :  __('Add New Pre-Publication Status', 'publishpress-statuses');
+            ?  __('Add New Visibility Status', 'publishpress-statuses')
+            :  __('Add New Pre-Publication Status', 'publishpress-statuses');
 
             $descript = ('post_visibility_pp' == \PublishPress_Functions::REQUEST_key('taxonomy'))
-                    ?  __('This status can be assigned to a post as a different form of Private Publication with its own capability requirements.', 'publishpress-statuses')
-                    :  __('This status can be assigned to an unpublished post using the Post Status dropdown.', 'publishpress-statuses');
+            ?  __('This status can be assigned to a post as a different form of Private Publication with its own capability requirements.', 'publishpress-statuses')
+            :  __('This status can be assigned to an unpublished post using the Post Status dropdown.', 'publishpress-statuses');
 
-                    \PublishPress\ModuleAdminUI_Base::instance()->module->title = $title;
-                    \PublishPress\ModuleAdminUI_Base::instance()->default_header($descript);
+            \PublishPress\ModuleAdminUI_Base::instance()->module->title = $title;
+            \PublishPress\ModuleAdminUI_Base::instance()->default_header($descript);
 
             $enable_left_col = true;
 
         /** Status Settings **/
         } elseif (isset($plugin_page) && ('publishpress-statuses-settings' === $plugin_page)) {
-                    \PublishPress\ModuleAdminUI_Base::instance()->module->title = __('PublishPress Statuses Settings', 'publishpress-statuses');
+            \PublishPress\ModuleAdminUI_Base::instance()->module->title = __('PublishPress Statuses Settings', 'publishpress-statuses');
             \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Note: Post types can also be specified for each individual status.', 'publishpress-statuses'));
 
             $enable_left_col = true;
-                }
+        }
 
         if (!empty($enable_left_col)) :?>
             <div id='co-l-left' class='pp-statuses-co-l-left'>
@@ -454,7 +454,7 @@ class StatusesUI {
                         } elseif ('publishpress-statuses-settings' === $plugin_page) {
                             require_once(__DIR__ . '/StatusSettingsUI.php');
                         }
-                                ?>
+                        ?>
                     </div>
                 </div>
             </div>
