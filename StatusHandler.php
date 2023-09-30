@@ -622,8 +622,6 @@ class StatusHandler {
                 self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
             }
 
-            $status_name = sanitize_key($_REQUEST['delete_status']);
-
             if ($status = \PublishPress_Statuses::getStatusBy('slug', $status_name)) {
                 if (!empty($status->_builtin) || !empty($status->pp_builtin)) {
                     self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
