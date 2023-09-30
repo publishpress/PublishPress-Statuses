@@ -418,6 +418,10 @@ line-height: 2em !important;
 
 
 /* Edit Status */
+div.publishpress-admin div.form-error p {
+color: #c00;
+} 
+
 div.pp-edit-status-back {
 float: right;
 padding-right: 50px;
