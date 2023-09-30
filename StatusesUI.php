@@ -381,28 +381,28 @@ class StatusesUI {
                 <!--
                 <div class='nav-tab-wrapper'>
                 <a href="<?php
-                    echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses'])); ?>"
+                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'moderation'])); ?>"
                         class="nav-tab<?php
-                        if (empty($_GET['action']) || $_GET['action'] == 'statuses') {
+                    if (!$action || ('moderation' == $status_type)) {
                             echo ' nav-tab-active';
                         } ?>"><?php
-                        _e('Statuses', 'publishpress-statuses'); ?></a>
+                    _e('Pre-Publication', 'publishpress-statuses'); ?></a>
     
                     <a href="<?php
-                    echo esc_url(\PublishPress_Statuses::getLink(['action' => 'add-new'])); ?>"
+                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'visibility'])); ?>"
                         class="nav-tab<?php
-                        if (isset($_GET['action']) && $_GET['action'] == 'add-new') {
+                    if ('visibility' == $status_type) {
                             echo ' nav-tab-active';
                         } ?>"><?php
-                        _e('Add New', 'publishpress-statuses'); ?></a>
+                    _e('Visibility', 'publishpress-statuses'); ?></a>
                     
                     <a href="<?php
-                    echo esc_url(\PublishPress_Statuses::getLink(['action' => 'options'])); ?>"
+                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'revision'])); ?>"
                         class="nav-tab<?php
-                        if (isset($_GET['action']) && $_GET['action'] == 'options') {
+                    if ('revision' == $status_type) {
                             echo ' nav-tab-active';
                         } ?>"><?php
-                        _e('Settings', 'publishpress-statuses'); ?></a>
+                    _e('Revision', 'publishpress-statuses'); ?></a>
                 </div>
                 -->
                 <?php
