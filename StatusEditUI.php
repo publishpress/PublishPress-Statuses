@@ -11,7 +11,6 @@ $name = \PublishPress_Functions::REQUEST_key('name');
 
 if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
     echo '<div class="error"><p>' . $module->messages['status-missing'] . '</p></div>';
-
     return;
 }
 
@@ -242,7 +241,7 @@ echo esc_attr($edit_status_link); ?>">
                     <div id="publishpress_icon_pick_wrap" data-target='#status_icon'
                             data-preview="#publishpress_icon_pick_preview" class="button dashicons-picker">
                         <div id="publishpress_icon_pick_preview" class="dashicons <?php
-                        echo isset($icon) ? esc_attr($icon) : ''; ?>"></div>
+                        echo !empty($icon) ? esc_attr($icon) : esc_attr(\PublishPress_Statuses::DEFAULT_ICON); ?>"></div>
                         <div class="publishpress_icon_pick_button_label"><?php
                             echo __('Select Icon', 'publishpress-statuses'); ?></div>
                     </div>

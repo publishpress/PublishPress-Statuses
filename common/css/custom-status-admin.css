@@ -406,7 +406,7 @@ body.toplevel_page_publishpress-statuses div.publishpress_icon_pick_button_label
 body.statuses_page_publishpress-statuses-add-new div.publishpress_icon_pick_button_label
 {
 float: right;
-padding-top: 1px;
+padding-top: 2px;
 padding-left: 5px;
 line-height: 2em !important;
 }
