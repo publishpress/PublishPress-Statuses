@@ -44,7 +44,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     const DEFAULT_STATUS = 'draft';
 
-    const DEFAULT_COLOR = '#3859ff';
+    const DEFAULT_COLOR = '#78645a';
     const DEFAULT_ICON = 'dashicons-post-status';
 
     const TAXONOMY_PRE_PUBLISH = 'post_status';
@@ -403,7 +403,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'draft' =>  (object) [
                         'label' => 'Draft',             // Replace with WP translation below
                         'description' => '-',
-                        'color' => '#aaaaaa',
+                        'color' => '#767676',
                         'icon' => 'dashicons-media-default',
                         'position' => 0,
                         'order' => 0,
@@ -414,7 +414,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => 'Pending Review',        // Replace with WP translation below
                         'label_friendly' => __('Pending Review'),
                         'description' => '-',
-                        'color' => '#ff8300',
+                        'color' => '#b95c00',
                         'icon' => 'dashicons-clock',
                         'position' => 4,
                         'order' => 200,
@@ -425,7 +425,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'future' => (object) [
                         'label' => 'Scheduled',             // Replace with WP translation below
                         'description' => '-',
-                        'color' => '#a996ff',
+                        'color' => '#8440f0',
                         'icon' => 'dashicons-calendar-alt',
                         'position' => 7,
                         'order' => 700,
@@ -436,7 +436,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'publish' => (object) [
                         'label' => 'Published',             // Replace with WP translation below
                         'description' => '-',
-                        'color' => self::DEFAULT_COLOR,
+                        'color' => '#207720',
                         'icon' => 'dashicons-yes',
                         'position' => 8,
                         'order' => 800,
@@ -447,7 +447,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'private' => (object) [
                         'label' => 'Privately Published',   // Replace with WP translation below
                         'description' => '-',
-                        'color' => '#ee0000',
+                        'color' => '#b40000',
                         'icon' => 'dashicons-lock',
                         'position' => 9,
                         'order' => 900,
@@ -464,7 +464,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('Pitch', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Throw Pitch', 'publishpress-statuses')],
                         'description' => __('Idea proposed; waiting for acceptance.', 'publishpress-statuses'),
-                        'color' => '#f4c5b0',
+                        'color' => '#887618',
                         'icon' => 'dashicons-lightbulb',
                         'position' => 1,
                         'order' => 100,
@@ -476,7 +476,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('Assigned', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Assign', 'publishpress-statuses')],
                         'description' => __('Post idea assigned to writer.', 'publishpress-statuses'),
-                        'color' => '#00bcc5',
+                        'color' => '#007780',
                         'icon' => 'dashicons-admin-users',
                         'position' => 2,
                         'order' => 200,
@@ -488,7 +488,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('In Progress', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Mark in Progress', 'publishpress-statuses')],
                         'description' => __('Writer is working on the post.', 'publishpress-statuses'),
-                        'color' => '#ccc500',
+                        'color' => '#774800',
                         'icon' => 'dashicons-performance',
                         'position' => 3,
                         'order' => 300,
@@ -500,7 +500,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('Approved', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
                         'description' => '-',
-                        'color' => '#41d836',
+                        'color' => '#304baa',
                         'icon' => 'dashicons-yes-alt',
                         'position' => 5,
                         'order' => 250,
