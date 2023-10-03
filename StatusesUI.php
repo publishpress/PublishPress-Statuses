@@ -380,6 +380,8 @@ class StatusesUI {
             <!--
             <div class='nav-tab-wrapper'>
             <a href="<?php
+                $status_type = ''; // @todo: Implement tab for status types
+
                 echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'moderation'])); ?>"
                     class="nav-tab<?php
                     if (!$action || ('moderation' == $status_type)) {
