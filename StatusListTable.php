@@ -267,7 +267,7 @@ if (!empty($this->collapsed_sections[$key])):?>
 <?php if (in_array($key, ['_pre-publish'])):
     $url = \PublishPress_Statuses::getLink(['action' => 'add-new']);
     ?>
-    <button type="button" class="add-new" title="<?php _e("Add New Pre-Publication Status", 'publishpress-statuses');?>" onclick="window.location.href='<?php echo $url;?>'">+</button>
+    <button type="button" class="button primary add-new" title="<?php _e("Add New Pre-Publication Status", 'publishpress-statuses');?>" onclick="window.location.href='<?php echo $url;?>'"><?php _e('Add New');?></button>
 <?php endif;
 
 do_action('publishpress_statuses_admin_row', $key, []);
