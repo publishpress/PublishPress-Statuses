@@ -15,11 +15,15 @@ body.toplevel_page_publishpress-statuses div.tablenav {
 margin: 0;
 }
 
+div.publishpress-admin-wrapper div.notice {
+margin: 10px 0 5px;
+}
+
 
 /* Update Notice, Counts above Statuses Table */
 .pp-float-notice {
 float: right;
-width: 60%;
+width: 40%;
 }
 
 div.pp-statuses-co-l-right span.displaying-num
