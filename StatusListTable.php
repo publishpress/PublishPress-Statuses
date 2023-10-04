@@ -14,7 +14,6 @@ class StatusListTable extends \WP_List_Table
 
     private $module;
 
-    private $collapsed_sections = [];
     private $status_children = [];
     private $current_ancestors = [];
 
@@ -44,8 +43,6 @@ class StatusListTable extends \WP_List_Table
         if (!$this->status_roles = get_option('publishpress_statuses_num_roles')) {
             $this->status_roles = [];
         }
-
-        $this->get_collapsed_sections();
     }
 
     function adminFooterScripts() {
@@ -59,14 +56,6 @@ class StatusListTable extends \WP_List_Table
         /* ]]> */
         </script>
         <?php
-    }
-
-    function get_collapsed_sections() {
-        global $current_user;
-
-        if ($collapsed = get_user_meta($current_user->ID, 'publishpress_statuses_collapsed_sections', true)) {
-            $this->collapsed_sections = (array) $collapsed;
-        }
     }
 
     /**
@@ -247,19 +236,6 @@ class StatusListTable extends \WP_List_Table
 <div class="row-inner has-row-actions">
 
 <table class="status-row" style="float:right; width:100%"><tbody><tr>
-
-<?php 
-if (!empty($this->collapsed_sections[$key])):?>
-<script type="text/javascript">
-    /* <![CDATA[ */
-    jQuery(document).ready(function ($) {
-        setTimeout(function() {
-            $('#the_status_list #status_row_<?php echo $key;?> div.section-toggle a').trigger('click');
-        }, 10);
-    });
-    /* ]]> */
-</script>
-<?php endif;?>
 
 <td class="section-toggle"><div class="section-toggle">
 <a href="#" class="open"><span class="pp-icon-arrow"></span></a>

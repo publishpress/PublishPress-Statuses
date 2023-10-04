@@ -104,7 +104,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             add_action('wp_ajax_pp_set_workflow_action', [$this, 'set_workflow_action']);
 
             add_action('wp_ajax_pp_update_status_positions', [$this, 'handle_ajax_update_status_positions']);
-            add_action('wp_ajax_pp_statuses_toggle_section', [$this, 'handle_ajax_pp_statuses_toggle_section']);
             add_action('wp_ajax_pp_delete_custom_status', [$this, 'handle_ajax_delete_custom_status']);
 
             add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 4);
@@ -292,12 +291,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         require_once(__DIR__ . '/StatusHandler.php');
         \PublishPress_Statuses\StatusHandler::handleAjaxUpdateStatusPositions();
-    }
-
-    public function handle_ajax_pp_statuses_toggle_section()
-    {
-        require_once(__DIR__ . '/StatusHandler.php');
-        \PublishPress_Statuses\StatusHandler::handleAjaxToggleStatusSection();
     }
 
     public function handle_ajax_delete_custom_status()

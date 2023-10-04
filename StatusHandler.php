@@ -596,32 +596,6 @@ class StatusHandler {
         }
     }
 
-    public static function handleAjaxToggleStatusSection() {
-        global $current_user;
-        
-        // low capability requirement since this is just a convenience toggle
-        if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-            return;
-        }
-
-        if ($status_section = \PublishPress_Functions::REQUEST_key('status_section')) {
-            if (!$collapsed_sections = \get_user_meta($current_user->ID, 'publishpress_statuses_collapsed_sections', true)) {
-                $collapsed_sections = [];
-            }
-
-            $section = str_replace('status_row_', '', $status_section);
-            $is_collapsed = !\PublishPress_Functions::empty_REQUEST('collapse');
-            
-            if ($is_collapsed) {
-                $collapsed_sections[$section] = true;
-            } else {
-                unset($collapsed_sections[$section]);
-            }
-
-            \update_user_meta($current_user->ID, 'publishpress_statuses_collapsed_sections', $collapsed_sections);
-        }
-    }
-
     public static function handleAjaxDeleteStatus() {
         if ($status_name = \PublishPress_Functions::REQUEST_key('delete_status')) {
             if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
