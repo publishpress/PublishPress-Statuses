@@ -138,9 +138,9 @@ if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
         define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
         define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
 
-        require_once(__DIR__ . '/lib/vendor/publishpress/PublishPress_Functions.php');
+        require_once(__DIR__ . '/lib/PublishPress_Functions.php');
 
-        require_once(__DIR__ . '/lib/vendor/publishpress/publishpress-module/Module_Base.php');
+        require_once(__DIR__ . '/lib/publishpress-module/Module_Base.php');
         new \PublishPress\PPP_Module_Base();
 
         require_once(__DIR__ . '/LibInstanceProtection.php');
