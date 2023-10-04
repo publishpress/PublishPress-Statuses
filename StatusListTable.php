@@ -132,7 +132,7 @@ class StatusListTable extends \WP_List_Table
     public function display() {
         $singular = $this->_args['singular'];
 
-		$this->display_tablenav( 'top' );
+		//$this->display_tablenav( 'top' );
 
         $this->screen->render_screen_reader_content( 'heading_list' );
 		?>
