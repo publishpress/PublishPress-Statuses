@@ -12,6 +12,7 @@
     "require": {
         "php": ">=7.2.5",
         "ext-json": "*",
-        "publishpress/instance-protection": "^1.0"
+        "publishpress/instance-protection": "^1.0",
+        "publishpress/wordpress-reviews": "^v1.1"
     }
 }

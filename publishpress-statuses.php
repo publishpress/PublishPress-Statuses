@@ -33,6 +33,7 @@
  **/
 
 use PublishPress_Statuses\LibInstanceProtection;
+use PublishPress_Statuses\LibWordPressReviews;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
@@ -143,8 +144,13 @@ if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
         require_once(__DIR__ . '/lib/publishpress-module/Module_Base.php');
         new \PublishPress\PPP_Module_Base();
 
+        require_once(__DIR__ . '/lib/vendor/autoload.php');
+
         require_once(__DIR__ . '/LibInstanceProtection.php');
         new LibInstanceProtection();
+
+        require_once(__DIR__ . '/LibWordPressReviews.php');
+        new LibWordPressReviews();
 
         require_once(__DIR__ . '/PublishPress_Statuses.php');
         PublishPress_Statuses::instance();
