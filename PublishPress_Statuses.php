@@ -395,7 +395,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     'draft' =>  (object) [
                         'label' => 'Draft',             // Replace with WP translation below
-                        'description' => '-',
+                        'description' => '',
                         'color' => '#767676',
                         'icon' => 'dashicons-media-default',
                         'position' => 0,
@@ -406,7 +406,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'pending' => (object) [
                         'label' => 'Pending Review',        // Replace with WP translation below
                         'label_friendly' => __('Pending Review'),
-                        'description' => '-',
+                        'description' => '',
                         'color' => '#b95c00',
                         'icon' => 'dashicons-clock',
                         'position' => 4,
@@ -417,7 +417,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'future' => (object) [
                         'label' => 'Scheduled',             // Replace with WP translation below
-                        'description' => '-',
+                        'description' => '',
                         'color' => '#8440f0',
                         'icon' => 'dashicons-calendar-alt',
                         'position' => 7,
@@ -428,7 +428,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'publish' => (object) [
                         'label' => 'Published',             // Replace with WP translation below
-                        'description' => '-',
+                        'description' => '',
                         'color' => '#207720',
                         'icon' => 'dashicons-yes',
                         'position' => 8,
@@ -439,7 +439,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'private' => (object) [
                         'label' => 'Privately Published',   // Replace with WP translation below
-                        'description' => '-',
+                        'description' => '',
                         'color' => '#b40000',
                         'icon' => 'dashicons-lock',
                         'position' => 9,
@@ -492,7 +492,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'approved' => (object) [
                         'label' => __('Approved', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
-                        'description' => '-',
+                        'description' => '',
                         'color' => '#304baa',
                         'icon' => 'dashicons-yes-alt',
                         'position' => 5,
@@ -509,7 +509,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     // [Fake status to support organization by table position re-ordering]: "Pre-Publication Statuses:"
                     '_pre-publish-alternate' => (object) [
                         'label' => __('Alternate Pre-Publication Workflow:', 'publishpress-statuses'),
-                        'description' => '-',
+                        'description' => '',
                         'color' => '',
                         'icon' => '',
                         'position' => 6,
@@ -522,7 +522,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     // [Fake status to support organization by table position re-oredering]: "Disabled Statuses:"
                     '_disabled' => (object) [
                         'label' => __('Disabled Statuses:', 'publishpress-statuses'),
-                        'description' => '-',
+                        'description' => '',
                         'color' => '',
                         'icon' => '',
                         'position' => 13,
