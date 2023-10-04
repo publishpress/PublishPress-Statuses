@@ -45,7 +45,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     const DEFAULT_STATUS = 'draft';
 
     const DEFAULT_COLOR = '#78645a';
-    const DEFAULT_ICON = 'dashicons-post-status';
+    const DEFAULT_ICON = 'dashicons-welcome-add-page';
 
     const TAXONOMY_PRE_PUBLISH = 'post_status';
     const TAXONOMY_PRIVACY = 'post_visibility_pp';
