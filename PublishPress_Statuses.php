@@ -1505,19 +1505,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $args['action'] = '';
         }
         
-        if (! isset($args['page'])) {
-            $args['page'] = 'publishpress-statuses';
-        }
-
         // Add other things we may need depending on the action
         switch ($args['action']) {
             case 'add-new':
-                $args['page'] = 'publishpress-statuses-add-new';
+                unset($args['action']);
+                unset($args['page']);
+                $args = array_merge(['page' => 'publishpress-statuses-add-new'], $args);
                 break;
 
             case 'edit-status':
-                //$args['page'] = 'publishpress-statuses';
-                $args['action'] = 'edit-status';
+                $args['page'] = 'publishpress-statuses';
 
                 if (!empty($args['slug'])) {
                     if (empty($args['name'])) {
@@ -1527,6 +1524,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                 break;
             case 'delete-status':
+            	$args['page'] = 'publishpress-statuses';
                 $args['_wpnonce'] = wp_create_nonce($args['action']);
                 break;
             default:
