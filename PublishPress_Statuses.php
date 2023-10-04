@@ -1082,6 +1082,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         // establish the position of the disabled section
         $privacy_statuses = array_merge($default_privacy_statuses, $stored_status_terms[self::TAXONOMY_PRIVACY]);
+
         $all_statuses['_disabled']->position = $all_statuses['private']->position + count($privacy_statuses) + 1;
         $all_statuses['_disabled']->disabled = true;
 
@@ -1528,6 +1529,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $args['_wpnonce'] = wp_create_nonce($args['action']);
                 break;
             default:
+                $args['page'] = 'publishpress-statuses';
                 break;
         }
 
