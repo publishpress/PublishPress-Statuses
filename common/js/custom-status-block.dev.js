@@ -373,29 +373,29 @@ setInterval(function () {
       var statusCaption = ppGetStatusLabel(buttonStatus);
       var statusObj = ppGetStatusObject(buttonStatus);
 
+      var statusSpanClass = 'pp-status-color pp-status-color-title';
+
       if (!statusObj && (-1 !== PPCustomStatuses.publishedStatuses.indexOf(buttonStatus)) ) {
         statusObj = ppGetPublishedStatusObject(buttonStatus);
-      }
-
-      if ('max' == buttonWorkflowAction && (-1 !== PPCustomStatuses.publishedStatuses.indexOf(buttonStatus)) ) {
+        
         if (statusObj) {
-          statusCaption = '<span class="dashicons ' + statusObj.icon + '"></span></span>';
-        } else {
-          statusCaption = '';
+          statusCaption = statusObj.label;
         }
-      } else {
-        if (statusObj && statusObj.color) {
-          statusCaption = '<span class="pp-status-color pp-status-color-title" style="background:' + statusObj.color + '; color:white">' + statusCaption + '</span>';
-        }
-  
-        if (statusObj && statusObj.icon) {
-          statusCaption = '<span class="dashicons ' + statusObj.icon + '"></span> ' + statusCaption + '</span>';
-        }
+
+        statusSpanClass += ' pp-published-status';
       }
 
+      if (statusObj && statusObj.color) {
+        statusCaption = '<span class="' + statusSpanClass + ' pp-status-' + buttonStatus + '" style="background:' + statusObj.color + '; color:white">' + statusCaption + '</span>';
+      }
+
+      if (statusObj && statusObj.icon) {
+        statusCaption = '<span class="dashicons ' + statusObj.icon + '"></span> ' + statusCaption + '</span>';
+      }
+      
       if (statusCaption) {
         $('div.pp-statuses-workflow input[type="radio"][value="' + buttonWorkflowAction + '"]').next('label').after(
-          '<div class="pp-editor-prepublish-' + buttonWorkflowAction + '-status pp-editor-workflow-caption pp-status-' + buttonStatus + '">&mdash;&nbsp;' + statusCaption + '</div>'
+          '<div class="pp-editor-prepublish-' + buttonWorkflowAction + '-status pp-editor-workflow-caption pp-status-' + buttonStatus + '">' + statusCaption + '</div>'
         );
       }
     }
