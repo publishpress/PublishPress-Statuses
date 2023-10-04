@@ -51,14 +51,11 @@
 			protectRoot: false,
 			rootID: null,
 			rtl: false,
-			startCollapsed: false,
 			tabSize: 20,
 
 			branchClass: "mjs-nestedSortable-branch",
-			collapsedClass: "mjs-nestedSortable-collapsed",
 			disableNestingClass: "mjs-nestedSortable-no-nesting",
 			errorClass: "mjs-nestedSortable-error",
-			expandedClass: "mjs-nestedSortable-expanded",
 			hoveringClass: "mjs-nestedSortable-hovering",
 			leafClass: "mjs-nestedSortable-leaf",
 			disabledClass: "mjs-nestedSortable-disabled"
@@ -90,21 +87,10 @@
 			// (the CSS is responsible for actual hide/show functionality)
 			if (this.options.isTree) {
 				$(this.items).each(function() {
-					var $li = this.item,
-						hasCollapsedClass = $li.hasClass(self.options.collapsedClass),
-						hasExpandedClass = $li.hasClass(self.options.expandedClass);
+					var $li = this.item;
 
 					if ($li.children(self.options.listType).length) {
 						$li.addClass(self.options.branchClass);
-						// expand/collapse class only if they have children
-
-						if ( !hasCollapsedClass && !hasExpandedClass ) {
-							if (self.options.startCollapsed) {
-								$li.addClass(self.options.collapsedClass);
-							} else {
-								$li.addClass(self.options.expandedClass);
-							}
-						}
 					} else {
 						$li.addClass(self.options.leafClass);
 					}
@@ -341,6 +327,7 @@
 
 					// mjs - if the element has children and they are hidden,
 					// show them after a delay (CSS responsible)
+					/*
 					if (o.isTree && $(itemElement).hasClass(o.collapsedClass) && o.expandOnHover) {
 						if (!this.hovering) {
 							$(itemElement).addClass(o.hoveringClass);
@@ -354,6 +341,7 @@
 							}, o.expandOnHover);
 						}
 					}
+					*/
 
 					this.direction = intersection === 1 ? "down" : "up";
 
@@ -387,7 +375,7 @@
 									if (o.isTree) {
 										$(itemElement)
 											.removeClass(o.leafClass)
-											.addClass(o.branchClass + " " + o.expandedClass);
+											.addClass(o.branchClass);
 									}
 								}
 
@@ -498,7 +486,7 @@
 											.length;
 				if (o.isTree && helperIsNotSibling) {
 					parentItem
-						.removeClass(this.options.branchClass + " " + this.options.expandedClass)
+						.removeClass(this.options.branchClass)
 						.addClass(this.options.leafClass);
 				}
                 if(typeof parentItem !== 'undefined')
@@ -535,7 +523,7 @@
 					if (o.isTree) {
 						previousItem
 							.removeClass(o.leafClass)
-							.addClass(o.branchClass + " " + o.expandedClass);
+							.addClass(o.branchClass);
 					}
 				}
 
@@ -840,7 +828,6 @@
 			}
 
 			if (!doNotClear) {
-				childrenList.parent().removeClass(o.expandedClass);
 				childrenList.remove();
 			}
 		},
