@@ -296,11 +296,11 @@ width: 6%;
 }
 
 table.status-row th.icon, table.status-row td.icon {
-width: 60px !important;
+width: 65px !important;
 }
 
 #the_status_list ol.pp-nested-list table.status-row th.icon, #the_status_list ol.pp-nested-list table.status-row td.icon {
-width: 39px !important;
+width: 44px !important;
 }
 
 table.status-row th.post_types, table.status-row td.post_types {
@@ -321,6 +321,12 @@ width: 14%;
 #the_status_list ol.pp-nested-list table.status-row td.enabled
 {
 width: 15%;
+}
+
+#the_status_list ol.pp-nested-list table.status-row th.description div:before,
+#the_status_list ol.pp-nested-list table.status-row td.description div:before
+{
+content: '— ';
 }
 
 /*
