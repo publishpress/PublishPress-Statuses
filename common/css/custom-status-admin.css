@@ -326,7 +326,7 @@ width: 15%;
 #the_status_list ol.pp-nested-list table.status-row th.description div:before,
 #the_status_list ol.pp-nested-list table.status-row td.description div:before
 {
-content: '— ';
+content: '\2014\00a0';
 }
 
 /*
