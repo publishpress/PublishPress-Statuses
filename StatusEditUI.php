@@ -10,12 +10,17 @@ class StatusEditUI
 $name = \PublishPress_Functions::REQUEST_key('name');
 
 if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
-    echo '<div class="error"><p>' . $module->messages['status-missing'] . '</p></div>';
-
+    echo '<div class="error"><p>' . esc_html($module->messages['status-missing']) . '</p></div>';
     return;
 }
 
-$url = \PublishPress_Statuses::getLink(['action' => 'statuses']);
+$url_args = ['action' => 'statuses'];
+
+if ($status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
+    $url_args['status_type'] = $status_type;
+}
+
+$url = \PublishPress_Statuses::getLink($url_args);
 ?>
 <div class='pp-edit-status-back'>
     <a href="<?php echo esc_url($url); ?>"><?php esc_html_e('Back to Statuses', 'publishpress-statuses'); ?></a>
@@ -219,7 +224,7 @@ echo esc_attr($edit_status_link); ?>">
                 <td>
 
                     <?php
-                    echo \PublishPress_Statuses\StatusesUI::colorPicker(esc_attr($color), 'status_color') ?>
+                    \PublishPress_Statuses\StatusesUI::colorPicker(esc_attr($color), 'status_color') ?>
 
                     <?php
                     \PublishPress_Statuses\StatusesUI::printErrorOrDescription(
@@ -241,10 +246,12 @@ echo esc_attr($edit_status_link); ?>">
 
                     <div id="publishpress_icon_pick_wrap" data-target='#status_icon'
                             data-preview="#publishpress_icon_pick_preview" class="button dashicons-picker">
+                        
                         <div id="publishpress_icon_pick_preview" class="dashicons <?php
-                        echo isset($icon) ? esc_attr($icon) : ''; ?>"></div>
+                        if (!empty($icon)) echo esc_attr($icon); else echo esc_attr(\PublishPress_Statuses::DEFAULT_ICON); ?>"></div>
+
                         <div class="publishpress_icon_pick_button_label"><?php
-                            echo __('Select Icon', 'publishpress-statuses'); ?></div>
+                            esc_html_e('Select Icon', 'publishpress-statuses'); ?></div>
                     </div>
 
                     <?php
@@ -295,12 +302,12 @@ echo esc_attr($edit_status_link); ?>">
                                 $can_set_status = $is_administrator || !empty($role->capabilities[$cap_name]);
                         ?>
                                 <div>
-                                <input type="hidden" name="roles_set_status[<?php echo $role_name;?>]" value="<?php echo ($is_administrator) ? 1 : 0?>" />
+                                <input type="hidden" name="roles_set_status[<?php echo esc_attr($role_name);?>]" value="<?php if ($is_administrator) echo '1'; else echo '0';?>" />
 
                                 <label>
-                                <input type="checkbox" name="roles_set_status[<?php echo $role_name;?>]" id="roles_set_status" autocomplete="off"
+                                <input type="checkbox" name="roles_set_status[<?php echo esc_attr($role_name);?>]" id="roles_set_status" autocomplete="off"
                                 <?php checked($can_set_status);?> <?php disabled($is_administrator);?> value="1" class="regular-text" />
-                                <?php echo $role_label;?>
+                                <?php echo esc_html($role_label);?>
                                 </label>
                                 </div>
                             <?php endif;

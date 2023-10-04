@@ -44,8 +44,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     const DEFAULT_STATUS = 'draft';
 
-    const DEFAULT_COLOR = '#3859ff';
-    const DEFAULT_ICON = 'dashicons-post-status';
+    const DEFAULT_COLOR = '#78645a';
+    const DEFAULT_ICON = 'dashicons-welcome-add-page';
 
     const TAXONOMY_PRE_PUBLISH = 'post_status';
     const TAXONOMY_PRIVACY = 'post_visibility_pp';
@@ -104,7 +104,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             add_action('wp_ajax_pp_set_workflow_action', [$this, 'set_workflow_action']);
 
             add_action('wp_ajax_pp_update_status_positions', [$this, 'handle_ajax_update_status_positions']);
-            add_action('wp_ajax_pp_statuses_toggle_section', [$this, 'handle_ajax_pp_statuses_toggle_section']);
             add_action('wp_ajax_pp_delete_custom_status', [$this, 'handle_ajax_delete_custom_status']);
 
             add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 4);
@@ -294,12 +293,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         \PublishPress_Statuses\StatusHandler::handleAjaxUpdateStatusPositions();
     }
 
-    public function handle_ajax_pp_statuses_toggle_section()
-    {
-        require_once(__DIR__ . '/StatusHandler.php');
-        \PublishPress_Statuses\StatusHandler::handleAjaxToggleStatusSection();
-    }
-
     public function handle_ajax_delete_custom_status()
     {
         require_once(__DIR__ . '/StatusHandler.php');
@@ -402,8 +395,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     'draft' =>  (object) [
                         'label' => 'Draft',             // Replace with WP translation below
-                        'description' => '-',
-                        'color' => '#aaaaaa',
+                        'description' => '',
+                        'color' => '#767676',
                         'icon' => 'dashicons-media-default',
                         'position' => 0,
                         'order' => 0,
@@ -413,8 +406,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'pending' => (object) [
                         'label' => 'Pending Review',        // Replace with WP translation below
                         'label_friendly' => __('Pending Review'),
-                        'description' => '-',
-                        'color' => '#ff8300',
+                        'description' => '',
+                        'color' => '#b95c00',
                         'icon' => 'dashicons-clock',
                         'position' => 4,
                         'order' => 200,
@@ -424,8 +417,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'future' => (object) [
                         'label' => 'Scheduled',             // Replace with WP translation below
-                        'description' => '-',
-                        'color' => '#a996ff',
+                        'description' => '',
+                        'color' => '#8440f0',
                         'icon' => 'dashicons-calendar-alt',
                         'position' => 7,
                         'order' => 700,
@@ -435,8 +428,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'publish' => (object) [
                         'label' => 'Published',             // Replace with WP translation below
-                        'description' => '-',
-                        'color' => self::DEFAULT_COLOR,
+                        'description' => '',
+                        'color' => '#207720',
                         'icon' => 'dashicons-yes',
                         'position' => 8,
                         'order' => 800,
@@ -446,8 +439,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'private' => (object) [
                         'label' => 'Privately Published',   // Replace with WP translation below
-                        'description' => '-',
-                        'color' => '#ee0000',
+                        'description' => '',
+                        'color' => '#b40000',
                         'icon' => 'dashicons-lock',
                         'position' => 9,
                         'order' => 900,
@@ -464,7 +457,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('Pitch', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Throw Pitch', 'publishpress-statuses')],
                         'description' => __('Idea proposed; waiting for acceptance.', 'publishpress-statuses'),
-                        'color' => '#f4c5b0',
+                        'color' => '#887618',
                         'icon' => 'dashicons-lightbulb',
                         'position' => 1,
                         'order' => 100,
@@ -476,7 +469,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('Assigned', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Assign', 'publishpress-statuses')],
                         'description' => __('Post idea assigned to writer.', 'publishpress-statuses'),
-                        'color' => '#00bcc5',
+                        'color' => '#007780',
                         'icon' => 'dashicons-admin-users',
                         'position' => 2,
                         'order' => 200,
@@ -488,7 +481,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('In Progress', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Mark in Progress', 'publishpress-statuses')],
                         'description' => __('Writer is working on the post.', 'publishpress-statuses'),
-                        'color' => '#ccc500',
+                        'color' => '#774800',
                         'icon' => 'dashicons-performance',
                         'position' => 3,
                         'order' => 300,
@@ -499,8 +492,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'approved' => (object) [
                         'label' => __('Approved', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
-                        'description' => '-',
-                        'color' => '#41d836',
+                        'description' => '',
+                        'color' => '#304baa',
                         'icon' => 'dashicons-yes-alt',
                         'position' => 5,
                         'order' => 250,
@@ -516,7 +509,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     // [Fake status to support organization by table position re-ordering]: "Pre-Publication Statuses:"
                     '_pre-publish-alternate' => (object) [
                         'label' => __('Alternate Pre-Publication Workflow:', 'publishpress-statuses'),
-                        'description' => '-',
+                        'description' => '',
                         'color' => '',
                         'icon' => '',
                         'position' => 6,
@@ -529,7 +522,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     // [Fake status to support organization by table position re-oredering]: "Disabled Statuses:"
                     '_disabled' => (object) [
                         'label' => __('Disabled Statuses:', 'publishpress-statuses'),
-                        'description' => '-',
+                        'description' => '',
                         'color' => '',
                         'icon' => '',
                         'position' => 13,
@@ -1060,6 +1053,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     if (($stored_status_positions[$status_name] < $stored_status_positions['private']) && !empty($stored_status_positions[$status_name])
                     ) {
                         $stored_status_positions[$status_name] = $stored_status_positions['private'];
+
+                    } elseif (($stored_status_positions[$status_name] >= $stored_status_positions['_disabled']) && ('_disabled' != $status_name)) {
+                        $all_statuses[$status_name]->disabled = true;
                     }
                 }
 
@@ -1086,6 +1082,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         // establish the position of the disabled section
         $privacy_statuses = array_merge($default_privacy_statuses, $stored_status_terms[self::TAXONOMY_PRIVACY]);
+
         $all_statuses['_disabled']->position = $all_statuses['private']->position + count($privacy_statuses) + 1;
         $all_statuses['_disabled']->disabled = true;
 
@@ -1509,19 +1506,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $args['action'] = '';
         }
         
-        if (! isset($args['page'])) {
-            $args['page'] = 'publishpress-statuses';
-        }
-
         // Add other things we may need depending on the action
         switch ($args['action']) {
             case 'add-new':
-                $args['page'] = 'publishpress-statuses-add-new';
+                unset($args['action']);
+                unset($args['page']);
+                $args = array_merge(['page' => 'publishpress-statuses-add-new'], $args);
                 break;
 
             case 'edit-status':
-                //$args['page'] = 'publishpress-statuses';
-                $args['action'] = 'edit-status';
+                $args['page'] = 'publishpress-statuses';
 
                 if (!empty($args['slug'])) {
                     if (empty($args['name'])) {
@@ -1531,9 +1525,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                 break;
             case 'delete-status':
+            	$args['page'] = 'publishpress-statuses';
                 $args['_wpnonce'] = wp_create_nonce($args['action']);
                 break;
             default:
+                $args['page'] = 'publishpress-statuses';
                 break;
         }
 

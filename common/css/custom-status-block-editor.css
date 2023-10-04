@@ -67,7 +67,7 @@ border-radius: 3px;
 .pp-status-color-title {
 width: auto;
 height: auto;
-padding: 1px 2px 1px 2px;
+padding: 2px 3px 2px 3px;
 color: black;
 -webkit-user-select: none;  
 -moz-user-select: none;    
@@ -79,7 +79,7 @@ user-select: none;
 margin-left: 5px;
 }
 
-div.pp-statuses-workflow span.pp-status-color-title, div.pp-statuses-workflow span.dashicons {
+div.pp-statuses-workflow, div.pp-statuses-workflow span.dashicons {
 padding: 2px;
 }
 

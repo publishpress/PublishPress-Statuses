@@ -242,7 +242,6 @@
             var params = {
                 action: 'pp_statuses_toggle_section',
                 status_section: $(this).closest('li').attr('id'),
-                collapse: $(this).hasClass('open') ? 0 : 1
                 //_wpnonce: $('#custom-status-sortable').val()
             };
 
@@ -261,12 +260,14 @@
         });
 
         // Make sure this status section is expanded to display the new status
+        /*
         $('#the_status_list button.add-new').click(function() {
             var sectionToggle = $(this).closest('tr').find('td div.section-toggle a');
             if (!$(sectionToggle).hasClass('open')) {
                 $(sectionToggle).trigger('click');
             }
         });
+        */
 
         $('#the_status_list td.name .disable').click(function() {
             $(this).hide().closest('li.page-row').addClass('disabled-status').insertAfter($('#the_status_list > li.disabled-status:last'));

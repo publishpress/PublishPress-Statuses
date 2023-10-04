@@ -5,7 +5,7 @@
  * Description: Manage and create post statuses to customize your editorial workflow
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
- * Version: 1.0-beta9
+ * Version: 1.0-beta12
  * Requires at least: 5.5
  * Requires PHP: 7.2.5
  *
@@ -32,7 +32,9 @@
  *
  **/
 
- if (!defined('ABSPATH')) exit; // Exit if accessed directly
+use PublishPress_Statuses\LibInstanceProtection;
+
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
  global $wp_version;
 
@@ -131,15 +133,18 @@ if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
     } 
     
     if (empty($interrupt_load)) {
-        define('PUBLISHPRESS_STATUSES_VERSION', '1.0-beta9');
+        define('PUBLISHPRESS_STATUSES_VERSION', '1.0-beta12');
 
         define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
         define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
 
-        require_once(__DIR__ . '/lib/vendor/publishpress/PublishPress_Functions.php');
+        require_once(__DIR__ . '/lib/PublishPress_Functions.php');
 
-        require_once(__DIR__ . '/lib/vendor/publishpress/publishpress-module/Module_Base.php');
+        require_once(__DIR__ . '/lib/publishpress-module/Module_Base.php');
         new \PublishPress\PPP_Module_Base();
+
+        require_once(__DIR__ . '/LibInstanceProtection.php');
+        new LibInstanceProtection();
 
         require_once(__DIR__ . '/PublishPress_Statuses.php');
         PublishPress_Statuses::instance();

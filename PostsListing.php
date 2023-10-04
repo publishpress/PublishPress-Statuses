@@ -74,7 +74,7 @@ class PostsListing
 
             if ($status_obj = get_post_status_object($post->post_status)) {
                 if (!empty($status_obj->label)) {
-                    echo $status_obj->label;
+                    echo esc_html($status_obj->label);
                 }
             }
         }

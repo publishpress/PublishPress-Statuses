@@ -11,6 +11,7 @@
     },
     "require": {
         "php": ">=7.2.5",
-        "ext-json": "*"
+        "ext-json": "*",
+        "publishpress/instance-protection": "^1.0"
     }
 }

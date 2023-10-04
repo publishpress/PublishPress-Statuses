@@ -105,17 +105,13 @@ class PostEditClassic
             ?>
             <script type="text/javascript">
                 var pp_text_no_change = '<?php echo esc_js(__("&mdash; No Change &mdash;")); ?>';
-                var label_save = '<?php echo __('Save'); ?>';
+                var label_save = '<?php echo esc_html__('Save'); ?>';
                 var pp_default_custom_status = '<?php echo esc_js(\PublishPress_Statuses::DEFAULT_STATUS); ?>';
                 var current_status = '<?php echo esc_js($selected); ?>';
                 var current_status_name = '<?php echo esc_js($selected_name); ?>';
                 var custom_statuses = <?php echo wp_json_encode($all_statuses); ?>;
-                var current_user_can_publish_posts = <?php echo current_user_can(
-                    $post_type_obj->cap->publish_posts
-                ) ? 1 : 0; ?>;
-                var current_user_can_edit_published_posts = <?php echo current_user_can(
-                    $post_type_obj->cap->edit_published_posts
-                ) ? 1 : 0; ?>;
+                var current_user_can_publish_posts = <?php if (current_user_can($post_type_obj->cap->publish_posts)) echo '1'; else echo '0'; ?>;
+                var current_user_can_edit_published_posts = <?php if (current_user_can($post_type_obj->cap->edit_published_posts)) echo '1'; else echo '0'; ?>;
             </script>
             <?php
         }

@@ -4,21 +4,26 @@ font-weight: normal;
 font-style: italic;
 margin-top: 5px;
 margin-bottom: 0;
+padding-top: 5px;
 }
 
 body.toplevel_page_publishpress-statuses div.nav-tab-wrapper {
-padding-top: 0;
+margin-top: 10px;
 }
 
 body.toplevel_page_publishpress-statuses div.tablenav {
 margin: 0;
 }
 
+div.publishpress-admin-wrapper div.notice {
+margin: 10px 0 5px;
+}
+
 
 /* Update Notice, Counts above Statuses Table */
 .pp-float-notice {
 float: right;
-width: 60%;
+width: 40%;
 }
 
 div.pp-statuses-co-l-right span.displaying-num
@@ -139,14 +144,8 @@ vertical-align: middle;
 
 
 /* Add New Status button */
-#the_status_list button.add-new {
-width: 28px;
+div.publishpress-admin-wrapper a.add-new {
 margin-left: 10px;
-padding-top: 2px;
-padding-left: 6px;
-padding-bottom: 5px;
-font-weight: bold;
-font-size: 16px;
 }
 
 
@@ -297,11 +296,11 @@ width: 6%;
 }
 
 table.status-row th.icon, table.status-row td.icon {
-width: 60px !important;
+width: 65px !important;
 }
 
 #the_status_list ol.pp-nested-list table.status-row th.icon, #the_status_list ol.pp-nested-list table.status-row td.icon {
-width: 39px !important;
+width: 44px !important;
 }
 
 table.status-row th.post_types, table.status-row td.post_types {
@@ -322,6 +321,12 @@ width: 14%;
 #the_status_list ol.pp-nested-list table.status-row td.enabled
 {
 width: 15%;
+}
+
+#the_status_list ol.pp-nested-list table.status-row th.description div:before,
+#the_status_list ol.pp-nested-list table.status-row td.description div:before
+{
+content: '\2014\00a0';
 }
 
 /*
@@ -410,7 +415,7 @@ body.toplevel_page_publishpress-statuses div.publishpress_icon_pick_button_label
 body.statuses_page_publishpress-statuses-add-new div.publishpress_icon_pick_button_label
 {
 float: right;
-padding-top: 1px;
+padding-top: 2px;
 padding-left: 5px;
 line-height: 2em !important;
 }

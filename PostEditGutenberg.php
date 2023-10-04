@@ -118,7 +118,7 @@ class PostEditGutenberg
         foreach($ordered_statuses as $key => $status_obj) {
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
-                $ordered_statuses[$key]->description = '-';
+                $ordered_statuses[$key]->description = '';
                 //$ordered_statuses[$key]->color = '';
                 //$ordered_statuses[$key]->icon = '';
             }
@@ -160,7 +160,7 @@ class PostEditGutenberg
         foreach($ordered_statuses as $key => $status_obj) {
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
-                $ordered_statuses[$key]->description = '-';
+                $ordered_statuses[$key]->description = '';
                 //$ordered_statuses[$key]->color = '';
                 //$ordered_statuses[$key]->icon = '';
             }

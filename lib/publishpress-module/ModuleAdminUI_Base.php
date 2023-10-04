@@ -66,7 +66,7 @@ class ModuleAdminUI_Base {
                 <img src="<?php echo PUBLISHPRESS_STATUSES_URL . 'common/assets/publishpress-logo-icon.png';?>" alt="" class="logo-header" />
                 </div>
 
-                <h1 class="wp-heading-inline"><?php echo $this->module->title; ?></h1>
+                <h1 class="wp-heading-inline"><?php echo $this->module->title; if (!empty($this->module->header_button)) echo $this->module->header_button;?></h1>
 
                 <?php echo !empty($display_text) ? $display_text : ''; ?>
                 <?php // We keep the H2 tag to keep notices tied to the header?>
