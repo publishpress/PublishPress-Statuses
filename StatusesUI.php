@@ -372,15 +372,33 @@ class StatusesUI {
 
         /** Statuses screen **/
         } elseif (('publishpress-statuses' === $plugin_page) && (!$action || ('statuses' == $action))) {
+            $args = [
+                'action' => 'add-new', 
+                'status_type' => \PublishPress_Functions::REQUEST_key('status_type')
+            ];
+
+            if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
+                $args['taxonomy'] = 'post_visibility_pp';
+            }
+            
+            $url = \PublishPress_Statuses::getLink(
+                $args
+            );
+
+            \PublishPress\ModuleAdminUI_Base::instance()->module->header_button = 
+                '<a class="button primary add-new" title="' 
+                . __("Add New Pre-Publication Status", 'publishpress-statuses')
+                . '" href="' . esc_url($url) . '">' . __('Add New') . '</a>';
 
             \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));
             
             // @todo: adapt old nav tab for status types (Pre-publication, Publication & Privacy, Revision Statuses)
             ?>
-            <!--
             <div class='nav-tab-wrapper'>
             <a href="<?php
-                $status_type = ''; // @todo: Implement tab for status types
+                if (!$status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
+                    $status_type = 'moderation';
+                }
 
                 echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'moderation'])); ?>"
                     class="nav-tab<?php
@@ -397,6 +415,7 @@ class StatusesUI {
                     } ?>"><?php
                     _e('Visibility', 'publishpress-statuses'); ?></a>
                 
+                <!--
                 <a href="<?php
                 echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'revision'])); ?>"
                     class="nav-tab<?php
@@ -404,8 +423,8 @@ class StatusesUI {
                         echo ' nav-tab-active';
                     } ?>"><?php
                     _e('Revision', 'publishpress-statuses'); ?></a>
+                -->
             </div>
-            -->
             <?php
             
             require_once(__DIR__ . '/StatusListTable.php');
@@ -480,9 +499,9 @@ class StatusesUI {
      * Generate the color picker
      * $current_value   Selected icon for the status
      * fieldname        The name for the <select> field
-     * $attributes      Insert attributes different to name and class. For example: 'id="something"'
+     * $attributes      Insert attributes different to name and class. For example: 'id' => "something"
      */
-    public static function colorPicker($current_value = '', $fieldname = 'icon', $attributes = '')
+    public static function colorPicker($current_value = '', $fieldname = 'icon', $attributes = [])
     {
         // Load Color Picker
         if (is_admin()) {
@@ -503,9 +522,7 @@ class StatusesUI {
             $pp_color = \PublishPress_Statuses::DEFAULT_COLOR;
         }
 
-        $color_picker = '<input type="text" aria-required="true" size="7" maxlength="7" name="' . $fieldname . '" value="' . $pp_color . '" class="pp-color-picker" ' . $attributes . ' data-default-color="' . $pp_color . '" />';
-
-        return $color_picker;
+        echo '<input type="text" aria-required="true" size="7" maxlength="7" name="' . esc_attr($fieldname) . '" value="' . esc_attr($pp_color) . '" class="pp-color-picker" data-default-color="' . esc_attr($pp_color) . '" />';
     }
 
     /**

@@ -114,9 +114,11 @@ class StatusHandler {
 
         delete_option('publishpress_statuses_num_roles');
 
-        delete_user_meta($current_user->ID, 'publishpress_statuses_collapsed_sections');
-
         $redirect_args = ['action' => 'edit-status', 'name' => $status_name, 'message' => 'status-added'];
+
+        if ($status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
+            $redirect_args['status_type'] = $status_type;
+        }
 
         // Redirect if successful
         $redirect_url = \PublishPress_Statuses::getLink($redirect_args);

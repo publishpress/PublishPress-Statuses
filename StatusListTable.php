@@ -247,13 +247,13 @@ class StatusListTable extends \WP_List_Table
 
 <td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
 
-<?php if (in_array($key, ['_pre-publish'])):
-    $url = \PublishPress_Statuses::getLink(['action' => 'add-new']);
-    ?>
-    <button type="button" class="button primary add-new" title="<?php _e("Add New Pre-Publication Status", 'publishpress-statuses');?>" onclick="window.location.href='<?php echo $url;?>'"><?php _e('Add New');?></button>
-<?php endif;
+<?php 
+/* Add New button moved to page header
+if (in_array($key, ['_pre-publish'])):
+endif;
+*/
 
-do_action('publishpress_statuses_admin_row', $key, []);
+do_action('publishpress_statuses_table_row', $key, []);
 ?>
 </div>
 </td>

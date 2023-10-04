@@ -14,8 +14,15 @@ method='post' id='addstatus' name='addstatus'>
     <input type="hidden" name="page" value="publishpress-statuses" />
     <input type="hidden" name="action" value="add-status" />
 
-    <?php if (\PublishPress_Statuses::TAXONOMY_PRIVACY === \PublishPress_Functions::REQUEST_key('taxonomy')) :?>
-    <input type="hidden" name="taxonomy" value="<?php echo \PublishPress_Statuses::TAXONOMY_PRIVACY;?>" />
+    <?php 
+    if (!$taxonomy = \PublishPress_Functions::REQUEST_key('taxonomy')) {
+        if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
+            $taxonomy = 'post_visibility_pp';
+        }
+    }
+    
+    if (\PublishPress_Statuses::TAXONOMY_PRIVACY === $taxonomy) :?>
+    <input type="hidden" name="taxonomy" value="<?php echo esc_attr(\PublishPress_Statuses::TAXONOMY_PRIVACY);?>" />
     <?php endif;?>
 
     <p class='submit'><?php
