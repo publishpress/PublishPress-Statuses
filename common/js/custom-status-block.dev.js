@@ -188,7 +188,7 @@ function PPCS_RecaptionButton(btnSelector, btnCaption) {
     
     $('span.presspermit-save-button').remove();
 
-    hideClass = 'presspermit-save-hidden';
+    var hideClass = 'presspermit-save-hidden';
 
     // Hide the stock button
     node.addClass(hideClass).hide().css('z-index', -999);
