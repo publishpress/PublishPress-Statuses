@@ -521,7 +521,7 @@ do_action('publishpress_statuses_table_row', $key, []);
                     } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) {
                         //if (!\PublishPress\Permissions\Statuses::postStatusHasCustomCaps($item->name)) {
                         if (empty($status_obj->capability_status)) {
-                            $caption = esc_html('(Standard)', 'publishpress-statuses');
+                            $caption = esc_html('Standard', 'publishpress-statuses');
                         } else {
                             if (!empty($status_obj->capability_status) && ($status_obj->capability_status != $status_obj->name)) {
                                 if ($cap_status_obj = get_post_status_object($status_obj->capability_status)) {
@@ -535,7 +535,7 @@ do_action('publishpress_statuses_table_row', $key, []);
                             }
                         }
                     } else {
-                        $caption = esc_html('(Standard)', 'publishpress-statuses');
+                        $caption = esc_html('Standard', 'publishpress-statuses');
                     }
 
                     $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses&pp_tab=post_access");
