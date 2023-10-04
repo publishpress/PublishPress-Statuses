@@ -171,9 +171,9 @@ class StatusListTable extends \WP_List_Table
 
                 foreach ($columns as $column_name => $column_display_name) {
                     $is_hidden = in_array($column_name, $hidden, true);?>
-                    <th class="<?php echo $column_name;?>" <?php if ($is_hidden) echo 'style="width:0"';?>>
-                        <div class="<?php echo $column_name;?> column-<?php echo $column_name;?>" <?php if ($is_hidden) echo 'hidden';?>>
-                            <?php echo $column_display_name;?>
+                    <th class="<?php echo esc_attr($column_name);?>" <?php if ($is_hidden) echo 'style="width:0"';?>>
+                        <div class="<?php echo esc_attr($column_name);?> column-<?php echo esc_attr($column_name);?>" <?php if ($is_hidden) echo 'hidden';?>>
+                            <?php echo esc_html($column_display_name);?>
                         </div>
                     </th>
                     <?php
@@ -189,7 +189,7 @@ class StatusListTable extends \WP_List_Table
 </div>
 
 
-<ol class="sortable visible ui-sortable pp-nested-list <?php echo implode( ' ', $this->get_table_classes() ); ?>" id="the_status_list">
+<ol class="sortable visible ui-sortable pp-nested-list <?php echo esc_attr(implode( ' ', $this->get_table_classes() )); ?>" id="the_status_list">
 	<?php $this->display_rows_or_placeholder(); ?>
 </ol>
 
@@ -234,8 +234,15 @@ class StatusListTable extends \WP_List_Table
     private function display_section_row($key, $args) {
         $class = (!empty($args['class'])) ? $args['class'] : '';
         $label = (!empty($args['label'])) ? $args['label'] : $key;
+
+        if (!$status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
+            $status_type = 'moderation';
+        }
+
+        $hidden = (in_array($key, ['_pre-publish', '_pre-publish-alternate']) && ('moderation' != $status_type))
+        || (in_array($key, ['_standard-publication', '_visibility-statuses']) && ('visibility' != $status_type));
         ?>
-<li id="status_row_<?php echo esc_attr($key);?>" class="page-row section-row <?php echo esc_attr($class);?>">
+<li id="status_row_<?php echo esc_attr($key);?>" class="page-row section-row <?php echo esc_attr($class);?>"<?php if ($hidden) echo ' style="display: none;"';?>>
 <div class="row tpl-default">
 <div class="row-inner has-row-actions">
 
@@ -259,10 +266,10 @@ if (!empty($this->collapsed_sections[$key])):?>
 </div></td>
 
 <?php if (\PublishPress_Statuses::getCustomStatus($key)) :?>
-<td class="status_name" style="width:0"><div class="status_name <?php echo $key;?> column-<?php echo $key;?> hidden"><?php echo $key;?></div></td>
+<td class="status_name" style="width:0"><div class="status_name <?php echo esc_attr($key);?> column-<?php echo esc_attr($key);?> hidden"><?php echo esc_attr($key);?></div></td>
 <?php endif; ?>
 
-<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo $label;?></strong>
+<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
 
 <?php if (in_array($key, ['_pre-publish'])):
     $url = \PublishPress_Statuses::getLink(['action' => 'add-new']);
@@ -332,26 +339,47 @@ do_action('publishpress_statuses_admin_row', $key, []);
         } elseif ('_disabled' == $item->name) {
             $this->display_section_row('_disabled', 
             [
-                'label' => sprintf(
-                        // translators: %s is the opening and closing <span> tags
-                    __('Disabled Statuses %1$s(drag to re-enable)%2$s:', 'publishpress-statuses'),
-                    '<span class="pp-status-ordering-note">',
-                    '</span>'
-                ),
+                'label' => 
+                    // translators: %s is the opening and closing <span> tags
+                    __('Disabled Statuses (drag to re-enable):', 'publishpress-statuses'),
                 'class' => 'disabled-status'
             ]);
 
             return;
         }
         
+        if (!$status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
+            $status_type = 'moderation';
+        }
+
+        $hidden = false;
+
         if (!empty($item->alternate) && ('future' != $item->name)) {
             $class = ' alternate-moderation-status';
+
+            if ('moderation' != $status_type) {
+                $hidden = true;
+            }
+
         } elseif ((!empty($item->moderation) || ('draft' == $item->name)) && ('future' != $item->name)) {
             $class = ' moderation-status';
+
+            if ('moderation' != $status_type) {
+                $hidden = true;
+            }
+
         } elseif (!empty($item->private)) {
             $class = ' private-status';
+
+            if ('visibility' != $status_type) {
+                $hidden = true;
+            }
         } else {
             $class = '';
+
+            if ('visibility' != $status_type) {
+                $hidden = true;
+            }
         }
 
         if (!empty($item->disabled)) {
@@ -362,11 +390,11 @@ do_action('publishpress_statuses_admin_row', $key, []);
             $class .= ' section-row';
         }
         ?>
-        <li id="status_row_<?php echo $item->name;?>" class="page-row<?php echo $class;?>">
+        <li id="status_row_<?php echo esc_attr($item->name);?>" class="page-row<?php echo esc_attr($class);?>"<?php if ($hidden) echo ' style="display: none;"';?>>
 
         <div class="row tpl-default">
             <div class="check-column">
-                <input id="cb-select-<?php echo $item->name;?>" type="checkbox" name="status[]" value="<?php echo $item->name;?>" />
+                <input id="cb-select-<?php echo esc_attr($item->name);?>" type="checkbox" name="status[]" value="<?php echo esc_attr($item->name);?>" />
             </div>
 
             <div class="child-toggle" style="padding-left: 0">
@@ -437,26 +465,23 @@ do_action('publishpress_statuses_admin_row', $key, []);
             
 			// Comments column uses HTML in the display name with screen reader text.
 			// Strip tags to get closer to a user-friendly string.
-			$data = 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '"';
 
-			$attributes = "class='$classes' $data";
-
-            echo '<td class="' . $column_name . '" ';
-            echo ( in_array( $column_name, $hidden, true ) ) ? 'style="width:0"' : '';
+            echo '<td class="' . esc_attr($column_name) . '" ';
+            if ( in_array( $column_name, $hidden, true ) ) echo 'style="width:0"';
             echo '>';
 
 			if ( 'cb' === $column_name ) {
 				echo '<div scope="row" class="check-column">';
-				echo $this->column_cb( $item );
+				/* echo $this->column_cb( $item ); */
                 echo '</div>';
                 
             } elseif ( 'status_name' === $column_name ) {
-                echo "<div $attributes>";
-                echo $item->name;
+                echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
+                echo esc_html($item->name);
                 echo '</div>';
 
             } elseif ('post_types' == $column_name) {
-                echo "<div $attributes>";
+                echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
                 
                 if (!in_array($item->name, ['draft', 'pending', 'future', 'publish', 'private'])) {
                     $status_obj = $item; // get_post_status_object($item->name);
@@ -473,18 +498,15 @@ do_action('publishpress_statuses_admin_row', $key, []);
 
                         if (count($arr_captions) > 7) {
                             // translators: %s is the list of post types
-                            $types_caption = sprintf(esc_html__('%s, more...', 'publishpress-statuses'), esc_html($types_caption));
-                        } else {
-                            $types_caption = esc_html($types_caption);
+                            $types_caption = sprintf(__('%s, more...', 'publishpress-statuses'), $types_caption);
                         }
                     } else {
-                        $types_caption = esc_html('All');
+                        $types_caption = __('All');
                     }
 
                     $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses&pp_tab=post_types");
-                    $types_link = "<a href='$url'>$types_caption</a>";
 
-                    echo $types_link;
+                    echo '<a href="' . esc_url($url) . '">' . esc_html($types_caption) . '</a>';
                 } else {
                     esc_html_e('All');
                 }
@@ -495,7 +517,7 @@ do_action('publishpress_statuses_admin_row', $key, []);
                 // $this->role_caps
 
                 if (!in_array($item->name, ['draft', 'future', 'publish', 'private'])) {
-                    echo "<div $attributes>";
+                    echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
 
                     if (!isset($this->status_roles[$item->name])) {
                         $this->status_roles[$item->name] = \PublishPress_Statuses::updateStatusNumRoles($item->name);
@@ -504,17 +526,16 @@ do_action('publishpress_statuses_admin_row', $key, []);
                     $num_roles = isset($this->status_roles[$item->name]) ? $this->status_roles[$item->name] : 0; // @todo
 
                     $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses&pp_tab=roles");
-                    $roles_link = "<a href='$url'>$num_roles</a>";
 
-                    echo $roles_link;
+                    echo '<a href="' . esc_url($url) . '">' . esc_html($num_roles) . '</a>';
                     echo '</div>';
                 }
 
             } elseif ('enabled' == $column_name) {
-                echo "<div $attributes>";
+                echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
 
                 if (in_array($item->name, ['draft', 'future', 'publish', 'private'])) {
-                    esc_html_e('(Standard)', 'publishpress-statuses');
+                    esc_html_e('Standard', 'publishpress-statuses');
                 } else {
                     $status_obj = $item;
 
@@ -542,27 +563,20 @@ do_action('publishpress_statuses_admin_row', $key, []);
                     }
 
                     $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses&pp_tab=post_access");
-                    echo "<a href='$url'>$caption</a>";
+                    
+                    echo '<a href="' . esc_url($url) . '">' . esc_html($caption) . '</a>';
                 }
 
                 echo '</div>';
 
-			} elseif ( method_exists( $this, '_column_' . $column_name ) ) {
-                echo call_user_func(
-					array( $this, '_column_' . $column_name ),
-					$item,
-					$classes,
-					$data,
-					$primary
-                );
 			} elseif ( method_exists( $this, 'column_' . $column_name ) ) {
-                echo "<div $attributes>";
+                echo "<div class='" . esc_attr($classes) . "' " . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
 
-                echo call_user_func( array( $this, 'column_' . $column_name ), $item );
+                call_user_func( array( $this, 'column_' . $column_name ), $item );
 
                 echo '</div>';
 			} else {
-				echo "<div $attributes>";
+				echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
                 //echo $this->column_default( $item, $column_name );
                 echo esc_html(apply_filters('presspermit_manage_conditions_custom_column', '', $column_name, 'post_status', $item->name));
                 echo '</div>';
@@ -638,19 +652,19 @@ do_action('publishpress_statuses_admin_row', $key, []);
         global $publishpress;
 
         if (!empty($item->taxonomy) && (\PublishPress_Statuses::TAXONOMY_PSEUDO_STATUS == $item->taxonomy)) {
-            return $this->pseudo_status_column_name($item);
+            echo '<strong><em>';
+            echo esc_html($item->label);
+            echo '</em></strong>';
         }
 
         //if () { / @todo: list statuses without editing ability?
-            $item_edit_link = esc_url(
-                \PublishPress_Statuses::getLink(
+            $item_edit_link = \PublishPress_Statuses::getLink(
                     [
                         'action' => 'edit-status',
                         'name' => $item->name,
                         //'status' => $item->name,
                     ]
-                )
-            );
+                );
         //} else {
            // $item_edit_link = '';
         //}
@@ -661,32 +675,33 @@ do_action('publishpress_statuses_admin_row', $key, []);
         ? 'handle '
         : 'handle-disabled ';
         
-        $output = "<img src='" . PUBLISHPRESS_STATUSES_URL . "common/assets/handle.svg' alt='Sorting Handle' class='{$handle_class}np-icon-menu'>";
+        echo "<img src='" . esc_url(PUBLISHPRESS_STATUSES_URL . "common/assets/handle.svg") . "' alt='Sorting Handle' class='" . esc_attr($handle_class) . "}np-icon-menu'>";
 
-        $output .= '<span class="pp-statuses-color" style="background:' . esc_attr($item->color) . ';"></span>';
+        echo '<span class="pp-statuses-color" style="background:' . esc_attr($item->color) . ';"></span>';
 
-        $output .= '<strong>';
+        echo '<strong>';
         if (empty($item->_builtin)) {
-            $output .= '<em>';
+            echo '<em>';
         }
 
         if ($item_edit_link) {
-            $output .= '<a href="' . $item_edit_link . '">';
+            echo '<a href="' . esc_url($item_edit_link) . '">';
         }
 
-        $output .= esc_html($item->label);
+        echo esc_html($item->label);
         
         if ($item_edit_link) {
-            $output .= '</a>';
+            echo '</a>';
         }
 
         if ($item->name == $this->default_status) {
-            $output .= ' - ' . __('Default', 'publishpress-statuses');
+            echo ' - ' . esc_html__('Default', 'publishpress-statuses');
         }
         if (empty($item->_builtin)) {
-            $output .= '</em>';
+            echo '</em>';
         }
-        $output .= '</strong>';
+
+        echo '</strong>';
 
         $actions = [];
         //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress-statuses') . "</a>";
@@ -694,37 +709,24 @@ do_action('publishpress_statuses_admin_row', $key, []);
         $status_obj = $item;
 
         if (empty($status_obj) || (empty($status_obj->_builtin))) {
-            $actions['disable'] = '<a href="#">' . __('Disable', 'publishpress-statuses') . '</a>';
+            $actions['disable'] = ['url' => '#', 'label' => __('Disable', 'publishpress-statuses')];
         }
 
         if (empty($status_obj) || (empty($status_obj->_builtin) && empty($status_obj->pp_builtin))) {
-            $actions['delete'] = '<a href="#">' . __('X', 'publishpress-statuses') . '</a>';
+            $actions['delete'] = ['url' => '#', 'label' => __('X', 'publishpress-statuses')];
         }
 
-        $actions = apply_filters('publishpress_statuses_row_actions', $actions, $item);
+        $actions = apply_filters('publishpress_statuses_row-actions', $actions, $item);
         
-        $output .= $this->row_actions($actions, false);
-
-        return $output;
-    }
-
-    public function pseudo_status_column_name($item)
-    {
-        $output = '<strong><em>';
-        $output .= esc_html($item->label);
-        $output .= '</em></strong>';
-
-        return $output;
+        $this->row_actions($actions, false);
     }
 
     protected function row_actions( $actions, $always_visible = false ) {
 		$action_count = count( $actions );
 
 		if ( ! $action_count ) {
-			return '';
+			return;
 		}
-
-        $out = '';
 
 		$mode = get_user_setting( 'posts_list_mode', 'list' );
 
@@ -732,19 +734,23 @@ do_action('publishpress_statuses_admin_row', $key, []);
 			$always_visible = true;
 		}
 
-		$out = '<div class="' . ( $always_visible ? 'row-actions visible' : 'row-actions' ) . '">';
+        $classes = $always_visible ? 'row-actions visible' : 'row-actions';
 
+        ?>
+		<div class="row-actions<?php if ($always_visible) echo ' visible';?>">
+
+        <?php
 		$i = 0;
 
-		foreach ( $actions as $action => $link ) {
+		foreach ( $actions as $action => $arr ) {
 			++$i;
 			$sep = ( $i < $action_count ) ? ' | ' : '';
-			$out .= "<span class='" . esc_attr($action) . "'>" . $link . esc_html($sep) . "</span>";
+			echo "<span class='" . esc_attr($action) . "'>";
+            echo '<a href="' . esc_html($arr['url']) . '">' . esc_html($arr['label']) . '</a>';
+            echo esc_html($sep) . "</span>";
 		}
 
-        $out .= '</div>';
-
-        return $out;
+        echo '</div>';
 	}
 
     /**
@@ -758,12 +764,11 @@ do_action('publishpress_statuses_admin_row', $key, []);
      */
     public function column_description($item)
     {
-        $descript = esc_html(!empty($item->description) ? $item->description : '&nbsp;');
+        $descript = (!empty($item->description && ('-' != $item->description)) ? $item->description : '&nbsp;');
 
         $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses");
-        $link = "<a href='$url'>$descript</a>";
 
-        return $link;
+        echo "<a href='" . esc_url($url) . "'>" . esc_html($descript) . "</a>";
     }
 
     /**
@@ -777,11 +782,8 @@ do_action('publishpress_statuses_admin_row', $key, []);
      */
     public function column_icon($item)
     {
-        $icon = '<span class="dashicons ' . esc_html($item->icon) . '"></span>';
-
         $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses");
-        $link = "<a href='$url'>$icon</a>";
 
-        return $link;
+        echo '<a href="' . esc_url($url) . '"><span class="dashicons ' . esc_html($item->icon) . '"></span></a>';
     }
 }
