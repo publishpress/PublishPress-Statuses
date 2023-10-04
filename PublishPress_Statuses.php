@@ -1053,6 +1053,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     if (($stored_status_positions[$status_name] < $stored_status_positions['private']) && !empty($stored_status_positions[$status_name])
                     ) {
                         $stored_status_positions[$status_name] = $stored_status_positions['private'];
+
+                    } elseif (($stored_status_positions[$status_name] >= $stored_status_positions['_disabled']) && ('_disabled' != $status_name)) {
+                        $all_statuses[$status_name]->disabled = true;
                     }
                 }
 
