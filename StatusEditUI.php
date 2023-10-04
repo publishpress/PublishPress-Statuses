@@ -246,6 +246,7 @@ echo esc_attr($edit_status_link); ?>">
 
                     <div id="publishpress_icon_pick_wrap" data-target='#status_icon'
                             data-preview="#publishpress_icon_pick_preview" class="button dashicons-picker">
+                        
                         <div id="publishpress_icon_pick_preview" class="dashicons <?php
                         if (!empty($icon)) echo esc_attr($icon); else echo esc_attr(\PublishPress_Statuses::DEFAULT_ICON); ?>"></div>
 
