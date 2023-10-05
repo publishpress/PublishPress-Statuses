@@ -62,9 +62,11 @@ class ModuleAdminUI_Base {
 
         <div class="publishpress-admin publishpress-admin-wrapper wrap">
             <header>
+                <!--
                 <div class="pp-icon">
-                <img src="<?php echo PUBLISHPRESS_STATUSES_URL . 'common/assets/publishpress-logo-icon.png';?>" alt="" class="logo-header" />
+                <img src="" alt="" class="logo-header" />
                 </div>
+                -->
 
                 <h1 class="wp-heading-inline"><?php echo $this->module->title; if (!empty($this->module->header_button)) echo $this->module->header_button;?></h1>
 

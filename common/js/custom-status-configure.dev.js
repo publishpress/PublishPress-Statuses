@@ -215,13 +215,13 @@
                 var message = '<div class="is-dismissible notice pp-float-notice notice-error"><p>' + retval.message + '</p></div>';
             }
 
-            $('header .pp-icon').before(message);
+            $('header > :first-child').before(message);
 
             $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
         }).fail(function() {
             var message = '<div class="is-dismissible pp-notice pp-float-notice notice-error"><p>Error</p></div>';
 
-            $('header .pp-icon').before(message);
+            $('header > :first-child').before(message);
             $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
         });
     }
@@ -252,7 +252,7 @@
 
             /*.fail(function() {
                 var message = '<div class="is-dismissible pp-notice pp-float-notice notice-error"><p>Error</p></div>';
-                $('header .pp-icon').before(message);
+                $('header > :first-child').before(message);
                 $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
             });
             */

@@ -51,7 +51,7 @@ class StatusListTable extends \WP_List_Table
         <script type="text/javascript">
         /* <![CDATA[ */
         jQuery(document).ready(function ($) {
-            $("div.notice-success").css('float', 'right').insertBefore("div.pp-icon");
+            $("div.notice-success").css('float', 'right').insertBefore("header > :first-child");
         });
         /* ]]> */
         </script>
