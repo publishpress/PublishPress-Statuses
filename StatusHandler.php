@@ -428,12 +428,6 @@ class StatusHandler {
             $taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
         }
 
-        // Require some intentionality in adding new properties to the encoded description.
-        $properties_to_encode = apply_filters(
-            'publishpress_statuses_encoded_properties',
-            ['description', 'color', 'icon', 'status_parent', 'post_type', 'labels']
-        );
-
         // Also re-encode any existing properties, since the plugin that defined it may be temporarily deactivated.
         if (!$term = get_term_by('slug', $name, $taxonomy)) {
             if ($term_id = \PublishPress_Statuses::instance()->addStatus($taxonomy, $status_obj->label, ['slug' => $name])) {
@@ -443,50 +437,40 @@ class StatusHandler {
         }
 
         if ($term) {
-            if ($current_properties = \PublishPress_Statuses::get_unencoded_description($term->description)) {
-                $properties_to_encode = array_merge($properties_to_encode, array_keys($current_properties));
-            }
+            foreach ($args as $field => $set_value) {
+                if (in_array($field, ['labels', 'post_type', 'roles', 'color', 'icon'])) {
+                    if (is_array($args[$field])) {
+                        $meta_val = [];
 
-            if (!empty($status_obj->_builtin)) {
-                $properties_to_encode = array_diff($properties_to_encode, ['status_parent', 'post_type']);
-            }
-
-            if (in_array($name, ['draft', 'future', 'publish', 'private'])) {
-                $properties_to_encode = array_diff($properties_to_encode, ['capability_status']);
-            }
-
-            // @todo: review
-            if (in_array($name, ['draft', 'future', 'publish', 'private'])) {
-                $properties_to_encode = array_diff($properties_to_encode, ['labels']);
-            }
-
-            $properties_to_encode = array_unique($properties_to_encode);
-
-            foreach ($properties_to_encode as $prop) {
-                if (isset($args[$prop])) {
-                    if (is_array($args[$prop])) {
-                        foreach ($args[$prop] as $k => $val) {
-                            $args_to_encode[$prop][$k] = sanitize_textarea_field($val);
+                        foreach ($set_value as $k => $val) {
+                            $meta_val[$k] = sanitize_textarea_field($val);
                         }
-                    } elseif (is_object($args[$prop])) {
-                        $props = \get_object_vars($args[$prop]);
+                    } elseif (is_object($set_value)) {
+                        $meta_val = \get_object_vars($set_value);
 
-                        foreach($props as $k => $val) {
-                            $props[$k] = sanitize_text_field($val);
+                        foreach($meta_val as $k => $val) {
+                            $meta_val[$k] = sanitize_text_field($val);
                         }
 
-                        $args_to_encode[$prop] = (object) $props;
+                        $meta_val = (object) $meta_val;
                     } else {
-                        $args_to_encode[$prop] = sanitize_textarea_field($args[$prop]);
+                        $meta_val = sanitize_textarea_field($set_value);
                     }
-                } else {
-                    $args_to_encode[$prop] = $status_obj->$prop;
+
+                    $result = update_term_meta($term->term_id, $field, $meta_val);
+
+                    if (is_wp_error($result)) {
+                        return $result;
+                    }
                 }
             }
 
-            $args = array_diff_key($args, $args_to_encode);
+            $args = array_intersect_key(
+                $args, 
+                array_fill_keys(['term_id', 'name', 'slug', 'label', 'term_group', 'term_taxonomy_id', 'taxonomy', 'description', 'parent', 'count'], true)
+            );
 
-            $args['description'] = \PublishPress_Statuses::get_encoded_description($args_to_encode);
+            $args['description'] = (isset($args['description'])) ? $args['description'] : $term->description;
 
             if (!empty($args['name'])) {
                 $args['slug'] = $args['name'];
@@ -674,7 +658,7 @@ class StatusHandler {
                 ['show_disabled' => true]
             );
 
-            // Update any modified status_parent value as an encoded value in term description field
+            // Update any modified status_parent value as an term meta value
             foreach ($status_parents as $status_name => $edited_status_parent) {
                 $current_status_parent = (!empty($statuses[$status_name]) && !empty($statuses[$status_name]->status_parent)) 
                 ? $statuses[$status_name] : '';

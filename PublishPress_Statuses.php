@@ -990,24 +990,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                 $term->name = $term->slug;
                 
-                // Unencode pseudo term meta values stored in description column
-                $unencoded_description = self::get_unencoded_description($term->description);
-                if (is_array($unencoded_description)) {
-                    $unencoded_description = array_diff_key(
-                        $unencoded_description,
-                    
-                        array_fill_keys(    // Strip out status properties no longer stored to description field
-                            ['position', 'order'], 
-                            true
-                        ),
-                        array_fill_keys(    // Prevent some status properties from being modified by description field encoding
-                            ['public', 'private', 'moderation', 'protected'],
-                            true
-                        )
-                    );
+                $term_meta = get_term_meta($term->term_id);
 
-                    foreach ($unencoded_description as $descriptionKey => $value) {
-                        $term->$descriptionKey = $value;
+                if (is_array($term_meta)) {
+                    foreach ($term_meta as $meta_key => $value) {
+                        if (in_array($meta_key, ['labels', 'post_type', 'roles', 'color', 'icon'])) {
+                            $value = (is_array($value)) ? reset($value) : $value;
+                            $term->$meta_key = maybe_unserialize($value);
+                        }
                     }
                 }
 
@@ -1025,7 +1015,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 // (@todo: support status slug (name) change using term_taxonomy_id?)
                 $term = (object) array_diff_key(
                     (array) $term,
-                    array_fill_keys(    // Strip out most properties related to taxonomy storage schema. status_parent property is encoded in description field using parent status_name.
+                    array_fill_keys(    // Strip out most properties related to taxonomy storage schema. status_parent property is stored as a term_meta field using parent status_name.
                         ['term_group', 'term_id', 'taxonomy', 'count', 'parent', 'filter'], 
                         true
                     )
@@ -1552,34 +1542,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     /**
-     * Encode all of the given arguments as a serialized array, and then base64_encode
-     * Used to store extra data in a term's description field.
-     *
-     * @param array $args The arguments to encode
-     *
-     * @return string Arguments encoded in base64
-     *
-     */
-    public static function get_encoded_description($args = [])
-    {
-        return base64_encode(maybe_serialize($args));
-    }
-
-    /**
-     * If given an encoded string from a term's description field,
-     * return an array of values. Otherwise, return the original string
-     *
-     * @param string $string_to_unencode Possibly encoded string
-     *
-     * @return array Array if string was encoded, otherwise the string as the 'description' field
-     *
-     */
-    public static function get_unencoded_description($string_to_unencode)
-    {
-        return maybe_unserialize(base64_decode($string_to_unencode));
-    }
-
-    /**
      * Adds a new custom status as a term in the wp_terms table.
      * Basically a wrapper for the wp_insert_term class.
      *
@@ -1600,13 +1562,44 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         $slug = (! empty($args['slug'])) ? $args['slug'] : sanitize_title($name);
         unset($args['slug']);
-        $encoded_description = self::get_encoded_description($args);
 
         $response = wp_insert_term(
             $name,
             $taxonomy,
-            ['slug' => $slug, 'description' => $encoded_description]
+            ['slug' => $slug, 'description' => $args['description']]
         );
+
+        if (is_array($response) && !empty($response['term_id'])) {
+            $term_id = $response['term_id'];
+
+            foreach ($args as $field => $set_value) {
+                if (in_array($field, ['labels', 'post_type', 'roles', 'color', 'icon'])) {
+                    if (is_array($args[$field])) {
+                        $meta_val = [];
+
+                        foreach ($set_value as $k => $val) {
+                            $meta_val[$k] = sanitize_textarea_field($val);
+                        }
+                    } elseif (is_object($set_value)) {
+                        $meta_val = \get_object_vars($set_value);
+
+                        foreach($meta_val as $k => $val) {
+                            $meta_val[$k] = sanitize_text_field($val);
+                        }
+
+                        $meta_val = (object) $meta_val;
+                    } else {
+                        $meta_val = sanitize_textarea_field($set_value);
+                    }
+
+                    $result = update_term_meta($term_id, $field, $meta_val);
+
+                    if (is_wp_error($updated_status_array)) {
+                        return $result;
+                    }
+                }
+            }
+        }
 
         // Reset our internal object cache
         $this->custom_statuses_cache = [];
