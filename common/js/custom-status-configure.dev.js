@@ -244,8 +244,8 @@
             // Prepare the POST
             var params = {
                 action: 'pp_delete_custom_status',
-                delete_status: $(this).closest('table.status-row tbody tr').find('td.status_name div.status_name').html()
-               // _wpnonce: $('#custom-status-sortable').val()
+                delete_status: $(this).closest('table.status-row tbody tr').find('td.status_name div.status_name').html(),
+                _wpnonce: $('#custom-status-sortable').val()
             };
 
             jQuery.post(ajaxurl, params, function (retval) {
@@ -271,8 +271,8 @@
            $(this).closest('li.page-row').find('ol.pp-nested-list li.page-row td.status_name div.status_name').each(function() {
                 params = {
                     action: 'pp_delete_custom_status',
-                    delete_status: $(this).html()
-                    // _wpnonce: $('#custom-status-sortable').val()
+                    delete_status: $(this).html(),
+                    _wpnonce: $('#custom-status-sortable').val()
                 };
 
                 jQuery.post(ajaxurl, params, function (retval) {});

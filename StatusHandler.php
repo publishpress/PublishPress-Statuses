@@ -599,6 +599,8 @@ class StatusHandler {
     }
 
     public static function handleAjaxDeleteStatus() {
+        check_ajax_referer('custom-status-sortable');
+
         if ($status_name = \PublishPress_Functions::REQUEST_key('delete_status')) {
             if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
                 self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
