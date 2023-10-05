@@ -237,10 +237,6 @@ class StatusListTable extends \WP_List_Table
 
 <table class="status-row" style="float:right; width:100%"><tbody><tr>
 
-<td class="section-toggle"><div class="section-toggle">
-<?php /* Section show / hide toggle arrow was here. */ ?>
-</div></td>
-
 <?php if (\PublishPress_Statuses::getCustomStatus($key)) :?>
 <td class="status_name" style="width:0"><div class="status_name <?php echo esc_attr($key);?> column-<?php echo esc_attr($key);?> hidden"><?php echo esc_attr($key);?></div></td>
 <?php endif; ?>
