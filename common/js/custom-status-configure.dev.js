@@ -248,14 +248,23 @@
                // _wpnonce: $('#custom-status-sortable').val()
             };
 
-            jQuery.post(ajaxurl, params, function (retval) {}); 
+            jQuery.post(ajaxurl, params, function (retval) {
+                // If there's a success message, print it. Otherwise we assume we received an error message
+                if (retval.status == 'success') {
+                    var message = '<div class="is-dismissible notice pp-float-notice notice-success"><p>' + retval.message + '</p></div>';
+                } else {
+                    var message = '<div class="is-dismissible notice pp-float-notice notice-error"><p>' + retval.message + '</p></div>';
+                }
 
-            /*.fail(function() {
+                $('header > :first-child').before(message);
+
+                $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
+
+            }).fail(function() {
                 var message = '<div class="is-dismissible pp-notice pp-float-notice notice-error"><p>Error</p></div>';
                 $('header > :first-child').before(message);
                 $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
             });
-            */
 
            // also delete status children
 
