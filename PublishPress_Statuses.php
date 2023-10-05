@@ -208,6 +208,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 ]
             );
         }
+
+        if (false === get_option('publishpress_statuses_version')) {
+            $this->archive_term_descriptions();
+
+            update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
+        }
+
         // Register new taxonomy so that we can store all our fancy new custom statuses (or is it stati?)
         if (! taxonomy_exists(self::TAXONOMY_PRE_PUBLISH)) {
             register_taxonomy(
@@ -1539,6 +1546,45 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         return add_query_arg($args, get_admin_url(null, 'admin.php'));
+    }
+
+    // Archive the wp_terms description field as stored by PublishPress, in case we need to unencode it later
+    private function archive_term_descriptions() {
+        if ($terms = get_terms('post_status', ['hide_empty' => false])) {
+            if (false === get_option('pp_statuses_archived_term_data')) {
+                $archived_term_descriptions = [];
+
+                foreach ($terms as $term) {
+                    $archived_term_descriptions[$term->term_id] = $term->description;
+                    wp_update_term($term->term_id, 'post_status', ['description' => '']);
+                }
+
+                update_option('pp_statuses_archived_term_data', maybe_serialize($archived_term_descriptions));
+            }
+        }
+
+        // Visibility terms were not implemented by PublishPress Planner; wipe any entries stored by dev versions
+        if (version_compare(PUBLISHPRESS_STATUSES_VERSION, '1.0', '<')) {
+            if (! taxonomy_exists('post_visibility_pp')) {
+                register_taxonomy(
+                    'post_visibility_pp',
+                    'post',
+                    [
+                        'hierarchical' => false,
+                        'label' => 'post_visibility',
+                        'query_var' => false,
+                        'rewrite' => false,
+                        'show_ui' => false,
+                    ]
+                );
+            }
+
+            if ($terms = get_terms('post_visibility_pp', ['hide_empty' => false])) {  
+                foreach ($terms as $term) {
+                    wp_update_term($term->term_id, 'post_visibility_pp', ['description' => '']);
+                }
+            }
+        }
     }
 
     /**
