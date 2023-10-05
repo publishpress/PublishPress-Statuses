@@ -410,7 +410,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     'draft' =>  (object) [
                         'label' => 'Draft',             // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('New post, not yet submitted.', 'publishpress-statuses'),
                         'color' => '#767676',
                         'icon' => 'dashicons-media-default',
                         'position' => 0,
@@ -421,7 +421,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'pending' => (object) [
                         'label' => 'Pending Review',        // Replace with WP translation below
                         'label_friendly' => __('Pending Review'),
-                        'description' => '',
+                        'description' => __('Post is awaiting review.', 'publishpress-statuses'),
                         'color' => '#b95c00',
                         'icon' => 'dashicons-clock',
                         'position' => 4,
@@ -432,7 +432,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'future' => (object) [
                         'label' => 'Scheduled',             // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('Post is scheduled for publication.', 'publishpress-statuses'),
                         'color' => '#8440f0',
                         'icon' => 'dashicons-calendar-alt',
                         'position' => 7,
@@ -443,7 +443,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'publish' => (object) [
                         'label' => 'Published',             // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('Post is published, publicly visible.', 'publishpress-statuses'),
                         'color' => '#207720',
                         'icon' => 'dashicons-yes',
                         'position' => 8,
@@ -454,7 +454,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'private' => (object) [
                         'label' => 'Privately Published',   // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('Post is published with private visibility.', 'publishpress-statuses'),
                         'color' => '#b40000',
                         'icon' => 'dashicons-lock',
                         'position' => 9,
@@ -507,7 +507,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'approved' => (object) [
                         'label' => __('Approved', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
-                        'description' => '',
+                        'description' => __('Post has been approved for publication.', 'publishpress-statuses'),
                         'color' => '#304baa',
                         'icon' => 'dashicons-yes-alt',
                         'position' => 5,
