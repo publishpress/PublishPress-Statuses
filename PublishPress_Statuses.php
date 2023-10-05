@@ -1042,7 +1042,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         $all_statuses[$status_name] = $stored_status_terms[$taxonomy][$status_name];
                     } else {
                         foreach (get_object_vars($stored_status_terms[$taxonomy][$status_name]) as $prop => $value) {
-                            $all_statuses[$status_name]->$prop = $value;
+                            if (('description' != $prop) || !in_array($value, ['', '-'])) {
+                                $all_statuses[$status_name]->$prop = $value;
+                            }
                         }
                     }
                 }
