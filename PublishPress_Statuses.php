@@ -193,6 +193,21 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $this->load();
         }
 
+        // Register post_status taxonomy
+        if (!taxonomy_exists('post_status')) {
+            register_taxonomy(
+                'post_status',
+                'post',
+                [
+                    'hierarchical'          => false,
+                    /*'update_count_callback' => '_update_post_term_count',*/
+                    'label'                 => __('Statuses', 'publishpress-statuses'),
+                    'query_var'             => false,
+                    'rewrite'               => false,
+                    'show_ui'               => false,
+                ]
+            );
+        }
         // Register new taxonomy so that we can store all our fancy new custom statuses (or is it stati?)
         if (! taxonomy_exists(self::TAXONOMY_PRE_PUBLISH)) {
             register_taxonomy(
