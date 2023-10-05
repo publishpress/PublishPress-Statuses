@@ -301,6 +301,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
+        /* This can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. */
+        /*
+        if (is_admin() && isset($_REQUEST['pp_statuses_import_terms'])) {
+            $this->import_encoded_properties();
+        }
+        */
+
         do_action('pp_statuses_init');
     }
 
@@ -1586,6 +1593,51 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
     }
+
+    /*  
+     *  Function import_encoded_properties() is disabled to avoid raising concerns about base64 encoding.
+     *  It can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. 
+     **/
+    /*
+    private function import_encoded_properties() {
+        if (!$terms = get_terms('post_status', ['hide_empty' => false])) {
+            return;
+        }
+
+        foreach ($terms as $term) {
+            $meta = get_term_meta($term->term_id);
+
+            $archived_term_descriptions = get_option('pp_statuses_archived_term_data');
+
+            if (is_array($archived_term_descriptions) && !empty($archived_term_descriptions[$term->term_id])) {
+                $unencoded_description = maybe_unserialize(base64_decode($archived_term_descriptions[$term->term_id]));
+            } else {
+                $unencoded_description = maybe_unserialize(base64_decode($term->description));
+            }
+
+            if (!is_array($unencoded_description)) {
+                continue;
+            }
+
+            foreach ($unencoded_description as $key => $value) {
+                if (in_array($key, ['viewable', 'show_in_filters', 'position'])) {
+                    if ('position' == $key) {
+                        $key = 'original_position';
+                    }
+
+                    if (!isset($meta[$key]) || !empty($_REQUEST['pp_overwrite_status_meta'])) {
+                        update_term_meta($term->term_id, $key, $value);
+                    }
+                } elseif ('description' == $key) {
+                    if (!$value || ('-' == $value)) {
+                        wp_update_term($term->term_id, 'post_status', ['description' => $value]);
+                    }
+                }
+            }
+        }
+    }
+    */
+    
 
     /**
      * Adds a new custom status as a term in the wp_terms table.
