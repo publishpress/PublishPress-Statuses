@@ -973,6 +973,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $stored_status_terms = [];
 
+        $term_meta_fields = apply_filters('publishpress_statuses_meta_fields', ['labels', 'post_type', 'roles', 'status_parent', 'color', 'icon']);
+
         // Merge stored positions with defaults
         foreach ($all_statuses as $status_name => $status) {
             if (empty($stored_status_positions[$status_name])) {
@@ -1008,7 +1010,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                 if (is_array($term_meta)) {
                     foreach ($term_meta as $meta_key => $value) {
-                        if (in_array($meta_key, ['labels', 'post_type', 'roles', 'color', 'icon'])) {
+                        if (in_array($meta_key, $term_meta_fields)) {
                             $value = (is_array($value)) ? reset($value) : $value;
                             $term->$meta_key = maybe_unserialize($value);
                         }
@@ -1670,10 +1672,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         );
 
         if (is_array($response) && !empty($response['term_id'])) {
+            $term_meta_fields = apply_filters('publishpress_statuses_meta_fields', ['labels', 'post_type', 'roles', 'status_parent', 'color', 'icon']);
+
             $term_id = $response['term_id'];
 
             foreach ($args as $field => $set_value) {
-                if (in_array($field, ['labels', 'post_type', 'roles', 'color', 'icon'])) {
+                if (in_array($field, $term_meta_fields)) {
                     if (is_array($args[$field])) {
                         $meta_val = [];
 

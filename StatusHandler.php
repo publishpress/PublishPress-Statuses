@@ -437,8 +437,10 @@ class StatusHandler {
         }
 
         if ($term) {
+            $term_meta_fields = apply_filters('publishpress_statuses_meta_fields', ['labels', 'post_type', 'roles', 'status_parent', 'color', 'icon']);
+
             foreach ($args as $field => $set_value) {
-                if (in_array($field, ['labels', 'post_type', 'roles', 'color', 'icon'])) {
+                if (in_array($field, $term_meta_fields)) {
                     if (is_array($args[$field])) {
                         $meta_val = [];
 
