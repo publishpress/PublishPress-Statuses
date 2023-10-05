@@ -193,6 +193,28 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $this->load();
         }
 
+        // Register post_status taxonomy
+        if (!taxonomy_exists('post_status')) {
+            register_taxonomy(
+                'post_status',
+                'post',
+                [
+                    'hierarchical'          => false,
+                    /*'update_count_callback' => '_update_post_term_count',*/
+                    'label'                 => __('Statuses', 'publishpress-statuses'),
+                    'query_var'             => false,
+                    'rewrite'               => false,
+                    'show_ui'               => false,
+                ]
+            );
+        }
+
+        if (false === get_option('publishpress_statuses_version')) {
+            $this->archive_term_descriptions();
+
+            update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
+        }
+
         // Register new taxonomy so that we can store all our fancy new custom statuses (or is it stati?)
         if (! taxonomy_exists(self::TAXONOMY_PRE_PUBLISH)) {
             register_taxonomy(
@@ -278,6 +300,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }
         }
+
+        /* This can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. */
+        /*
+        if (is_admin() && isset($_REQUEST['pp_statuses_import_terms'])) {
+            $this->import_encoded_properties();
+        }
+        */
 
         do_action('pp_statuses_init');
     }
@@ -395,7 +424,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     'draft' =>  (object) [
                         'label' => 'Draft',             // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('New post, not yet submitted.', 'publishpress-statuses'),
                         'color' => '#767676',
                         'icon' => 'dashicons-media-default',
                         'position' => 0,
@@ -406,7 +435,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'pending' => (object) [
                         'label' => 'Pending Review',        // Replace with WP translation below
                         'label_friendly' => __('Pending Review'),
-                        'description' => '',
+                        'description' => __('Post is awaiting review.', 'publishpress-statuses'),
                         'color' => '#b95c00',
                         'icon' => 'dashicons-clock',
                         'position' => 4,
@@ -417,7 +446,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'future' => (object) [
                         'label' => 'Scheduled',             // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('Post is scheduled for publication.', 'publishpress-statuses'),
                         'color' => '#8440f0',
                         'icon' => 'dashicons-calendar-alt',
                         'position' => 7,
@@ -428,7 +457,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'publish' => (object) [
                         'label' => 'Published',             // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('Post is published, publicly visible.', 'publishpress-statuses'),
                         'color' => '#207720',
                         'icon' => 'dashicons-yes',
                         'position' => 8,
@@ -439,7 +468,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     'private' => (object) [
                         'label' => 'Privately Published',   // Replace with WP translation below
-                        'description' => '',
+                        'description' => __('Post is published with private visibility.', 'publishpress-statuses'),
                         'color' => '#b40000',
                         'icon' => 'dashicons-lock',
                         'position' => 9,
@@ -492,7 +521,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'approved' => (object) [
                         'label' => __('Approved', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
-                        'description' => '',
+                        'description' => __('Post has been approved for publication.', 'publishpress-statuses'),
                         'color' => '#304baa',
                         'icon' => 'dashicons-yes-alt',
                         'position' => 5,
@@ -944,6 +973,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $stored_status_terms = [];
 
+        $term_meta_fields = apply_filters('publishpress_statuses_meta_fields', ['labels', 'post_type', 'roles', 'status_parent', 'color', 'icon']);
+
         // Merge stored positions with defaults
         foreach ($all_statuses as $status_name => $status) {
             if (empty($stored_status_positions[$status_name])) {
@@ -975,24 +1006,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                 $term->name = $term->slug;
                 
-                // Unencode pseudo term meta values stored in description column
-                $unencoded_description = self::get_unencoded_description($term->description);
-                if (is_array($unencoded_description)) {
-                    $unencoded_description = array_diff_key(
-                        $unencoded_description,
-                    
-                        array_fill_keys(    // Strip out status properties no longer stored to description field
-                            ['position', 'order'], 
-                            true
-                        ),
-                        array_fill_keys(    // Prevent some status properties from being modified by description field encoding
-                            ['public', 'private', 'moderation', 'protected'],
-                            true
-                        )
-                    );
+                $term_meta = get_term_meta($term->term_id);
 
-                    foreach ($unencoded_description as $descriptionKey => $value) {
-                        $term->$descriptionKey = $value;
+                if (is_array($term_meta)) {
+                    foreach ($term_meta as $meta_key => $value) {
+                        if (in_array($meta_key, $term_meta_fields)) {
+                            $value = (is_array($value)) ? reset($value) : $value;
+                            $term->$meta_key = maybe_unserialize($value);
+                        }
                     }
                 }
 
@@ -1010,7 +1031,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 // (@todo: support status slug (name) change using term_taxonomy_id?)
                 $term = (object) array_diff_key(
                     (array) $term,
-                    array_fill_keys(    // Strip out most properties related to taxonomy storage schema. status_parent property is encoded in description field using parent status_name.
+                    array_fill_keys(    // Strip out most properties related to taxonomy storage schema. status_parent property is stored as a term_meta field using parent status_name.
                         ['term_group', 'term_id', 'taxonomy', 'count', 'parent', 'filter'], 
                         true
                     )
@@ -1023,7 +1044,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         $all_statuses[$status_name] = $stored_status_terms[$taxonomy][$status_name];
                     } else {
                         foreach (get_object_vars($stored_status_terms[$taxonomy][$status_name]) as $prop => $value) {
-                            $all_statuses[$status_name]->$prop = $value;
+                            if (('description' != $prop) || !in_array($value, ['', '-'])) {
+                                $all_statuses[$status_name]->$prop = $value;
+                            }
                         }
                     }
                 }
@@ -1536,33 +1559,91 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         return add_query_arg($args, get_admin_url(null, 'admin.php'));
     }
 
-    /**
-     * Encode all of the given arguments as a serialized array, and then base64_encode
-     * Used to store extra data in a term's description field.
-     *
-     * @param array $args The arguments to encode
-     *
-     * @return string Arguments encoded in base64
-     *
-     */
-    public static function get_encoded_description($args = [])
-    {
-        return base64_encode(maybe_serialize($args));
+    // Archive the wp_terms description field as stored by PublishPress, in case we need to unencode it later
+    private function archive_term_descriptions() {
+        if ($terms = get_terms('post_status', ['hide_empty' => false])) {
+            if (false === get_option('pp_statuses_archived_term_data')) {
+                $archived_term_descriptions = [];
+
+                foreach ($terms as $term) {
+                    if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) { // clear the description field only if it's encoded
+                        $archived_term_descriptions[$term->term_id] = $term->description;
+                        wp_update_term($term->description, 'post_status', ['description' => '']);
+                    }
+                }
+
+                update_option('pp_statuses_archived_term_data', maybe_serialize($archived_term_descriptions));
+            }
+        }
+
+        // Visibility terms were not implemented by PublishPress Planner; wipe any entries stored by dev versions
+        if (version_compare(PUBLISHPRESS_STATUSES_VERSION, '1.0', '<')) {
+            if (! taxonomy_exists('post_visibility_pp')) {
+                register_taxonomy(
+                    'post_visibility_pp',
+                    'post',
+                    [
+                        'hierarchical' => false,
+                        'label' => 'post_visibility',
+                        'query_var' => false,
+                        'rewrite' => false,
+                        'show_ui' => false,
+                    ]
+                );
+            }
+
+            if ($terms = get_terms('post_visibility_pp', ['hide_empty' => false])) {  
+                foreach ($terms as $term) {
+                    wp_update_term($term->term_id, 'post_visibility_pp', ['description' => '']);
+                }
+            }
+        }
     }
 
-    /**
-     * If given an encoded string from a term's description field,
-     * return an array of values. Otherwise, return the original string
-     *
-     * @param string $string_to_unencode Possibly encoded string
-     *
-     * @return array Array if string was encoded, otherwise the string as the 'description' field
-     *
-     */
-    public static function get_unencoded_description($string_to_unencode)
-    {
-        return maybe_unserialize(base64_decode($string_to_unencode));
+    /*  
+     *  Function import_encoded_properties() is disabled to avoid raising concerns about base64 encoding.
+     *  It can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. 
+     **/
+    /*
+    private function import_encoded_properties() {
+        if (!$terms = get_terms('post_status', ['hide_empty' => false])) {
+            return;
+        }
+
+        foreach ($terms as $term) {
+            $meta = get_term_meta($term->term_id);
+
+            $archived_term_descriptions = get_option('pp_statuses_archived_term_data');
+
+            if (is_array($archived_term_descriptions) && !empty($archived_term_descriptions[$term->term_id])) {
+                $unencoded_description = maybe_unserialize(base64_decode($archived_term_descriptions[$term->term_id]));
+            } else {
+                $unencoded_description = maybe_unserialize(base64_decode($term->description));
+            }
+
+            if (!is_array($unencoded_description)) {
+                continue;
+            }
+
+            foreach ($unencoded_description as $key => $value) {
+                if (in_array($key, ['viewable', 'show_in_filters', 'position'])) {
+                    if ('position' == $key) {
+                        $key = 'original_position';
+                    }
+
+                    if (!isset($meta[$key]) || !empty($_REQUEST['pp_overwrite_status_meta'])) {
+                        update_term_meta($term->term_id, $key, $value);
+                    }
+                } elseif ('description' == $key) {
+                    if (!$value || ('-' == $value)) {
+                        wp_update_term($term->term_id, 'post_status', ['description' => $value]);
+                    }
+                }
+            }
+        }
     }
+    */
+    
 
     /**
      * Adds a new custom status as a term in the wp_terms table.
@@ -1585,13 +1666,46 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         $slug = (! empty($args['slug'])) ? $args['slug'] : sanitize_title($name);
         unset($args['slug']);
-        $encoded_description = self::get_encoded_description($args);
 
         $response = wp_insert_term(
             $name,
             $taxonomy,
-            ['slug' => $slug, 'description' => $encoded_description]
+            ['slug' => $slug, 'description' => $args['description']]
         );
+
+        if (is_array($response) && !empty($response['term_id'])) {
+            $term_meta_fields = apply_filters('publishpress_statuses_meta_fields', ['labels', 'post_type', 'roles', 'status_parent', 'color', 'icon']);
+
+            $term_id = $response['term_id'];
+
+            foreach ($args as $field => $set_value) {
+                if (in_array($field, $term_meta_fields)) {
+                    if (is_array($args[$field])) {
+                        $meta_val = [];
+
+                        foreach ($set_value as $k => $val) {
+                            $meta_val[$k] = sanitize_textarea_field($val);
+                        }
+                    } elseif (is_object($set_value)) {
+                        $meta_val = \get_object_vars($set_value);
+
+                        foreach($meta_val as $k => $val) {
+                            $meta_val[$k] = sanitize_text_field($val);
+                        }
+
+                        $meta_val = (object) $meta_val;
+                    } else {
+                        $meta_val = sanitize_textarea_field($set_value);
+                    }
+
+                    $result = update_term_meta($term_id, $field, $meta_val);
+
+                    if (is_wp_error($updated_status_array)) {
+                        return $result;
+                    }
+                }
+            }
+        }
 
         // Reset our internal object cache
         $this->custom_statuses_cache = [];

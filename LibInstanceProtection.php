@@ -9,14 +9,16 @@ class LibInstanceProtection
 {
     public function __construct()
     {
-        $includeFile = __DIR__ . '/lib/vendor/publishpress/instance-protection/include.php';
+        if (! class_exists('PublishPressInstanceProtection\\Config')) {
+            $includeFile = __DIR__ . '/lib/vendor/publishpress/instance-protection/include.php';
 
-        if (is_file($includeFile) && is_readable($includeFile)) {
-            // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-            require_once $includeFile;
+            if (is_file($includeFile) && is_readable($includeFile)) {
+                // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+                require_once $includeFile;
+            }
         }
 
-        if ( ! class_exists('PublishPressInstanceProtection\\Config')) {
+        if (! class_exists('PublishPressInstanceProtection\\Config')) {
             return null;
         }
 

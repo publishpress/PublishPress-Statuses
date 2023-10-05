@@ -215,13 +215,13 @@
                 var message = '<div class="is-dismissible notice pp-float-notice notice-error"><p>' + retval.message + '</p></div>';
             }
 
-            $('header .pp-icon').before(message);
+            $('header > :first-child').before(message);
 
             $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
         }).fail(function() {
             var message = '<div class="is-dismissible pp-notice pp-float-notice notice-error"><p>Error</p></div>';
 
-            $('header .pp-icon').before(message);
+            $('header > :first-child').before(message);
             $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
         });
     }
@@ -234,41 +234,6 @@
 
         ppInitializeNestedStatusList();
 
-        // Show / Hide status sections
-        $('#the_status_list .section-toggle a').click(function() {
-            $(this).toggleClass('open');
-
-            // Remember the setting for future admin page loads
-            var params = {
-                action: 'pp_statuses_toggle_section',
-                status_section: $(this).closest('li').attr('id'),
-                //_wpnonce: $('#custom-status-sortable').val()
-            };
-
-            jQuery.post(ajaxurl, params, function (retval) {});
-
-            // Apply the toggle
-            $("#" + $(this).closest('li').attr('id') + " ~ li").each(function() {
-                if ($(this).hasClass('section-row')) {
-                    return false;
-                } else {
-                    $(this).toggle();
-                }
-            });
-
-            return false;
-        });
-
-        // Make sure this status section is expanded to display the new status
-        /*
-        $('#the_status_list button.add-new').click(function() {
-            var sectionToggle = $(this).closest('tr').find('td div.section-toggle a');
-            if (!$(sectionToggle).hasClass('open')) {
-                $(sectionToggle).trigger('click');
-            }
-        });
-        */
-
         $('#the_status_list td.name .disable').click(function() {
             $(this).hide().closest('li.page-row').addClass('disabled-status').insertAfter($('#the_status_list > li.disabled-status:last'));
             ppUpdateStatusPositions();
@@ -279,26 +244,35 @@
             // Prepare the POST
             var params = {
                 action: 'pp_delete_custom_status',
-                delete_status: $(this).closest('table.status-row tbody tr').find('td.status_name div.status_name').html()
-               // _wpnonce: $('#custom-status-sortable').val()
+                delete_status: $(this).closest('table.status-row tbody tr').find('td.status_name div.status_name').html(),
+                _wpnonce: $('#custom-status-sortable').val()
             };
 
-            jQuery.post(ajaxurl, params, function (retval) {}); 
+            jQuery.post(ajaxurl, params, function (retval) {
+                // If there's a success message, print it. Otherwise we assume we received an error message
+                if (retval.status == 'success') {
+                    var message = '<div class="is-dismissible notice pp-float-notice notice-success"><p>' + retval.message + '</p></div>';
+                } else {
+                    var message = '<div class="is-dismissible notice pp-float-notice notice-error"><p>' + retval.message + '</p></div>';
+                }
 
-            /*.fail(function() {
+                $('header > :first-child').before(message);
+
+                $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
+
+            }).fail(function() {
                 var message = '<div class="is-dismissible pp-notice pp-float-notice notice-error"><p>Error</p></div>';
-                $('header .pp-icon').before(message);
+                $('header > :first-child').before(message);
                 $('.pp-float-notice').delay(1000).fadeOut(2000, function() {$(this).remove();});
             });
-            */
 
            // also delete status children
 
            $(this).closest('li.page-row').find('ol.pp-nested-list li.page-row td.status_name div.status_name').each(function() {
                 params = {
                     action: 'pp_delete_custom_status',
-                    delete_status: $(this).html()
-                    // _wpnonce: $('#custom-status-sortable').val()
+                    delete_status: $(this).html(),
+                    _wpnonce: $('#custom-status-sortable').val()
                 };
 
                 jQuery.post(ajaxurl, params, function (retval) {});

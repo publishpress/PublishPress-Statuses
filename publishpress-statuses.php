@@ -5,7 +5,7 @@
  * Description: Manage and create post statuses to customize your editorial workflow
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
- * Version: 1.0-beta12
+ * Version: 1.0-beta13
  * Requires at least: 5.5
  * Requires PHP: 7.2.5
  *
@@ -33,6 +33,7 @@
  **/
 
 use PublishPress_Statuses\LibInstanceProtection;
+use PublishPress_Statuses\LibWordPressReviews;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
@@ -82,74 +83,76 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
      return;
  }
 
-if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
+ add_action('plugins_loaded', function() {
+    if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
+        if (defined('PUBLISHPRESS_VERSION') && version_compare(PUBLISHPRESS_VERSION, '4.0-beta4', '<')) {
+            add_action('admin_notices', function() {
+                ?>
+                <div class="notice error">
+                    <p><?php echo sprintf(
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Plannner to version %s or higher.', 'publishpress_statuses'),
+                        '4.0-beta4'
+                    ); 
+                    ?></p>
+                </div>
+                <?php
+            });
 
-    if (defined('PUBLISHPRESS_VERSION') && version_compare(PUBLISHPRESS_VERSION, '3.11-beta', '<')) {
-        add_action('admin_notices', function() {
-            ?>
-            <div class="notice notice-success is-dismissible">
-                <p><?php echo sprintf(
-                    esc_html__('To use PublishPress Statuses, please upgrade PublishPress Plannner to version %s or higher.', 'publishpress_statuses'),
-                    '3.11-beta'
-                ); 
-                ?></p>
-            </div>
-            <?php
-        });
+            $interrupt_load = true;
+        }
 
-        $interrupt_load = true;
-    }
-    
-    if (defined('PRESSPERMIT_VERSION') && version_compare(PRESSPERMIT_VERSION, '3.9-beta', '<')) {
-        add_action('admin_notices', function() {
-            ?>
-            <div class="notice notice-success is-dismissible">
-                <p><?php echo sprintf(
-                    esc_html__('To use PublishPress Statuses, please upgrade PublishPress Permissions to version %s or higher.', 'publishpress_statuses'),
-                    '3.9-beta'
-                ); 
-                ?></p>
-            </div>
-            <?php
-        });
-    
-        $interrupt_load = true;
-    }
-    
-    if (defined('PUBLISHPRESS_CAPS_VERSION') && version_compare(PUBLISHPRESS_CAPS_VERSION, '2.7.2-beta', '<')) {
-        add_action('admin_notices', function() {
-            ?>
-            <div class="notice notice-success is-dismissible">
-                <p><?php echo sprintf(
-                    esc_html__('To use PublishPress Statuses, please upgrade PublishPress Capabilities to version %s or higher.', 'publishpress_statuses'),
-                    '2.7.2-beta'
-                ); 
-                ?></p>
-            </div>
-            <?php
-        });
+        if (defined('PRESSPERMIT_PRO_VERSION') && version_compare(PRESSPERMIT_PRO_VERSION, '4.0-beta8', '<')) {
+            add_action('admin_notices', function() {
+                ?>
+                <div class="notice error">
+                    <p><?php echo sprintf(
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Permissions Pro to version %s or higher.', 'publishpress_statuses'),
+                        '4.0-beta8'
+                    ); 
+                    ?></p>
+                </div>
+                <?php
+            });
+        
+            $interrupt_load = true;
+        }
+        
+        if (defined('PUBLISHPRESS_CAPS_PRO_VERSION') && version_compare(PUBLISHPRESS_CAPS_PRO_VERSION, '2.11-beta2', '<')) {
+            add_action('admin_notices', function() {
+                ?>
+                <div class="notice error">
+                    <p><?php echo sprintf(
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Capabilities Pro to version %s or higher.', 'publishpress_statuses'),
+                        '2.11-beta2'
+                    ); 
+                    ?></p>
+                </div>
+                <?php
+            });
 
-        $interrupt_load = true;
-    } 
-    
-    if (empty($interrupt_load)) {
-        define('PUBLISHPRESS_STATUSES_VERSION', '1.0-beta12');
+            $interrupt_load = true;
+        } 
+        
+        if (empty($interrupt_load)) {
+            define('PUBLISHPRESS_STATUSES_VERSION', '1.0-beta13');
 
-        define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
-        define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
+            define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
+            define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
 
-        require_once(__DIR__ . '/lib/PublishPress_Functions.php');
+            require_once(__DIR__ . '/lib/PublishPress_Functions.php');
 
-        require_once(__DIR__ . '/lib/publishpress-module/Module_Base.php');
-        new \PublishPress\PPP_Module_Base();
+            require_once(__DIR__ . '/lib/publishpress-module/Module_Base.php');
+            new \PublishPress\PPP_Module_Base();
 
-        require_once(__DIR__ . '/LibInstanceProtection.php');
-        new LibInstanceProtection();
+            require_once(__DIR__ . '/LibInstanceProtection.php');
+            new LibInstanceProtection();
+            
+            require_once(__DIR__ . '/LibWordPressReviews.php');
+        	new LibWordPressReviews();
 
-        require_once(__DIR__ . '/PublishPress_Statuses.php');
-        PublishPress_Statuses::instance();
+            require_once(__DIR__ . '/PublishPress_Statuses.php');
+            PublishPress_Statuses::instance();
 
-        add_action('plugins_loaded', function() {
             if (defined('PRESSPERMIT_VERSION')) {
                 class_alias('\PressShack\LibWP', '\PublishPress_Statuses\PWP');
 
@@ -159,12 +162,12 @@ if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
             }
 
             @load_plugin_textdomain('publishpress-statuses', false, dirname(plugin_basename(__FILE__)) . '/languages');
-        });
 
-        if (!class_exists('PP_Custom_Status') 
-        && (defined('PRESSPERMIT_VERSION') || (!defined('PUBLISHPRESS_VERSION') || version_compare(PUBLISHPRESS_VERSION, '4.0', '<')))
-        ) {
-            class_alias('\PublishPress_Statuses', '\PP_Custom_Status');
+            if (!class_exists('PP_Custom_Status') 
+            && (defined('PRESSPERMIT_VERSION') || (!defined('PUBLISHPRESS_VERSION') || version_compare(PUBLISHPRESS_VERSION, '4.0', '<')))
+            ) {
+                class_alias('\PublishPress_Statuses', '\PP_Custom_Status');
+            }
         }
     }
-}
+}, -5);

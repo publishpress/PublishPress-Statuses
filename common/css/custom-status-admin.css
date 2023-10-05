@@ -87,55 +87,6 @@ display:table;
 width:100%
 }
 
-#the_status_list .pp-icon-arrow {
-display: inline-block;
-vertical-align: middle;
-width: 0;
-height: 0;
-position: relative;
-top: -3px;
-border-top: 5px solid transparent;
-border-bottom: 5px solid transparent;
-border-left: 6px solid #333;
-margin-left: 5px;
-margin-right: 2px;
-}
-
-#the_status_list .section-toggle {
-display: table-cell;
-width: 30px;
-text-align: left
-}
-
-#the_status_list .section-toggle a{
-display:inline-block;
-text-align:center;
-vertical-align:middle;
-width:29px;
-height:29px;
-line-height:29px;
--webkit-box-shadow:none;
-box-shadow:none;
--webkit-transition:all .2s ease;
--o-transition:all .2s ease;
-transition:all .2s ease;
--webkit-transform-origin:center;
--ms-transform-origin:center;
-transform-origin:center;
--webkit-transform:rotate(0);
--ms-transform:rotate(0);
-transform:rotate(0)
-}
-
-#the_status_list .section-toggle a.open{
--webkit-transition:all .2s ease;
--o-transition:all .2s ease;
-transition:all .2s ease;
--webkit-transform:rotate(90deg);
--ms-transform:rotate(90deg);
-transform:rotate(90deg)
-}
-
 #the_status_list li.section-row td.name {
 width: 100%;
 vertical-align: middle;
