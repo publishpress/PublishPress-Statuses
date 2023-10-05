@@ -1566,8 +1566,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $archived_term_descriptions = [];
 
                 foreach ($terms as $term) {
-                    $archived_term_descriptions[$term->term_id] = $term->description;
-                    wp_update_term($term->term_id, 'post_status', ['description' => '']);
+                    if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) { // clear the description field only if it's encoded
+                        $archived_term_descriptions[$term->term_id] = $term->description;
+                        wp_update_term($term->description, 'post_status', ['description' => '']);
+                    }
                 }
 
                 update_option('pp_statuses_archived_term_data', maybe_serialize($archived_term_descriptions));
