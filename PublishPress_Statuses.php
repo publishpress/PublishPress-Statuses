@@ -616,6 +616,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
+        foreach ($wp_post_statuses as $k => $status) {
+            if (empty($status->labels)) {
+                $wp_post_statuses[$k]->labels = (object) array();
+            }
+        }
+
         if (is_admin()) {
             $wp_post_statuses['publish']->labels->publish = esc_attr(self::__wp('Publish'));
             $wp_post_statuses['future']->labels->publish = esc_attr(self::__wp('Schedule'));
@@ -991,7 +997,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
 
             // Under PublishPress / PublishPress Planner, post_status properties were encoded in the description column of the term_taxonomy table
-            $_terms = $this->archive_encoded_properties($_terms, $taxonomy);
+            if (empty($args['skip_archive'])) {
+                $_terms = $this->archive_encoded_properties($_terms, $taxonomy);
+            }
 
             foreach ($_terms as $term) {
                 if (isset($stored_status_terms[$taxonomy][$term->slug]) || ('pending-review' == $term->slug)) {
@@ -1558,6 +1566,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     // Archive the wp_terms description field as stored by PublishPress, in case we need to unencode it later
     private function archive_encoded_properties($terms, $taxonomy) {
+        static $busy;
+        
+        if (!empty($busy)) {
+        	return $terms;
+    	}
+    
+    	$busy = true;
+        
         $archived_term_descriptions = [];
 
         foreach ($terms as $k => $term) {
@@ -1575,7 +1591,45 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         if ($archived_term_descriptions) {
             update_option('pp_statuses_archived_term_properties', maybe_serialize($archived_term_descriptions));
+
+            if ('post_status' == $taxonomy) {
+                // migrate status_parent from Permissions Pro
+                $status_parent = get_option('presspermit_status_parent');
+                    
+                if ($status_parent && is_array($status_parent)) {
+                    foreach ($terms as $k => $term) {
+                        if (!empty($status_parent[$term->name])) {
+                            if (get_post_status_object($status_parent[$term->name])) {
+                                update_term_meta($term->term_id, 'status_parent', $status_parent[$term->name]);
+                            }
+                        }
+                    }
+                }
+
+                // migrate status order from Permissions Pro (needs more work to account for status type boundaries)
+                /*
+                if ($presspermit_status_order = get_option('presspermit_status_order')) {
+                    asort($presspermit_status_order);
+                    $presspermit_status_positions = array_keys($presspermit_status_order);
+
+                    $statuses = $this->getPostStatuses([], 'names', ['load' => true, 'skip_archive' => true]);
+
+                    $publishpress_status_positions = array_keys($statuses);
+
+                    // Use ordering stored by Permissions Pro, but with any missing statuses appended to the end in PublishPress Statuses order
+                    $publishpress_status_positions = array_merge(
+                        ['draft'],
+                        $presspermit_status_positions,
+                        array_diff($publishpress_status_positions, $presspermit_status_positions)
+                    );
+                    
+                    update_option('publishpress_status_positions', $publishpress_status_positions);
+                }
+                */
+            }
         }
+    
+    	$busy = false;
 
         return $terms;
     }
