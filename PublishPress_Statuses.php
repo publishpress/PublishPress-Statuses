@@ -982,6 +982,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
+        if (!did_action('pp_statuses_init')) {
+            $args['skip_archive'] = true;
+        }
+
         // We are using the terms and term_taxonomy tables to store and configure several types of post statuses, but disregarding term_id and term_taxonomy_id. 
         // Status name (slug) is the unique key (as used in the post_status column of the posts table), and there is no expectation to join the term tables to post queries for status filtering.
         foreach ([self::TAXONOMY_PRE_PUBLISH, self::TAXONOMY_PRIVACY, self::TAXONOMY_CORE_STATUS] as $taxonomy) {
@@ -1578,7 +1582,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         foreach ($terms as $k => $term) {
             // Archive and clear the description field only if it's encoded
-            if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) {
+            if (!empty($term->description) && preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) {
+                
                 // Don't bother archiving Post Visibility or Core Status description fields, which only existed in Statuses beta
                 if ('post_status' == $taxonomy) {
                     $archived_term_descriptions[$term->term_id] = $term->description;
@@ -1592,40 +1597,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if ($archived_term_descriptions) {
             update_option('pp_statuses_archived_term_properties', maybe_serialize($archived_term_descriptions));
 
-            if ('post_status' == $taxonomy) {
-                // migrate status_parent from Permissions Pro
-                $status_parent = get_option('presspermit_status_parent');
-                    
-                if ($status_parent && is_array($status_parent)) {
-                    foreach ($terms as $k => $term) {
-                        if (!empty($status_parent[$term->name])) {
-                            if (get_post_status_object($status_parent[$term->name])) {
-                                update_term_meta($term->term_id, 'status_parent', $status_parent[$term->name]);
-                            }
-                        }
-                    }
+            if (('post_status' == $taxonomy) && !defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
+                if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
+                    require_once(__DIR__ . '/PermissionsImport.php');
+                    \PublishPress_Statuses\PermissionsImport::import($terms);
                 }
-
-                // migrate status order from Permissions Pro (needs more work to account for status type boundaries)
-                /*
-                if ($presspermit_status_order = get_option('presspermit_status_order')) {
-                    asort($presspermit_status_order);
-                    $presspermit_status_positions = array_keys($presspermit_status_order);
-
-                    $statuses = $this->getPostStatuses([], 'names', ['load' => true, 'skip_archive' => true]);
-
-                    $publishpress_status_positions = array_keys($statuses);
-
-                    // Use ordering stored by Permissions Pro, but with any missing statuses appended to the end in PublishPress Statuses order
-                    $publishpress_status_positions = array_merge(
-                        ['draft'],
-                        $presspermit_status_positions,
-                        array_diff($publishpress_status_positions, $presspermit_status_positions)
-                    );
-                    
-                    update_option('publishpress_status_positions', $publishpress_status_positions);
-                }
-                */
             }
         }
     
