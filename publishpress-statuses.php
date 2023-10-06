@@ -147,8 +147,11 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             require_once(__DIR__ . '/LibInstanceProtection.php');
             new LibInstanceProtection();
             
+            // Disable Reviews library until other plugins are updated to fix conflict
+            /*
             require_once(__DIR__ . '/LibWordPressReviews.php');
         	new LibWordPressReviews();
+            */
 
             require_once(__DIR__ . '/PublishPress_Statuses.php');
             PublishPress_Statuses::instance();
