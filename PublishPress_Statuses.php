@@ -209,12 +209,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             );
         }
 
-        if (false === get_option('publishpress_statuses_version')) {
-            $this->archive_term_descriptions();
-
-            update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
-        }
-
         // Register new taxonomy so that we can store all our fancy new custom statuses (or is it stati?)
         if (! taxonomy_exists(self::TAXONOMY_PRE_PUBLISH)) {
             register_taxonomy(
@@ -996,6 +990,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 continue;
             }
 
+            // Under PublishPress / PublishPress Planner, post_status properties were encoded in the description column of the term_taxonomy table
+            $_terms = $this->archive_encoded_properties($_terms, $taxonomy);
+
             foreach ($_terms as $term) {
                 if (isset($stored_status_terms[$taxonomy][$term->slug]) || ('pending-review' == $term->slug)) {
                     continue;
@@ -1560,44 +1557,27 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     // Archive the wp_terms description field as stored by PublishPress, in case we need to unencode it later
-    private function archive_term_descriptions() {
-        if ($terms = get_terms('post_status', ['hide_empty' => false])) {
-            if (false === get_option('pp_statuses_archived_term_data')) {
-                $archived_term_descriptions = [];
+    private function archive_encoded_properties($terms, $taxonomy) {
+        $archived_term_descriptions = [];
 
-                foreach ($terms as $term) {
-                    if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) { // clear the description field only if it's encoded
-                        $archived_term_descriptions[$term->term_id] = $term->description;
-                        wp_update_term($term->description, 'post_status', ['description' => '']);
-                    }
+        foreach ($terms as $k => $term) {
+            // Archive and clear the description field only if it's encoded
+            if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) {
+                // Don't bother archiving Post Visibility or Core Status description fields, which only existed in Statuses beta
+                if ('post_status' == $taxonomy) {
+                    $archived_term_descriptions[$term->term_id] = $term->description;
                 }
 
-                update_option('pp_statuses_archived_term_data', maybe_serialize($archived_term_descriptions));
+                wp_update_term($term->term_id, $taxonomy, ['description' => '']);
+                $terms[$k]->description = '';
             }
         }
 
-        // Visibility terms were not implemented by PublishPress Planner; wipe any entries stored by dev versions
-        if (version_compare(PUBLISHPRESS_STATUSES_VERSION, '1.0', '<')) {
-            if (! taxonomy_exists('post_visibility_pp')) {
-                register_taxonomy(
-                    'post_visibility_pp',
-                    'post',
-                    [
-                        'hierarchical' => false,
-                        'label' => 'post_visibility',
-                        'query_var' => false,
-                        'rewrite' => false,
-                        'show_ui' => false,
-                    ]
-                );
-            }
-
-            if ($terms = get_terms('post_visibility_pp', ['hide_empty' => false])) {  
-                foreach ($terms as $term) {
-                    wp_update_term($term->term_id, 'post_visibility_pp', ['description' => '']);
-                }
-            }
+        if ($archived_term_descriptions) {
+            update_option('pp_statuses_archived_term_properties', maybe_serialize($archived_term_descriptions));
         }
+
+        return $terms;
     }
 
     /*  
@@ -1613,7 +1593,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         foreach ($terms as $term) {
             $meta = get_term_meta($term->term_id);
 
-            $archived_term_descriptions = get_option('pp_statuses_archived_term_data');
+            $archived_term_descriptions = get_option('pp_statuses_archived_term_properties');
 
             if (is_array($archived_term_descriptions) && !empty($archived_term_descriptions[$term->term_id])) {
                 $unencoded_description = maybe_unserialize(base64_decode($archived_term_descriptions[$term->term_id]));
