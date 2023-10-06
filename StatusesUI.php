@@ -33,10 +33,10 @@ class StatusesUI {
         // Register our settings
         if ('publishpress-statuses-settings' === $plugin_page) { 
             add_action('admin_init', [$this, 'register_settings']);
+        }
 
-            if (!\PublishPress_Functions::empty_POST('submit')) {
-                add_action('admin_init', [$this, 'handle_settings'], 100);
-            }
+        if ('publishpress_custom_status_options' === \PublishPress_Functions::POST_key('option_page')) { 
+            $this->handle_settings();
         }
 
         // Methods for handling the actions of creating, making default, and deleting post stati
@@ -190,6 +190,7 @@ class StatusesUI {
             'status-added' => __('Post status created. Select a tab for further configuration.', 'publishpress-statuses'),
             // translators: %1$s is the status name, %2$s is the edit link
             'status-updated' => sprintf(__('Post status %1$s updated. %2$s', 'publishpress-statuses'), $status_name, $edit_again),
+            'settings-updated' => sprintf(__('Settings updated', 'publishpress-statuses')),
             'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
             'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
             // translators: %1$s is the status name, %2$s is the edit link
