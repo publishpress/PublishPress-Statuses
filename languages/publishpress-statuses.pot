@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PublishPress Statuses 1.0-beta8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
-"POT-Creation-Date: 2023-10-05 18:55-0400\n"
+"POT-Creation-Date: 2023-10-06 13:46-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 msgid "Statuses"
 msgstr ""
 
-#: Admin.php:173 Admin.php:174 StatusesUI.php:395
+#: Admin.php:173 Admin.php:174 StatusesUI.php:396
 msgid "Add New"
 msgstr ""
 
@@ -48,11 +48,11 @@ msgstr ""
 msgid "Submit for Review"
 msgstr ""
 
-#: Admin.php:263 PublishPress_Statuses.php:523
+#: Admin.php:263 PublishPress_Statuses.php:517
 msgid "Approve"
 msgstr ""
 
-#: Admin.php:265 PublishPress_Statuses.php:499
+#: Admin.php:265 PublishPress_Statuses.php:493
 msgid "Assign"
 msgstr ""
 
@@ -108,7 +108,7 @@ msgid "Advance Status"
 msgstr ""
 
 #: PostEdit.php:171 PostEditGutenberg.php:146 PostsListing.php:88
-#: PublishPress_Statuses.php:2353
+#: PublishPress_Statuses.php:2387
 msgid "Pending"
 msgstr ""
 
@@ -246,87 +246,87 @@ msgstr ""
 msgid "PublishPress Statues"
 msgstr ""
 
-#: PublishPress_Statuses.php:226
+#: PublishPress_Statuses.php:220
 msgid "Pre-Publication Statuses"
 msgstr ""
 
-#: PublishPress_Statuses.php:241
+#: PublishPress_Statuses.php:235
 msgid "Core Post Statuses"
 msgstr ""
 
-#: PublishPress_Statuses.php:257
+#: PublishPress_Statuses.php:251
 msgid "Pseudo Statuses"
 msgstr ""
 
-#: PublishPress_Statuses.php:427
+#: PublishPress_Statuses.php:421
 msgid "New post, not yet submitted."
 msgstr ""
 
-#: PublishPress_Statuses.php:437
+#: PublishPress_Statuses.php:431
 msgid "Pending Review"
 msgstr ""
 
-#: PublishPress_Statuses.php:438
+#: PublishPress_Statuses.php:432
 msgid "Post is awaiting review."
 msgstr ""
 
-#: PublishPress_Statuses.php:449
+#: PublishPress_Statuses.php:443
 msgid "Post is scheduled for publication."
 msgstr ""
 
-#: PublishPress_Statuses.php:460
+#: PublishPress_Statuses.php:454
 msgid "Post is published, publicly visible."
 msgstr ""
 
-#: PublishPress_Statuses.php:471
+#: PublishPress_Statuses.php:465
 msgid "Post is published with private visibility."
 msgstr ""
 
-#: PublishPress_Statuses.php:486
+#: PublishPress_Statuses.php:480
 msgid "Pitch"
 msgstr ""
 
-#: PublishPress_Statuses.php:487
+#: PublishPress_Statuses.php:481
 msgid "Throw Pitch"
 msgstr ""
 
-#: PublishPress_Statuses.php:488
+#: PublishPress_Statuses.php:482
 msgid "Idea proposed; waiting for acceptance."
 msgstr ""
 
-#: PublishPress_Statuses.php:498
+#: PublishPress_Statuses.php:492
 msgid "Assigned"
 msgstr ""
 
-#: PublishPress_Statuses.php:500
+#: PublishPress_Statuses.php:494
 msgid "Post idea assigned to writer."
 msgstr ""
 
-#: PublishPress_Statuses.php:510
+#: PublishPress_Statuses.php:504
 msgid "In Progress"
 msgstr ""
 
-#: PublishPress_Statuses.php:511
+#: PublishPress_Statuses.php:505
 msgid "Mark in Progress"
 msgstr ""
 
-#: PublishPress_Statuses.php:512
+#: PublishPress_Statuses.php:506
 msgid "Writer is working on the post."
 msgstr ""
 
-#: PublishPress_Statuses.php:522
+#: PublishPress_Statuses.php:516
 msgid "Approved"
 msgstr ""
 
-#: PublishPress_Statuses.php:524
+#: PublishPress_Statuses.php:518
 msgid "Post has been approved for publication."
 msgstr ""
 
-#: PublishPress_Statuses.php:540
+#: PublishPress_Statuses.php:534
 msgid "Alternate Pre-Publication Workflow:"
 msgstr ""
 
-#: PublishPress_Statuses.php:553
+#: PublishPress_Statuses.php:547
 msgid "Disabled Statuses:"
 msgstr ""
 
@@ -463,7 +463,7 @@ msgstr ""
 msgid "You are not permitted to do that."
 msgstr ""
 
-#: StatusHandler.php:176 StatusesUI.php:193
+#: StatusHandler.php:176 StatusesUI.php:194
 msgid "Post status doesn't exist."
 msgstr ""
 
@@ -584,102 +584,106 @@ msgstr ""
 msgid "Post status %1$s updated. %2$s"
 msgstr ""
 
-#: StatusesUI.php:194
+#: StatusesUI.php:193
+msgid "Settings updated"
+msgstr ""
+
+#: StatusesUI.php:195
 msgid "Default post status has been changed."
 msgstr ""
 
-#: StatusesUI.php:196
+#: StatusesUI.php:197
 #, php-format
 msgid "Post status%1$s updated. %2$s"
 msgstr ""
 
-#: StatusesUI.php:197
+#: StatusesUI.php:198
 msgid "Post status deleted."
 msgstr ""
 
-#: StatusesUI.php:198
+#: StatusesUI.php:199
 msgid "Status order updated."
 msgstr ""
 
-#: StatusesUI.php:221
+#: StatusesUI.php:222
 msgid "Use on these post types:"
 msgstr ""
 
-#: StatusesUI.php:229
+#: StatusesUI.php:230
 msgid "Workflow sequence:"
 msgstr ""
 
-#: StatusesUI.php:238
+#: StatusesUI.php:239
 msgid "Editor capabilities:"
 msgstr ""
 
-#: StatusesUI.php:263
+#: StatusesUI.php:264
 msgid "Supplemental Role of Editor for \"standard statuses\" also covers Custom Statuses"
 msgstr ""
 
-#: StatusesUI.php:286
+#: StatusesUI.php:287
 msgid "Publish button defaults to highest status available to user"
 msgstr ""
 
-#: StatusesUI.php:296
+#: StatusesUI.php:297
 msgid "Publish button defaults to next status in publication workflow"
 msgstr ""
 
-#: StatusesUI.php:311
+#: StatusesUI.php:312
 msgid "Posts"
 msgstr ""
 
-#: StatusesUI.php:312
+#: StatusesUI.php:313
 msgid "Pages"
 msgstr ""
 
-#: StatusesUI.php:340
+#: StatusesUI.php:341
 #, php-format
 msgid "Disabled because add_post_type_support('%1$s', '%2$s') is included in a loaded file."
 msgstr ""
 
-#: StatusesUI.php:371
+#: StatusesUI.php:372
 #, php-format
 msgid "Edit Status: %s"
 msgstr ""
 
-#: StatusesUI.php:394 StatusesUI.php:452
+#: StatusesUI.php:395 StatusesUI.php:453
 msgid "Add New Pre-Publication Status"
 msgstr ""
 
-#: StatusesUI.php:397
+#: StatusesUI.php:398
 msgid "Click any status property to edit. Drag to re-order, nest, or move to a different section."
 msgstr ""
 
-#: StatusesUI.php:412
+#: StatusesUI.php:413
 msgid "Pre-Publication"
 msgstr ""
 
-#: StatusesUI.php:420
+#: StatusesUI.php:421
 msgid "Visibility"
 msgstr ""
 
-#: StatusesUI.php:429
+#: StatusesUI.php:430
 msgid "Revision"
 msgstr ""
 
-#: StatusesUI.php:451
+#: StatusesUI.php:452
 msgid "Add New Visibility Status"
 msgstr ""
 
-#: StatusesUI.php:455
+#: StatusesUI.php:456
 msgid "This status can be assigned to a post as a different form of Private Publication with its own capability requirements."
 msgstr ""
 
-#: StatusesUI.php:456
+#: StatusesUI.php:457
 msgid "This status can be assigned to an unpublished post using the Post Status dropdown."
 msgstr ""
 
-#: StatusesUI.php:465
+#: StatusesUI.php:466
 msgid "PublishPress Statuses Settings"
 msgstr ""
 
-#: StatusesUI.php:466
+#: StatusesUI.php:467
 msgid "Note: Post types can also be specified for each individual status."
 msgstr ""
 
