@@ -616,6 +616,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
+        foreach ($wp_post_statuses as $k => $status) {
+            if (empty($status->labels)) {
+                $wp_post_statuses[$k]->labels = (object) array();
+            }
+        }
+
         if (is_admin()) {
             $wp_post_statuses['publish']->labels->publish = esc_attr(self::__wp('Publish'));
             $wp_post_statuses['future']->labels->publish = esc_attr(self::__wp('Schedule'));
