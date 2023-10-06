@@ -240,6 +240,7 @@ width: 24%;
 
 table.status-row td.name {
 width: 25%;
+padding-left: 3px;
 }
 
 table.status-row th.roles, table.status-row td.roles {
