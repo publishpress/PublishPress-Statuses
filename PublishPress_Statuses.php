@@ -1606,7 +1606,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
 
             foreach ($unencoded_description as $key => $value) {
-                if (in_array($key, ['viewable', 'show_in_filters', 'position'])) {
+                if (in_array($key, ['position', 'color', 'icon'])) {
                     if ('position' == $key) {
                         $key = 'original_position';
                     }
