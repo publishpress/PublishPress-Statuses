@@ -496,34 +496,5 @@ class PublishPress_Functions
             return (isset($_POST[$var]) && ($_POST[$var] == $match));
         }
     }
-    
-    /*
-    public static function POST_int($var) {
-        return (!empty($_POST) && !empty($_POST[$var])) ? intval($_POST[$var]) : 0;
-    }
-    */
-    
-    /*
-    public static function empty_GET($var = false) {
-        if (false === $var) {
-            return empty($_GET);
-        } else {
-            return empty($_GET[$var]);
-        }
-    }
-    */
-
-    /*
-    public static function is_GET($var, $match = false) {
-        if (false === $match) {
-            return isset($_GET[$var]);
-    
-        } elseif (is_array($match)) {
-            return isset($_GET[$var]) && in_array($_GET[$var], $match);
-        } else {
-            return !empty($_GET[$var]) && ($_GET[$var] == $match);
-        }
-    }
-    */
 }
 }

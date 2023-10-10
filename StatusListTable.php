@@ -244,11 +244,6 @@ class StatusListTable extends \WP_List_Table
 <td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
 
 <?php 
-/* Add New button moved to page header
-if (in_array($key, ['_pre-publish'])):
-endif;
-*/
-
 do_action('publishpress_statuses_table_row', $key, []);
 ?>
 </div>
@@ -486,8 +481,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '</div>';
 
             } elseif ( 'roles' === $column_name ) {
-                // $this->role_caps
-
                 if (!in_array($item->name, ['draft', 'future', 'publish', 'private'])) {
                     echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
 
@@ -515,7 +508,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                         $caption = esc_html('Disabled', 'publishpress-statuses');
                 
                     } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) {
-                        //if (!\PublishPress\Permissions\Statuses::postStatusHasCustomCaps($item->name)) {
                         if (empty($status_obj->capability_status)) {
                             $caption = esc_html('Standard', 'publishpress-statuses');
                         } else {
@@ -549,7 +541,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '</div>';
 			} else {
 				echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
-                //echo $this->column_default( $item, $column_name );
                 echo esc_html(apply_filters('presspermit_manage_conditions_custom_column', '', $column_name, 'post_status', $item->name));
                 echo '</div>';
             }
@@ -629,17 +620,12 @@ do_action('publishpress_statuses_table_row', $key, []);
             echo '</em></strong>';
         }
 
-        //if () { / @todo: list statuses without editing ability?
             $item_edit_link = \PublishPress_Statuses::getLink(
                     [
                         'action' => 'edit-status',
                         'name' => $item->name,
-                        //'status' => $item->name,
                     ]
                 );
-        //} else {
-           // $item_edit_link = '';
-        //}
         
         $status_obj = $item;
 
@@ -676,7 +662,6 @@ do_action('publishpress_statuses_table_row', $key, []);
         echo '</strong>';
 
         $actions = [];
-        //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress-statuses') . "</a>";
 
         $status_obj = $item;
 

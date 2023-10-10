@@ -106,8 +106,7 @@ class PostEditClassicSubmitMetabox
         </div> <?php // submitpost ?>
 
         <?php
-
-    } // end function post_submit_meta_box()
+    }
 
     /*
      *  Classic Editor Post Submit Metabox: Post Save Button HTML
@@ -264,7 +263,7 @@ class PostEditClassicSubmitMetabox
                 ?>
             </div>
 
-        <?php } // endif status editable
+        <?php }
     }
 
     /**

@@ -482,9 +482,7 @@ class StatusHandler {
             }
 
             // temp (@todo: test status slug rename
-            // if (!empty($status_obj->_builtin)) {
             unset($args['slug']);
-            //}
 
             if (!empty($status_obj->_builtin)) {
                 $args['name'] = $status_obj->label;

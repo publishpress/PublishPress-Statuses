@@ -200,7 +200,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 'post',
                 [
                     'hierarchical'          => false,
-                    /*'update_count_callback' => '_update_post_term_count',*/
                     'label'                 => __('Statuses', 'publishpress-statuses'),
                     'query_var'             => false,
                     'rewrite'               => false,
@@ -381,19 +380,21 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public function set_workflow_action($action) {
         global $current_user;
 
-        if (!empty($_REQUEST['post_id']) && !empty($_REQUEST['workflow_action'])) {
-            if (!wp_verify_nonce($_POST['pp_nonce'],'pp-custom-statuses-nonce')) {
+        if ($post_id = \PublishPress_Functions::REQUEST_int('post_id')) {
+            if ($workflow_action = \PublishPress_Functions::REQUEST_key('workflow_action')) {
+                if (!wp_verify_nonce(\PublishPress_Functions::POST_key('pp_nonce'),'pp-custom-statuses-nonce')) {
                 exit;
             }
 
-            if (!current_user_can('edit_post', intval($_REQUEST['post_id']))) {
+                if (!current_user_can('edit_post', $post_id)) {
                 exit;
             }
 
-            update_user_meta($current_user->ID, "_pp_statuses_workflow_action_" . intval($_REQUEST['post_id']), sanitize_key($_REQUEST['workflow_action']));
+                update_user_meta($current_user->ID, "_pp_statuses_workflow_action_" . $post_id, sanitize_key($workflow_action));
 
             \PublishPress_Functions::printAjaxResponse('success', '', [], []);
         }
+    }
     }
 
     public static function isStatusManagement() {
@@ -446,7 +447,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'position' => 7,
                         'order' => 700,
                         '_builtin' => true,
-                        //'moderation' => true,
                     ],
 
                     'publish' => (object) [
@@ -638,8 +638,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
 
             $wp_post_statuses['private']->labels->caption = self::__wp('Privately Published');
-
-            //$wp_post_statuses['auto-draft']->labels->caption = self::__wp('Draft');
         }
     }
 
@@ -831,28 +829,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $statuses = self::get_default_statuses(self::TAXONOMY_CORE_STATUS);
 
-        /*
-        $statuses = [
-            'draft' => (object)[
-                'label'        => __('Draft'),
-                'description' => '',
-                'position'    => 1,
-            ],
-
-            'pending' => (object)[
-                'label'        => __('Pending Review'),
-                'description' => '',
-                'position'    => 2,
-            ],
-
-            'publish' => (object)[
-                'label'        => __('Published'),
-                'description' => '',
-                'position'    => 3,
-            ],
-        ];
-        */
-
         foreach (array_keys($statuses) as $status_name) {
             $statuses[$status_name]->slug = $status_name;
             $statuses[$status_name]->name = $status_name;
@@ -861,7 +837,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             $status_name = $statuses[$status_name]->name;
 
-            //if (!empty($args['mirror_to_wp_statuses'])) {
                 foreach (get_object_vars($statuses[$status_name]) as $prop => $val) {
                     if (isset($wp_post_statuses[$status_name])) {
                         if (!isset($wp_post_statuses[$status_name]->$prop)) {
@@ -869,7 +844,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         }
                     }
                 }
-            //}
         }
 
         return ($return_args['output'] == 'object') ? $statuses : array_keys($statuses);
@@ -905,7 +879,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public static function getPostStati($status_args = [], $return_args = [], $function_args = []) {
-        //$args = array_merge($args, ['_builtin' => false]);
         return self::instance()->getPostStatuses($status_args, $return_args, $function_args);
     }
 
@@ -1181,11 +1154,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         
                         } elseif ($status->position >= $all_statuses['pending']->position) {
                             $status->post_pending = true;
-
-                        } /*elseif ($status->position > $all_statuses['draft']->position) {
-
                         }
-                        */
                     }
                 }
 
@@ -1272,25 +1241,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        // @todo ?
-        /*
-        // If a plugin-defined moderation status has not been stored as a term, add it
-        foreach($default_moderation_statuses as $status) {
-            if (! term_exists($status->slug, 'post_status')) {
-                //$status_term_args =   @todo
-                $this->addStatus('post_status', $status->slug, $status_term_args);
-            }
-        }
-
-        // If a plugin-defined visibility status has not been stored as a term, add it
-        foreach($default_visibility_statuses as $status) {
-            if (! term_exists($status->slug, 'post_visibility_pp')) {
-                //$status_term_args =   @todo
-                $this->addStatus('post_visibility_pp', $status->slug, $status_term_args);
-            }
-        }
-        */
-
         global $wp_post_statuses;
 
         foreach (array_keys($status_by_position) as $key) {
@@ -1305,7 +1255,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             $status_name = $status_by_position[$key]->name;
 
-            //if (!empty($args['mirror_to_wp_statuses'])) {
                 foreach (get_object_vars($status_by_position[$key]) as $prop => $val) {
                     if (isset($wp_post_statuses[$status_name])) {
                         if (!isset($wp_post_statuses[$status_name]->$prop)) {
@@ -1317,7 +1266,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         }
                     }
                 }
-            //}
         }
 
         $this->custom_statuses_cache[$arg_hash] = $status_by_position;
@@ -1616,41 +1564,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
      **/
     /*
     private function import_encoded_properties() {
-        if (!$terms = get_terms('post_status', ['hide_empty' => false])) {
-            return;
-        }
-
-        foreach ($terms as $term) {
-            $meta = get_term_meta($term->term_id);
-
-            $archived_term_descriptions = get_option('pp_statuses_archived_term_properties');
-
-            if (is_array($archived_term_descriptions) && !empty($archived_term_descriptions[$term->term_id])) {
-                $unencoded_description = maybe_unserialize(base64_decode($archived_term_descriptions[$term->term_id]));
-            } else {
-                $unencoded_description = maybe_unserialize(base64_decode($term->description));
-            }
-
-            if (!is_array($unencoded_description)) {
-                continue;
-            }
-
-            foreach ($unencoded_description as $key => $value) {
-                if (in_array($key, ['position', 'color', 'icon'])) {
-                    if ('position' == $key) {
-                        $key = 'original_position';
-                    }
-
-                    if (!isset($meta[$key]) || !empty($_REQUEST['pp_overwrite_status_meta'])) {
-                        update_term_meta($term->term_id, $key, $value);
-                    }
-                } elseif ('description' == $key) {
-                    if (!$value || ('-' == $value)) {
-                        wp_update_term($term->term_id, 'post_status', ['description' => $value]);
-                    }
-                }
-            }
-        }
+        // code provided in custom build as needed
     }
     */
     
@@ -2271,7 +2185,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if (
             (in_array($selected_status, ['publish', 'pending', 'future']) && !in_array($stored_status, ['publish', 'private', 'future']) 
             && empty($stored_status_obj->public) && empty($stored_status_obj->private))
-            //(!$doing_rest && ('publish' == $selected_status))
         ) {
             // Gutenberg REST gives no way to distinguish between Publish and Save request. Treat as Publish (next workflow progression) if any of the following:
             //  * user cannot set pending status
@@ -2318,8 +2231,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         if (empty($save_as_pending) 
                         && ($doing_rest && ($selected_status != $stored_status || (('pending' == $selected_status) && !$can_publish))) 
                         || !\PublishPress_Functions::empty_POST('publish')
-                        ) { //} && ! empty( $_POST['pp_submission_status'] ) ) { 
-                        
+                        ) {
                             // Submission status inferred using same logic as UI generation (including permission check)
                             $post_status = \PublishPress_Statuses::defaultStatusProgression($post_id, ['return' => 'name', 'post_type' => $post_type]);
                         }
@@ -2432,10 +2344,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public static function updateWorkflowAction( $value, $object ) {
-        /*
-        $id = (is_object($object)) ? $object->ID : $object['id'];
-        */
-
         return false;
     }
 
@@ -2454,10 +2362,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public static function updateStatusSelection( $value, $object ) {
-        /*
-        $id = (is_object($object)) ? $object->ID : $object['id'];
-        */
-
         return false;
     }
 }

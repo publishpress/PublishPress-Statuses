@@ -111,8 +111,6 @@ jQuery(document).ready(function ($) {
         $default_tab
     );
 
-    //$default_tab = apply_filters('presspermit_edit_status_default_tab', 'name');
-
     self::tabContent('labels', $status, $default_tab);
     self::tabContent('roles', $status, $default_tab);
     self::tabContent('post_types', $status, $default_tab);
@@ -327,7 +325,6 @@ jQuery(document).ready(function ($) {
                 <?php
                 $types = get_post_types(['public' => true, 'show_ui' => true], 'object', 'or');
 
-                //$omit_types = apply_filters('presspermit_unfiltered_post_types', ['wp_block']);
                 $omit_types = ['nav_menu', 'attachment', 'revision', 'wp_navigation', 'wp_block']; // @todo: review block, navigation filtering
 
                 $custom_status_post_types = \PublishPress_Statuses::instance()->options->post_types;
