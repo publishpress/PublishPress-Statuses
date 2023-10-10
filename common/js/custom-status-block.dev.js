@@ -400,12 +400,15 @@ setInterval(function () {
       }
     }
 
+    $('input[name="pp_statuses_workflow_selection"][value="current"]').closest('div.components-radio-control__option').toggle(-1 == PPCustomStatuses.publishedStatuses.indexOf(selectedStatus));
     $('input[name="pp_statuses_workflow_selection"][value="specified"]').closest('div.components-radio-control__option').toggle(currentStatus != selectedStatus);
     $('input[name="pp_statuses_workflow_selection"][value="next"]').closest('div.components-radio-control__option').toggle(!currentStatusPublished && (ppObjEdit.nextStatus != currentStatus) && (ppObjEdit.nextStatus != ppObjEdit.maxStatus));
     $('input[name="pp_statuses_workflow_selection"][value="max"]').closest('div.components-radio-control__option').toggle(!currentStatusPublished && (ppObjEdit.maxStatus != currentStatus));
 
     // default to current status if checked option is hidden
-    if (currentStatusPublished || !$('input[name="pp_statuses_workflow_selection"]:visible:checked').length) {
+    if ((currentStatusPublished || !$('input[name="pp_statuses_workflow_selection"]:visible:checked').length)
+    && (-1 == PPCustomStatuses.publishedStatuses.indexOf(selectedStatus))
+    ) {
       $('input[name="pp_statuses_workflow_selection"][value="current"]').trigger('click');
 
       wp.data.dispatch('core/editor').editPost({
