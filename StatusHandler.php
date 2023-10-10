@@ -69,7 +69,7 @@ class StatusHandler {
         }
 
         // Check to make sure the status doesn't already exist as another term because otherwise we'd get a weird slug
-        if (term_exists($status_name, 'post_status')) {
+        if (get_term_by('slug', $status_name, 'post_status')) {
             $form_errors['label'] = __(
                 'Name conflicts with existing status. Please choose another.',
                 'publishpress-statuses'
