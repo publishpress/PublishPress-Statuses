@@ -324,7 +324,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public function get_ajax_selectable_statuses()
     {
         if (!empty($_REQUEST['post_id'])) {
-            if (!wp_verify_nonce($_POST['pp_nonce'],'pp-custom-statuses-nonce')) {
+            if (!wp_verify_nonce(\PublishPress_Functions::POST_key('pp_nonce'),'pp-custom-statuses-nonce')) {
                 exit;
             }
 
