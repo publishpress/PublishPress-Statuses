@@ -794,7 +794,7 @@ class StatusHandler {
     }
 
     /**
-     * Assign new statuses to posts using value provided or the default
+     * Assign a new status to all posts currently set to another specified status.
      *
      * @param string $old_status Slug for the old status
      * @param string $new_status Slug for the new status
@@ -813,5 +813,7 @@ class StatusHandler {
             ['post_status' => $old_status],
             ['%s']
         );
+
+        wp_cache_flush();
     }
 }
