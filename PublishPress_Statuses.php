@@ -925,7 +925,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         //      * status_parent set: Normally unavailable, but available for manual selection after a parent status is selected
 
         // Internal object cache for repeat requests
-        $arg_hash = md5(serialize($function_args));
+        $arg_hash = md5(wp_json_encode($function_args));
+
         if (! empty($this->custom_statuses_cache[$arg_hash])) {
             return $this->process_return_array($this->custom_statuses_cache[$arg_hash], $status_args, $return_args, $function_args);
         }
