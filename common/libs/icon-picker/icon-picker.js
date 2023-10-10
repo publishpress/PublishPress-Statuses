@@ -2,6 +2,9 @@
  * Dashicons Picker
  *
  * Based on: https://github.com/bradvin/dashicons-picker/
+ * 
+ * License: GPL Version 2
+ * 
  */
 
 (function ($) {
