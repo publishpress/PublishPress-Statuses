@@ -258,7 +258,7 @@ class StatusesUI {
         $checked = $module->options->supplemental_cap_moderate_any ? 'checked' : '';
 
         echo sprintf(
-            '<input type="checkbox" name="%s" value="on" autocomplete="off" %s>',
+            '<input type="checkbox" name="%s" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[supplemental_cap_moderate_any]',
             esc_attr($checked)
         ) . ' ';
@@ -295,7 +295,7 @@ class StatusesUI {
         $checked = $module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
 
         echo sprintf(
-            '<input type="radio" name="%s" value="on" autocomplete="off" %s>',
+            '<input type="radio" name="%s" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
             esc_attr($checked)
         ) . ' ';
@@ -339,7 +339,7 @@ class StatusesUI {
 
             // Defining post_type_supports in the functions.php file or similar should disable the checkbox
             disabled(post_type_supports($post_type, 'pp_custom_statuses'), true);
-            echo ' type="checkbox" value="on" />&nbsp;&nbsp;&nbsp;' . esc_html($title) . '</label>';
+            echo ' type="checkbox" value="1" />&nbsp;&nbsp;&nbsp;' . esc_html($title) . '</label>';
             
             // Leave a note to the admin as a reminder that add_post_type_support has been used somewhere in their code
             if (post_type_supports($post_type, 'pp_custom_statuses')) {
