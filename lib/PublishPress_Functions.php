@@ -200,7 +200,10 @@ class PublishPress_Functions
                 if (!empty($wp_query->query_vars) && !empty($wp_query->query_vars['p'])) {
                     return (int) $wp_query->query_vars['p'];
                 
-                } elseif (!empty($wp_query->query['post_type']) && !empty($wp_query->query['name'])) {
+                } 
+
+                /* @todo: review usage with other plugins
+                elseif (!empty($wp_query->query['post_type']) && !empty($wp_query->query['name'])) {
                     global $wpdb;
                     
                     return $wpdb->get_var(
@@ -211,6 +214,7 @@ class PublishPress_Functions
                         )
                     );
                 }
+                */
             }
         } elseif (self::is_REQUEST('post')) {
             return self::REQUEST_int('post');
