@@ -149,8 +149,21 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             
             // Disable Reviews library until other plugins are updated to fix conflict
             /*
-            require_once(__DIR__ . '/LibWordPressReviews.php');
-        	new LibWordPressReviews();
+            if (!class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
+                include_once PUBLISHPRESS_STATUSES_DIR. '/lib/vendor/publishpress/wordpress-reviews/ReviewsController.php';
+            }
+
+            if (class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
+                $reviews = new \PublishPress\WordPressReviews\ReviewsController(
+                    'publishpress-statuses',
+                    'PublishPress Statuses',
+                    PUBLISHPRESS_STATUSES_URL . 'common/img/permissions-wp-logo.jpg'
+                );
+
+                add_filter('publishpress_wp_reviews_display_banner_publishpress-statuses', [$this, 'shouldDisplayBanner']);
+
+                $reviews->init();
+            }
             */
 
             require_once(__DIR__ . '/PublishPress_Statuses.php');
