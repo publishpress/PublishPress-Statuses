@@ -96,7 +96,7 @@ jQuery(document).ready(function ($) {
 
 <div id="ajax-response"></div>
 <form method="post" action="<?php
-echo esc_attr($edit_status_link); ?>">
+        echo esc_url($edit_status_link); ?>">
     <input type="hidden" name="name" value="<?php
     echo esc_attr($name); ?>"/>
     <?php

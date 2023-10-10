@@ -238,7 +238,7 @@ class StatusListTable extends \WP_List_Table
 <table class="status-row" style="float:right; width:100%"><tbody><tr>
 
 <?php if (\PublishPress_Statuses::getCustomStatus($key)) :?>
-<td class="status_name" style="width:0"><div class="status_name <?php echo esc_attr($key);?> column-<?php echo esc_attr($key);?> hidden"><?php echo esc_attr($key);?></div></td>
+<td class="status_name" style="width:0"><div class="status_name <?php echo esc_attr($key);?> column-<?php echo esc_attr($key);?> hidden"><?php echo esc_html($key);?></div></td>
 <?php endif; ?>
 
 <td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
@@ -718,7 +718,7 @@ do_action('publishpress_statuses_table_row', $key, []);
 			++$i;
 			$sep = ( $i < $action_count ) ? ' | ' : '';
 			echo "<span class='" . esc_attr($action) . "'>";
-            echo '<a href="' . esc_html($arr['url']) . '">' . esc_html($arr['label']) . '</a>';
+            echo '<a href="' . esc_url($arr['url']) . '">' . esc_html($arr['label']) . '</a>';
             echo esc_html($sep) . "</span>";
 		}
 

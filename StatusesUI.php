@@ -255,10 +255,12 @@ class StatusesUI {
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[supplemental_cap_moderate_any]'
         ) . ' ';
 
+        $checked = $module->options->supplemental_cap_moderate_any ? 'checked' : '';
+
         echo sprintf(
             '<input type="checkbox" name="%s" value="on" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[supplemental_cap_moderate_any]',
-            $module->options->supplemental_cap_moderate_any ? 'checked' : ''
+            esc_attr($checked)
         ) . ' ';
 
         esc_html_e('Supplemental Role of Editor for "standard statuses" also covers Custom Statuses', 'publishpress-statuses');
@@ -278,20 +280,24 @@ class StatusesUI {
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]'
         ) . ' ';
 
+        $checked = !$module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
+
         echo sprintf(
             '<input type="radio" name="%s" value="0" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
-            !$module->options->moderation_statuses_default_by_sequence ? 'checked' : ''
+            esc_attr($checked)
         ) . ' ';
 
         esc_html_e('Publish button defaults to highest status available to user', 'publishpress-statuses');
 
         echo '</div><div style="margin-top: 10px;">';
 
+        $checked = $module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
+
         echo sprintf(
             '<input type="radio" name="%s" value="on" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
-            $module->options->moderation_statuses_default_by_sequence ? 'checked' : ''
+            esc_attr($checked)
         ) . ' ';
 
         esc_html_e('Publish button defaults to next status in publication workflow', 'publishpress-statuses');
@@ -323,9 +329,9 @@ class StatusesUI {
         echo '<div class="pp-statuses-post-types">';
 
         foreach ($post_types as $post_type => $title) {
-            echo '<label for="' . esc_attr($post_type) . '-' . $pp->module->slug . '">';
-            echo '<input id="' . esc_attr($post_type) . '-' . $pp->module->slug . '" name="'
-                . $pp->options_group_name . '[post_types][' . esc_attr($post_type) . ']"';
+            echo '<label for="' . esc_attr($post_type) . '-' . esc_attr($pp->module->slug) . '">';
+            echo '<input id="' . esc_attr($post_type) . '-' . esc_attr($pp->module->slug) . '" name="'
+                . esc_attr($pp->options_group_name) . '[post_types][' . esc_attr($post_type) . ']"';
             
             if (isset($pp->options->post_types[$post_type])) {
                 checked($pp->options->post_types[$post_type], true);
@@ -338,7 +344,7 @@ class StatusesUI {
             // Leave a note to the admin as a reminder that add_post_type_support has been used somewhere in their code
             if (post_type_supports($post_type, 'pp_custom_statuses')) {
                 // translators: %1$s is the post type name, %2$s is the pp_custom_statuses feature
-                echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(__('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), $post_type, 'pp_custom_statuses') . '</span>';
+                echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(esc_html____('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), esc_html($post_type), 'pp_custom_statuses') . '</span>';
             }
         }
 
@@ -392,8 +398,8 @@ class StatusesUI {
 
             \PublishPress\ModuleAdminUI_Base::instance()->module->header_button = 
                 '<a class="button primary add-new" title="' 
-                . __("Add New Pre-Publication Status", 'publishpress-statuses')
-                . '" href="' . esc_url($url) . '">' . __('Add New') . '</a>';
+                . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
+                . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
 
             \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));
             

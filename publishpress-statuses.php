@@ -54,7 +54,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                  echo '<div class="notice notice-error"><p>';
                  printf(
                      'PublishPress Statuses requires PHP version %s or higher.',
-                     $min_php_version
+                     esc_html($min_php_version)
                  );
                  echo '</p></div>';
              }
@@ -71,7 +71,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                  echo '<div class="notice notice-error"><p>';
                  printf(
                      'PublishPress Statuses requires WordPress version %s or higher.',
-                     $min_wp_version
+                     esc_html($min_wp_version)
                  );
                  echo '</p></div>';
              }

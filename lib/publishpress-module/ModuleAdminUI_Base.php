@@ -27,21 +27,15 @@ class ModuleAdminUI_Base {
 
     public function default_header($custom_text = null)
     {
-        $display_text = '';
+        $display_messages = [];
 
         // If there's been a message, let's display it
-        if (isset($_GET['message'])) {
-            $message = sanitize_text_field($_GET['message']);
-        } elseif (isset($_REQUEST['message'])) {
-            $message = sanitize_text_field($_REQUEST['message']);
-        } elseif (isset($_POST['message'])) {
-            $message = sanitize_text_field($_POST['message']);
-        } else {
+        if (!$message = \PublishPress_Functions::REQUEST_key('message')) {
             $message = false;
         }
 
         if ($message && isset($this->module->messages[$message])) {
-            $display_text .= '<div class="is-dismissible notice notice-info"><p>' . esc_html($this->module->messages[$message]) . '</p></div>';
+            $display_messages['notice-info'] = $this->module->messages[$message];
         }
 
         if (!empty($form_errors)) {
@@ -56,7 +50,7 @@ class ModuleAdminUI_Base {
         }
 
         if ($error && isset($this->module->messages[$error])) {
-            $display_text .= '<div class="is-dismissible notice notice-error"><p>' . esc_html($this->module->messages[$error]) . '</p></div>';
+            $display_messages['notice-error'] = $this->module->messages[$error];
         }
         ?>
 
@@ -68,17 +62,23 @@ class ModuleAdminUI_Base {
                 </div>
                 -->
 
-                <h1 class="wp-heading-inline"><?php echo $this->module->title; if (!empty($this->module->header_button)) echo $this->module->header_button;?></h1>
+                <h1 class="wp-heading-inline"><?php echo esc_html($this->module->title); do_action('publishpress_header_button');?></h1>
 
-                <?php echo !empty($display_text) ? $display_text : ''; ?>
+                <?php 
+                if (!empty($display_messages)) {
+                    foreach  ($display_messages as $display_class => $message_text) {
+                        echo '<div class="is-dismissible notice ' . esc_attr($display_class) . '"><p>' . esc_html($message_text) . '</p></div>';
+                    }
+                }
+                ?>
                 <?php // We keep the H2 tag to keep notices tied to the header?>
                 <h2>
                     <?php if ($this->module->short_description && empty($custom_text)): ?>
-                        <?php echo $this->module->short_description; ?>
+                        <?php echo esc_html($this->module->short_description); ?>
                     <?php endif; ?>
 
                     <?php if (!empty($custom_text)) : ?>
-                        <?php echo $custom_text; ?>
+                        <?php echo esc_html($custom_text); ?>
                     <?php endif; ?>
                 </h2>
                 
@@ -108,9 +108,9 @@ class ModuleAdminUI_Base {
         <hr>
         <nav>
         <ul>
-        <li><a href="<?php echo esc_url($ppcom_url);?>" target="_blank" rel="noopener noreferrer" title="<?php printf(esc_attr__('About %s', 'publishpress-functions'), $plugin_title);?>"><?php esc_html_e('About', 'publishpress-functions');?>
+        <li><a href="<?php echo esc_url($ppcom_url);?>" target="_blank" rel="noopener noreferrer" title="<?php printf(esc_attr__('About %s', 'publishpress-functions'), esc_html($plugin_title));?>"><?php esc_html_e('About', 'publishpress-functions');?>
         </a></li>
-        <li><a href="<?php echo esc_url($ppcom_doc_url);?>" target="_blank" rel="noopener noreferrer" title="<?php printf(esc_attr__('%s Documentation', 'publishpress-functions'), $plugin_title);?>"><?php esc_html_e('Documentation', 'publishpress-functions');?>
+        <li><a href="<?php echo esc_url($ppcom_doc_url);?>" target="_blank" rel="noopener noreferrer" title="<?php printf(esc_attr__('%s Documentation', 'publishpress-functions'), esc_html($plugin_title));?>"><?php esc_html_e('Documentation', 'publishpress-functions');?>
         </a></li>
         <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'publishpress-functions');?>"><?php esc_html_e('Contact', 'publishpress-functions');?>
         </a></li>

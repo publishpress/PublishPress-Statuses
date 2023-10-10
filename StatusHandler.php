@@ -14,7 +14,7 @@ class StatusHandler {
         check_admin_referer('custom-status-add-nonce');
 
         if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-            wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
+            wp_die(esc_html__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
         // Validate and sanitize the form data
@@ -101,7 +101,7 @@ class StatusHandler {
         $return = \PublishPress_Statuses::instance()->addStatus($taxonomy, $status_label, $status_args);
 
         if (is_wp_error($return)) {
-            wp_die(__('Could not add status: ', 'publishpress-statuses') . $return->get_error_message());
+            wp_die(esc_html__('Could not add status: ', 'publishpress-statuses') . esc_html($return->get_error_message()));
         }
 
         $roles = ['administrator', 'editor', 'author', 'contributor'];
@@ -138,19 +138,19 @@ class StatusHandler {
 
         // Only allow users with the proper caps
         if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-            wp_die(__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
+            wp_die(esc_html__('Sorry, you do not have permission to edit custom statuses.', 'publishpress-statuses'));
         }
 
         // Check to make sure the status isn't already deleted
         $name = sanitize_key($_GET['name']);
         $term = \PublishPress_Statuses::getStatusBy('id', $name);
         if (! $term) {
-            wp_die(__('Status does not exist.', 'publishpress-statuses'));
+            wp_die(esc_html__('Status does not exist.', 'publishpress-statuses'));
         }
 
         $return = self::deleteCustomStatus($name);
         if (is_wp_error($return)) {
-            wp_die(__('Could not delete the status: ', 'publishpress-statuses') . $return->get_error_message());
+            wp_die(esc_html__('Could not delete the status: ', 'publishpress-statuses') . esc_html($return->get_error_message()));
         }
 
         $redirect_url = \PublishPress_Statuses::getLink(['message' => 'status-deleted']);
@@ -173,7 +173,7 @@ class StatusHandler {
         }
 
         if (!$existing_status = \PublishPress_Statuses::getStatusBy('name', sanitize_key($_GET['name']))) {
-            wp_die(__("Post status doesn't exist.", 'publishpress-statuses'));
+            wp_die(esc_html__("Post status doesn't exist.", 'publishpress-statuses'));
         }
 
         $color = sanitize_hex_color($_POST['status_color']);
@@ -370,7 +370,7 @@ class StatusHandler {
         $return = self::updateCustomStatus($existing_status->name, $args);
 
         if (is_wp_error($return)) {
-            wp_die(__('Error updating post status.', 'publishpress-statuses'));
+            wp_die(esc_html__('Error updating post status.', 'publishpress-statuses'));
         }
 
         // Saving custom settings for native statuses
@@ -677,7 +677,7 @@ class StatusHandler {
             }
         }
         
-        self::printAjaxResponse('success', __('Status order updated', 'publishpress-statuses'));
+        self::printAjaxResponse('success', esc_html__('Status order updated', 'publishpress-statuses'));
     }
 
     /**
@@ -781,7 +781,7 @@ class StatusHandler {
         }
 
         if (!current_user_can('manage_options') || !wp_verify_nonce(sanitize_key($_POST['_wpnonce']), 'edit-publishpress-settings')) {
-            wp_die(__('Cheatin&#8217; uh?'));
+            wp_die(esc_html__('Cheatin&#8217; uh?'));
         }
 
         $module = \PublishPress_Statuses::instance();
