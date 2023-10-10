@@ -153,6 +153,8 @@ class StatusesUI {
     }
 
     public function loadAdminMessages() {
+        // Mechanism for "Edit again" link if we redirect back to Statuses screen after Edit Status update
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         /*
         if (!empty($_REQUEST['name'])) {
             if ($status_obj = get_post_status_object(sanitize_key($_REQUEST['name']))) {

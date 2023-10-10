@@ -202,6 +202,7 @@ class PublishPress_Functions
                 
                 } 
 
+                // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
                 /* @todo: review usage with other plugins
                 elseif (!empty($wp_query->query['post_type']) && !empty($wp_query->query['name'])) {
                     global $wpdb;

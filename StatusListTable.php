@@ -34,6 +34,8 @@ class StatusListTable extends \WP_List_Table
 
         add_action('admin_footer', [$this, 'adminFooterScripts']);
 
+        // Possible troubleshooting use
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         /*
         if (!empty($_REQUEST['pp_refresh_role_counts'])) {
             delete_option('publishpress_statuses_num_roles');
@@ -132,6 +134,7 @@ class StatusListTable extends \WP_List_Table
     public function display() {
         $singular = $this->_args['singular'];
 
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 		//$this->display_tablenav( 'top' );
 
         $this->screen->render_screen_reader_content( 'heading_list' );
@@ -439,6 +442,8 @@ do_action('publishpress_statuses_table_row', $key, []);
 
 			if ( 'cb' === $column_name ) {
 				echo '<div scope="row" class="check-column">';
+
+                // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 				/* echo $this->column_cb( $item ); */
                 echo '</div>';
                 

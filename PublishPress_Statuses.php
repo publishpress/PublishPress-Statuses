@@ -295,6 +295,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         /* This can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. */
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         /*
         if (is_admin() && isset($_REQUEST['pp_statuses_import_terms'])) {
             $this->import_encoded_properties();
@@ -1221,6 +1222,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 
             } elseif ($status->position > $all_statuses['future']->position) {
                 //possible future support for custom future statuses
+                // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
                 /*
                 $last_order['future']++;
                 $status->order = $last_order['future'];
@@ -1562,6 +1564,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
      *  Function import_encoded_properties() is disabled to avoid raising concerns about base64 encoding.
      *  It can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. 
      **/
+    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
     /*
     private function import_encoded_properties() {
         // code provided in custom build as needed
