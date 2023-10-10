@@ -787,7 +787,7 @@ class StatusHandler {
             $new_status = \PublishPress_Statuses::DEFAULT_STATUS;
         }
 
-        $result = $wpdb->update(
+        $result = $wpdb->update( // Direct DB query for efficient and reliable update of all existing $old_status posts to $new_status
             $wpdb->posts,
             ['post_status' => $new_status],
             ['post_status' => $old_status],
