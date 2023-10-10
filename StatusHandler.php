@@ -18,11 +18,15 @@ class StatusHandler {
         }
 
         // Validate and sanitize the form data
-        $status_label = sanitize_text_field(trim($_POST['status_label']));
+        $status_label = !empty($_POST['status_label']) ? sanitize_text_field(trim(sanitize_text_field($_POST['status_label']))) : '';
+
         $status_name = sanitize_title($status_label);
-        $status_description = stripslashes(wp_filter_nohtml_kses(trim($_POST['description'])));
-        $status_color = sanitize_hex_color($_POST['status_color']);
-        $status_icon = str_replace('dashicons|', '', $_POST['icon']);
+
+        $status_description = !empty($_POST['description']) ? stripslashes(wp_filter_nohtml_kses(trim(sanitize_text_field($_POST['description'])))) : '';
+
+        $status_color = !empty($_POST['status_color']) ? sanitize_hex_color($_POST['status_color']) : '';
+
+        $status_icon = !empty($_POST['icon']) ? str_replace('dashicons|', '', sanitize_key($_POST['icon'])) : '';
 
         $taxonomy = (!empty($_POST['taxonomy'])) ? sanitize_key($_POST['taxonomy']) : \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
 
@@ -142,7 +146,7 @@ class StatusHandler {
         }
 
         // Check to make sure the status isn't already deleted
-        $name = sanitize_key($_GET['name']);
+        $name = !empty($_GET['name']) ? sanitize_key($_GET['name']) : '';
         $term = \PublishPress_Statuses::getStatusBy('id', $name);
         if (! $term) {
             wp_die(esc_html__('Status does not exist.', 'publishpress-statuses'));
@@ -172,23 +176,22 @@ class StatusHandler {
             wp_die(esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
         }
 
-        if (!$existing_status = \PublishPress_Statuses::getStatusBy('name', sanitize_key($_GET['name']))) {
+        $name = !empty($_REQUEST['name']) ? trim(sanitize_text_field($_REQUEST['name'])) : '';
+
+        if (!$existing_status = \PublishPress_Statuses::getStatusBy('name', sanitize_key($name))) {
             wp_die(esc_html__("Post status doesn't exist.", 'publishpress-statuses'));
         }
 
-        $color = sanitize_hex_color($_POST['status_color']);
-        $icon = sanitize_text_field($_POST['icon']);
+        $color = !empty($_POST['status_color']) ? sanitize_hex_color($_POST['status_color']) : '';
+        $icon = !empty($_POST['icon']) ? sanitize_text_field($_POST['icon']) : '';
         $icon = str_replace('dashicons|', '', $icon);
 
-        $name = sanitize_key($_GET['name']);
         $status_obj = $existing_status;
-
-        $name = sanitize_text_field(trim($_POST['name']));
 
         $form_errors = [];
 
         if (isset($_REQUEST['description'])) {
-            $description = stripslashes(wp_filter_nohtml_kses(trim($_REQUEST['description'])));
+            $description = stripslashes(wp_filter_nohtml_kses(trim(sanitize_text_field($_REQUEST['description']))));
         }
 
         if (isset($_REQUEST['status_label'])) {
@@ -200,7 +203,7 @@ class StatusHandler {
              * - 'description' is optional
              */
 
-            $label = sanitize_text_field(trim($_POST['status_label']));
+            $label = !empty($_POST['status_label']) ? trim(sanitize_text_field($_POST['status_label'])) : '';
 
             // Check if name field was filled in
             if (empty($label)) {
@@ -256,8 +259,8 @@ class StatusHandler {
 
 
         $labels = [];
-        $labels['save_as'] = sanitize_text_field($_REQUEST['status_save_as_label']);
-        $labels['publish'] = sanitize_text_field($_REQUEST['status_publish_label']);
+        $labels['save_as'] = !empty($_REQUEST['status_save_as_label']) ? sanitize_text_field($_REQUEST['status_save_as_label']) : '';
+        $labels['publish'] = !empty($_REQUEST['status_publish_label']) ? sanitize_text_field($_REQUEST['status_publish_label']) : '';
         $args['labels'] = (object) $labels;
 
 
@@ -314,8 +317,9 @@ class StatusHandler {
         }
 
         if (isset($_REQUEST['status_caps'])) {
-            foreach ($_REQUEST['status_caps'] as $role_name => $set_status_caps) {
+            foreach ($_REQUEST['status_caps'] as $role_name => $set_status_caps) { // array elements sanitized below
                 $role_name = sanitize_key($role_name);
+                $set_status_caps = array_map('boolval', $set_status_caps);
 
                 if (!\PublishPress_Functions::isEditableRole($role_name)) {
                     continue;
@@ -328,6 +332,7 @@ class StatusHandler {
                     array_filter($role->capabilities)
                 )) {
                     foreach (array_keys($add_caps) as $cap_name) {
+                        $cap_name = sanitize_key($cap_name);
                         $role->add_cap($cap_name);
                     }
                 }
@@ -335,6 +340,8 @@ class StatusHandler {
                 $set_false_status_caps = array_diff_key($set_status_caps, array_filter($set_status_caps));
 
                 foreach(array_keys($set_false_status_caps) as $cap_name) {
+                    $cap_name = sanitize_key($cap_name);
+
                     if (!empty($role->capabilities[$cap_name])) {
                         $role->remove_cap($cap_name);
                     }
@@ -628,14 +635,20 @@ class StatusHandler {
             self::printAjaxResponse('error', __('Status positions were not sent.', 'publishpress-statuses'));
         }
 
-        update_option('publishpress_status_positions', array_map('sanitize_key', array_values(array_filter($_POST['status_positions']))));
+        update_option('publishpress_status_positions', 
+            array_values(
+                array_filter(
+                    array_map('sanitize_key', $_POST['status_positions'])
+                )
+            )
+        );
 
         // @todo: update 'publishpress_disabled_statuses' based on ordering relative to '_disabled'
 
         if (!empty($_REQUEST['status_hierarchy'])) {
             $status_parents = [];
 
-            foreach ($_REQUEST['status_hierarchy'] as $arr) {
+            foreach ($_REQUEST['status_hierarchy'] as $arr) { // array elements sanitized below
                 $status_name = str_replace('status_row_', '', sanitize_key($arr['id']));
                 
                 $status_parents[$status_name] = '';
@@ -725,51 +738,14 @@ class StatusHandler {
         return $restricted;
     }
 
-
-    /**
-     * Validate input from the end user
-     *
-     * @since 0.7
-     */
-    public static function settings_validate($new_options)
-    {
-        // Whitelist validation for the post type options
-        if (! isset($new_options['post_types'])) {
-            $new_options['post_types'] = [];
-        }
-
-        $new_options['post_types'] = self::clean_post_type_options(
-            $new_options['post_types'],
-            'pp_custom_statuses'
-        );
-
-        return $new_options;
-    }
-
-    /**
-     * Sanitize submitted post types and apply add_post_type_support() usage.
-     * 
-     * If add_post_type_support() has been used anywhere (legacy support), inherit the state
-     *
-     * @param array $module_post_types Current state of post type options for the module
-     * @param string $post_type_support_slug What the feature is called for post_type_support (e.g. 'pp_calendar')
-     *
-     * @return array $normalized_post_type_options The setting for each post type, normalized based on rules
-     *
-     */
-    public static function clean_post_type_options($module_post_types = [], $post_type_support_slug = null)
-    {
-        $normalized_post_type_options = [];
-
-        foreach (array_keys(\PublishPress_Statuses::instance()->get_supported_post_types()) as $post_type) {
-            $normalized_post_type_options[$post_type] = !empty($module_post_types[$post_type]) || post_type_supports($post_type, $post_type_support_slug);
-        }
-
-        return $normalized_post_type_options;
-    }
-
     public static function settings_validate_and_save()
     {
+        if (!wp_verify_nonce(\PublishPress_Functions::POST_key('_wpnonce'), 'edit-publishpress-settings')
+        || !current_user_can('manage_options')
+        ) {
+            wp_die(esc_html__('Cheatin&#8217; uh?'));
+    }
+
         if (!isset($_POST['action'], $_POST['_wpnonce'], $_POST['option_page'], $_POST['_wp_http_referer'], $_POST['publishpress_module_name'], $_POST['submit']) || !is_admin()) {
             return false;
         }
@@ -780,23 +756,35 @@ class StatusHandler {
             return false;
         }
 
-        if (!current_user_can('manage_options') || !wp_verify_nonce(sanitize_key($_POST['_wpnonce']), 'edit-publishpress-settings')) {
-            wp_die(esc_html__('Cheatin&#8217; uh?'));
+        $module = \PublishPress_Statuses::instance();
+
+        $new_options = [];
+
+        foreach ($module->options as $option_name => $current_val) {
+            if ('loaded_once' == $option_name) {
+                continue;
         }
 
-        $module = \PublishPress_Statuses::instance();
-        $module_name = 'custom_status';
+            if (isset($_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name])) {
+                switch ($option_name) {
+                    case 'post_types':
+                        $new_options[$option_name] = array_intersect_key(
+                            array_map('intval', (array) $_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name]), 
+                            \PublishPress_Statuses::instance()->get_supported_post_types()
+                        );
 
-        $new_options = (isset($_POST[\PublishPress_Statuses::SETTINGS_SLUG])) ? $_POST[\PublishPress_Statuses::SETTINGS_SLUG] : [];
-        $new_options = self::settings_validate($new_options);
+                        break;
 
-        // New way to validate settings
-        $new_options = apply_filters('publishpress_validate_module_settings', $new_options, $module_name);
+                    default:
+                        $new_options[$option_name] = (int) $_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name];
+                }
+            } else {
+                $new_options[$option_name] = $current_val;
+            }
+        }
 
         // Cast our object and save the data.
-        $new_options = (object)array_merge((array)$module->options, $new_options);
-
-        update_option('publishpress_' . $module_name . '_options', $new_options);
+        update_option('publishpress_custom_status_options', (object) $new_options);
         
         // Redirect back to the settings page that was submitted without any previous messages
         $goback = add_query_arg('message', 'settings-updated', remove_query_arg(['message'], wp_get_referer()));
