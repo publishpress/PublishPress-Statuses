@@ -317,6 +317,7 @@ class StatusHandler {
         }
 
         if (isset($_REQUEST['status_caps'])) {
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             foreach ($_REQUEST['status_caps'] as $role_name => $set_status_caps) { // array elements sanitized below
                 $role_name = sanitize_key($role_name);
                 $set_status_caps = array_map('boolval', $set_status_caps);
@@ -627,8 +628,9 @@ class StatusHandler {
 
         if (!empty($_REQUEST['status_hierarchy'])) {
             $status_parents = [];
-
-            foreach ($_REQUEST['status_hierarchy'] as $arr) { // array elements sanitized below
+			
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            foreach ($_REQUEST['status_hierarchy'] as $arr) { // elements of multi-dim array sanitized below
                 $status_name = str_replace('status_row_', '', sanitize_key($arr['id']));
                 
                 $status_parents[$status_name] = '';
@@ -787,6 +789,7 @@ class StatusHandler {
             $new_status = \PublishPress_Statuses::DEFAULT_STATUS;
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching
         $result = $wpdb->update( // Direct DB query for efficient and reliable update of all existing $old_status posts to $new_status
             $wpdb->posts,
             ['post_status' => $new_status],

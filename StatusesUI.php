@@ -359,6 +359,7 @@ class StatusesUI {
             $status_obj = get_post_status_object($status_name);
             $status_label = ($status_obj && !empty($status_obj->label)) ? $status_obj->label : $status_name;
 
+            // translators: %s is the status name
             \PublishPress\ModuleAdminUI_Base::instance()->module->title = sprintf(__('Edit Status: %s', 'publishpress-statuses'), $status_label);
             \PublishPress\ModuleAdminUI_Base::instance()->default_header('');
 

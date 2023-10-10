@@ -245,7 +245,7 @@ class Admin
         }
 
         if (empty($status->label_count)) {
-            // translators: %s: post count
+            // translators: %s is the post count
             $sing = sprintf(__('%s <span class="count">()</span>', 'publishpress-statuses'), $status->label);
             $plur = sprintf(__('%s <span class="count">()</span>', 'publishpress-statuses'), $status->label);
 
@@ -273,10 +273,10 @@ class Admin
                 if (strlen($status->label) > 16) {
                     $status->labels->publish = __('Submit', 'publishpress-statuses');
                 } elseif (strlen($status->label) > 13) {
-                    // translators: %s: post status
+                    // translators: %s is the status label
                     $status->labels->publish = esc_attr(sprintf(__('Set to %s', 'publishpress-statuses'), $status->label));
                 } else {
-                    // translators: %s: post status
+                    // translators: %s is the status label
                     $status->labels->publish = esc_attr(sprintf(__('Submit as %s', 'publishpress-statuses'), $status->label));
                 }
             }
