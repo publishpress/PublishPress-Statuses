@@ -364,7 +364,6 @@ class Admin
                     // * next status after current status
                     $_args['status_parent'] = $post_status_obj->status_parent;
 
-                    // ['moderation_statuses' => [], 'can_set_status' => [], 'force_main_channel' => false, 'post_type' => '', 'default_by_sequence' => null, 'skip_current_status_check' => false];
                     if ($status_obj = \PublishPress_Statuses::getNextStatusObject($post->ID, compact('moderation_statuses', 'default_by_sequence', 'post_status'))) {
                         $_args['whitelist_status'] = $status_obj->name;
                     }

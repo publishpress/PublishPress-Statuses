@@ -119,8 +119,6 @@ class PostEditGutenberg
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
                 $ordered_statuses[$key]->description = '';
-                //$ordered_statuses[$key]->color = '';
-                //$ordered_statuses[$key]->icon = '';
             }
 
             if (!empty($status_obj->status_parent) && !empty($ordered_statuses[$status_obj->status_parent])) {
@@ -161,8 +159,6 @@ class PostEditGutenberg
             if (!isset($status_obj->slug)) {
                 $ordered_statuses[$key]->slug = $status_obj->name;
                 $ordered_statuses[$key]->description = '';
-                //$ordered_statuses[$key]->color = '';
-                //$ordered_statuses[$key]->icon = '';
             }
 
             if ('draft' == $status_obj->name) {

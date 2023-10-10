@@ -34,6 +34,8 @@ class StatusListTable extends \WP_List_Table
 
         add_action('admin_footer', [$this, 'adminFooterScripts']);
 
+        // Possible troubleshooting use
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         /*
         if (!empty($_REQUEST['pp_refresh_role_counts'])) {
             delete_option('publishpress_statuses_num_roles');
@@ -132,6 +134,7 @@ class StatusListTable extends \WP_List_Table
     public function display() {
         $singular = $this->_args['singular'];
 
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 		//$this->display_tablenav( 'top' );
 
         $this->screen->render_screen_reader_content( 'heading_list' );
@@ -197,7 +200,7 @@ class StatusListTable extends \WP_List_Table
 		if ( $this->has_items() ) {
 			$this->display_rows();
 		} else {
-			echo '<li class="no-items colspanchange" ' /*. $this->get_column_count() */ . '>';
+			echo '<li class="no-items colspanchange">';
 			$this->no_items();
 			echo '</li>';
 		}
@@ -238,17 +241,12 @@ class StatusListTable extends \WP_List_Table
 <table class="status-row" style="float:right; width:100%"><tbody><tr>
 
 <?php if (\PublishPress_Statuses::getCustomStatus($key)) :?>
-<td class="status_name" style="width:0"><div class="status_name <?php echo esc_attr($key);?> column-<?php echo esc_attr($key);?> hidden"><?php echo esc_attr($key);?></div></td>
+<td class="status_name" style="width:0"><div class="status_name <?php echo esc_attr($key);?> column-<?php echo esc_attr($key);?> hidden"><?php echo esc_html($key);?></div></td>
 <?php endif; ?>
 
 <td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
 
 <?php 
-/* Add New button moved to page header
-if (in_array($key, ['_pre-publish'])):
-endif;
-*/
-
 do_action('publishpress_statuses_table_row', $key, []);
 ?>
 </div>
@@ -444,6 +442,8 @@ do_action('publishpress_statuses_table_row', $key, []);
 
 			if ( 'cb' === $column_name ) {
 				echo '<div scope="row" class="check-column">';
+
+                // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 				/* echo $this->column_cb( $item ); */
                 echo '</div>';
                 
@@ -456,7 +456,7 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
                 
                 if (!in_array($item->name, ['draft', 'pending', 'future', 'publish', 'private'])) {
-                    $status_obj = $item; // get_post_status_object($item->name);
+                    $status_obj = $item;
 
                     if (!empty($status_obj) && !empty($status_obj->post_type)) {
                         $arr_captions = [];
@@ -486,8 +486,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '</div>';
 
             } elseif ( 'roles' === $column_name ) {
-                // $this->role_caps
-
                 if (!in_array($item->name, ['draft', 'future', 'publish', 'private'])) {
                     echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
 
@@ -515,7 +513,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                         $caption = esc_html('Disabled', 'publishpress-statuses');
                 
                     } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) {
-                        //if (!\PublishPress\Permissions\Statuses::postStatusHasCustomCaps($item->name)) {
                         if (empty($status_obj->capability_status)) {
                             $caption = esc_html('Standard', 'publishpress-statuses');
                         } else {
@@ -549,7 +546,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '</div>';
 			} else {
 				echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
-                //echo $this->column_default( $item, $column_name );
                 echo esc_html(apply_filters('presspermit_manage_conditions_custom_column', '', $column_name, 'post_status', $item->name));
                 echo '</div>';
             }
@@ -629,17 +625,12 @@ do_action('publishpress_statuses_table_row', $key, []);
             echo '</em></strong>';
         }
 
-        //if () { / @todo: list statuses without editing ability?
-            $item_edit_link = \PublishPress_Statuses::getLink(
-                    [
-                        'action' => 'edit-status',
-                        'name' => $item->name,
-                        //'status' => $item->name,
-                    ]
-                );
-        //} else {
-           // $item_edit_link = '';
-        //}
+        $item_edit_link = \PublishPress_Statuses::getLink(
+            [
+                'action' => 'edit-status',
+                'name' => $item->name,
+            ]
+        );
         
         $status_obj = $item;
 
@@ -669,6 +660,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         if ($item->name == $this->default_status) {
             echo ' - ' . esc_html__('Default', 'publishpress-statuses');
         }
+
         if (empty($item->_builtin)) {
             echo '</em>';
         }
@@ -676,8 +668,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         echo '</strong>';
 
         $actions = [];
-        //$actions['edit'] = "<a href='$item_edit_link'>" . __('Edit', 'publishpress-statuses') . "</a>";
-
+ 
         $status_obj = $item;
 
         if (empty($status_obj) || (empty($status_obj->_builtin))) {
@@ -718,7 +709,7 @@ do_action('publishpress_statuses_table_row', $key, []);
 			++$i;
 			$sep = ( $i < $action_count ) ? ' | ' : '';
 			echo "<span class='" . esc_attr($action) . "'>";
-            echo '<a href="' . esc_html($arr['url']) . '">' . esc_html($arr['label']) . '</a>';
+            echo '<a href="' . esc_url($arr['url']) . '">' . esc_html($arr['label']) . '</a>';
             echo esc_html($sep) . "</span>";
 		}
 

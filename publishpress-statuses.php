@@ -5,7 +5,7 @@
  * Description: Manage and create post statuses to customize your editorial workflow
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
- * Version: 1.0-beta16
+ * Version: 1.0-rc
  * Requires at least: 5.5
  * Requires PHP: 7.2.5
  *
@@ -54,7 +54,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                  echo '<div class="notice notice-error"><p>';
                  printf(
                      'PublishPress Statuses requires PHP version %s or higher.',
-                     $min_php_version
+                     esc_html($min_php_version)
                  );
                  echo '</p></div>';
              }
@@ -71,7 +71,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                  echo '<div class="notice notice-error"><p>';
                  printf(
                      'PublishPress Statuses requires WordPress version %s or higher.',
-                     $min_wp_version
+                     esc_html($min_wp_version)
                  );
                  echo '</p></div>';
              }
@@ -134,7 +134,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         } 
         
         if (empty($interrupt_load)) {
-            define('PUBLISHPRESS_STATUSES_VERSION', '1.0-beta16');
+            define('PUBLISHPRESS_STATUSES_VERSION', '1.0-rc');
 
             define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
             define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
@@ -148,9 +148,23 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             new LibInstanceProtection();
             
             // Disable Reviews library until other plugins are updated to fix conflict
+            // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
             /*
-            require_once(__DIR__ . '/LibWordPressReviews.php');
-        	new LibWordPressReviews();
+            if (!class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
+                include_once PUBLISHPRESS_STATUSES_DIR. '/lib/vendor/publishpress/wordpress-reviews/ReviewsController.php';
+            }
+
+            if (class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
+                $reviews = new \PublishPress\WordPressReviews\ReviewsController(
+                    'publishpress-statuses',
+                    'PublishPress Statuses',
+                    PUBLISHPRESS_STATUSES_URL . 'common/img/permissions-wp-logo.jpg'
+                );
+
+                add_filter('publishpress_wp_reviews_display_banner_publishpress-statuses', [$this, 'shouldDisplayBanner']);
+
+                $reviews->init();
+            }
             */
 
             require_once(__DIR__ . '/PublishPress_Statuses.php');

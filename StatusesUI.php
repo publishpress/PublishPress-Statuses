@@ -80,26 +80,8 @@ class StatusesUI {
 
         $pp->title = $title;
 
-        /*
-        'settings_help_tab' => [
-            'id' => 'pp-custom-status-overview',
-            'title' => __('Overview', 'publishpress-statuses'),
-            'content' => __(
-                '<p>PublishPress custom statuses allow you to define the most important stages of your editorial workflow. Out of the box, WordPress only offers "Draft" and "Pending Review" as post states. With custom statuses, you can create your own post states like "In Progress", "Pitch", or "Waiting for Edit" and keep or delete the originals. You can also drag and drop statuses to set the best order for your workflow.</p><p>Custom statuses are fully integrated into the rest of PublishPress and the WordPress admin. On the calendar and content overview, you can filter your view to see only posts of a specific post state. Furthermore, email notifications can be sent to a specific group of users when a post changes state.</p>',
-                'publishpress-statuses'
-            ),
-        ],
-
-        'settings_help_sidebar' => __(
-            '<p><strong>For more information:</strong></p><p><a href="https://publishpress.com/features/custom-statuses/">Custom Status Documentation</a></p><p><a href="https://github.com/ostraining/PublishPress">PublishPress on Github</a></p>',
-            'publishpress-statuses'
-        ),
-        'options_page' => false,
-        */
-
         add_action('init', [$this, 'loadAdminMessages'], 999);
 
-        // trigger 
         do_action('publishpress_plugin_screen', \PublishPress_Statuses::instance());
     }
 
@@ -171,6 +153,8 @@ class StatusesUI {
     }
 
     public function loadAdminMessages() {
+        // Mechanism for "Edit again" link if we redirect back to Statuses screen after Edit Status update
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         /*
         if (!empty($_REQUEST['name'])) {
             if ($status_obj = get_post_status_object(sanitize_key($_REQUEST['name']))) {
@@ -255,10 +239,12 @@ class StatusesUI {
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[supplemental_cap_moderate_any]'
         ) . ' ';
 
+        $checked = $module->options->supplemental_cap_moderate_any ? 'checked' : '';
+
         echo sprintf(
-            '<input type="checkbox" name="%s" value="on" autocomplete="off" %s>',
+            '<input type="checkbox" name="%s" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[supplemental_cap_moderate_any]',
-            $module->options->supplemental_cap_moderate_any ? 'checked' : ''
+            esc_attr($checked)
         ) . ' ';
 
         esc_html_e('Supplemental Role of Editor for "standard statuses" also covers Custom Statuses', 'publishpress-statuses');
@@ -278,20 +264,24 @@ class StatusesUI {
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]'
         ) . ' ';
 
+        $checked = !$module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
+
         echo sprintf(
             '<input type="radio" name="%s" value="0" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
-            !$module->options->moderation_statuses_default_by_sequence ? 'checked' : ''
+            esc_attr($checked)
         ) . ' ';
 
         esc_html_e('Publish button defaults to highest status available to user', 'publishpress-statuses');
 
         echo '</div><div style="margin-top: 10px;">';
 
+        $checked = $module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
+
         echo sprintf(
-            '<input type="radio" name="%s" value="on" autocomplete="off" %s>',
+            '<input type="radio" name="%s" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
-            $module->options->moderation_statuses_default_by_sequence ? 'checked' : ''
+            esc_attr($checked)
         ) . ' ';
 
         esc_html_e('Publish button defaults to next status in publication workflow', 'publishpress-statuses');
@@ -323,9 +313,9 @@ class StatusesUI {
         echo '<div class="pp-statuses-post-types">';
 
         foreach ($post_types as $post_type => $title) {
-            echo '<label for="' . esc_attr($post_type) . '-' . $pp->module->slug . '">';
-            echo '<input id="' . esc_attr($post_type) . '-' . $pp->module->slug . '" name="'
-                . $pp->options_group_name . '[post_types][' . esc_attr($post_type) . ']"';
+            echo '<label for="' . esc_attr($post_type) . '-' . esc_attr($pp->module->slug) . '">';
+            echo '<input id="' . esc_attr($post_type) . '-' . esc_attr($pp->module->slug) . '" name="'
+                . esc_attr($pp->options_group_name) . '[post_types][' . esc_attr($post_type) . ']"';
             
             if (isset($pp->options->post_types[$post_type])) {
                 checked($pp->options->post_types[$post_type], true);
@@ -333,12 +323,12 @@ class StatusesUI {
 
             // Defining post_type_supports in the functions.php file or similar should disable the checkbox
             disabled(post_type_supports($post_type, 'pp_custom_statuses'), true);
-            echo ' type="checkbox" value="on" />&nbsp;&nbsp;&nbsp;' . esc_html($title) . '</label>';
+            echo ' type="checkbox" value="1" />&nbsp;&nbsp;&nbsp;' . esc_html($title) . '</label>';
             
             // Leave a note to the admin as a reminder that add_post_type_support has been used somewhere in their code
             if (post_type_supports($post_type, 'pp_custom_statuses')) {
                 // translators: %1$s is the post type name, %2$s is the pp_custom_statuses feature
-                echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(__('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), $post_type, 'pp_custom_statuses') . '</span>';
+                echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(esc_html____('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), esc_html($post_type), 'pp_custom_statuses') . '</span>';
             }
         }
 
@@ -377,23 +367,24 @@ class StatusesUI {
 
         /** Statuses screen **/
         } elseif (('publishpress-statuses' === $plugin_page) && (!$action || ('statuses' == $action))) {
-            $args = [
-                'action' => 'add-new', 
-                'status_type' => \PublishPress_Functions::REQUEST_key('status_type')
-            ];
+            add_action('publishpress_header_button', function() {
+                $args = [
+                    'action' => 'add-new', 
+                    'status_type' => \PublishPress_Functions::REQUEST_key('status_type')
+                ];
+    
+                if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
+                    $args['taxonomy'] = 'post_visibility_pp';
+                }
+                
+                $url = \PublishPress_Statuses::getLink(
+                    $args
+                );
 
-            if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
-                $args['taxonomy'] = 'post_visibility_pp';
-            }
-            
-            $url = \PublishPress_Statuses::getLink(
-                $args
-            );
-
-            \PublishPress\ModuleAdminUI_Base::instance()->module->header_button = 
-                '<a class="button primary add-new" title="' 
-                . __("Add New Pre-Publication Status", 'publishpress-statuses')
-                . '" href="' . esc_url($url) . '">' . __('Add New') . '</a>';
+                echo '<a class="button primary add-new" title="' 
+                    . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
+                    . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+            });
 
             \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));
             

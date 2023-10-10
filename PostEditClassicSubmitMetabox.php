@@ -106,8 +106,7 @@ class PostEditClassicSubmitMetabox
         </div> <?php // submitpost ?>
 
         <?php
-
-    } // end function post_submit_meta_box()
+    }
 
     /*
      *  Classic Editor Post Submit Metabox: Post Save Button HTML
@@ -264,7 +263,7 @@ class PostEditClassicSubmitMetabox
                 ?>
             </div>
 
-        <?php } // endif status editable
+        <?php }
     }
 
     /**
@@ -298,14 +297,10 @@ class PostEditClassicSubmitMetabox
                 printf(esc_html__('Published on: %s%s%s'), '<strong>', esc_html($date), '</strong>');
 
             } elseif (in_array($post->post_date_gmt, [constant('PRESSPERMIT_MIN_DATE_STRING'), '0000-00-00 00:00:00'])) { // draft, 1 or more saves, no date specified
-                echo apply_filters(
-                    'presspermit_post_editor_immediate_caption', 
-                    sprintf(
-                        esc_html__('Publish %simmediately%s'),
-                        '<strong>',
-                        '</strong>'
-                    ),
-                    $post
+                printf(
+                    esc_html__('Publish %simmediately%s'),
+                    '<strong>',
+                    '</strong>'
                 );
 
             } elseif (time() < strtotime($post->post_date_gmt . ' +0000')) { // draft, 1 or more saves, future date specified

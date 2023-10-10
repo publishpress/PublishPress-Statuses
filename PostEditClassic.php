@@ -86,7 +86,6 @@ class PostEditClassic
 
             // Load the custom statuses
             foreach ($custom_statuses as $status) {
-                // @todo: function argument?
                 if (!empty($status->private) && ('private' != $status->name)) {
                     continue;
                 }
