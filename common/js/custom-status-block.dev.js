@@ -406,7 +406,8 @@ setInterval(function () {
     $('input[name="pp_statuses_workflow_selection"][value="max"]').closest('div.components-radio-control__option').toggle(!currentStatusPublished && (ppObjEdit.maxStatus != currentStatus));
 
     // default to current status if checked option is hidden
-    if ((currentStatusPublished || !$('input[name="pp_statuses_workflow_selection"]:visible:checked').length)
+    if ((currentStatusPublished || (!$('input[name="pp_statuses_workflow_selection"]:visible:checked').length 
+    && (!ppObjEdit.defaultBySequence || $('input[name="pp_statuses_workflow_selection"]:checked').val() != 'next')))
     && (-1 == PPCustomStatuses.publishedStatuses.indexOf(selectedStatus))
     ) {
       $('input[name="pp_statuses_workflow_selection"][value="current"]').trigger('click');
@@ -415,12 +416,23 @@ setInterval(function () {
         pp_workflow_action: 'current'
       });
     } else {
-      if ((currentStatus != selectedStatus) && (selectedStatus != lastSelectedStatus)) {
-        $('input[name="pp_statuses_workflow_selection"][value="specified"]').trigger('click');
-  
+      if (!$('input[name="pp_statuses_workflow_selection"]:visible:checked').length 
+      && (ppObjEdit.nextStatus == ppObjEdit.maxStatus) 
+      && $('input[name="pp_statuses_workflow_selection"][value="max"]:visible').length
+      && (-1 == PPCustomStatuses.publishedStatuses.indexOf(selectedStatus))) {
+        $('input[name="pp_statuses_workflow_selection"][value="max"]').trigger('click');
+
         wp.data.dispatch('core/editor').editPost({
-          pp_workflow_action: 'specified'
+          pp_workflow_action: 'max'
         });
+      } else {
+        if ((currentStatus != selectedStatus) && (selectedStatus != lastSelectedStatus)) {
+          $('input[name="pp_statuses_workflow_selection"][value="specified"]').trigger('click');
+    
+          wp.data.dispatch('core/editor').editPost({
+            pp_workflow_action: 'specified'
+          });
+        }
       }
     }
 
