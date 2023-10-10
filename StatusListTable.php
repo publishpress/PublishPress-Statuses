@@ -197,7 +197,7 @@ class StatusListTable extends \WP_List_Table
 		if ( $this->has_items() ) {
 			$this->display_rows();
 		} else {
-			echo '<li class="no-items colspanchange" ' /*. $this->get_column_count() */ . '>';
+			echo '<li class="no-items colspanchange">';
 			$this->no_items();
 			echo '</li>';
 		}
@@ -451,7 +451,7 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
                 
                 if (!in_array($item->name, ['draft', 'pending', 'future', 'publish', 'private'])) {
-                    $status_obj = $item; // get_post_status_object($item->name);
+                    $status_obj = $item;
 
                     if (!empty($status_obj) && !empty($status_obj->post_type)) {
                         $arr_captions = [];

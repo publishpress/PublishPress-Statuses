@@ -1385,7 +1385,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     function flt_get_post_statuses($statuses, $status_args, $return_args, $function_args) {
         global $current_user;
         
-        if (self::isContentAdministrator() || self::disable_custom_statuses_for_post_type()) { // || !get_option('cme_custom_status_control')) {
+        if (self::isContentAdministrator() || self::disable_custom_statuses_for_post_type()) {
             return $statuses;
         }
 

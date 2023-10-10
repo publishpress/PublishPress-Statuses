@@ -132,7 +132,7 @@ jQuery(document).ready(function ($) {
 </form>
 
 <?php
-    } // end function displayUI
+    } // end function display
 
     public static function mainTabContent($args = [], $default_tab = 'name') {
         foreach(
@@ -386,7 +386,7 @@ jQuery(document).ready(function ($) {
                                 </label>
                             </div>
                         <?php
-                        } // end foreach src_otype
+                        }
                     }
                 ?>
                 </td>
@@ -420,4 +420,4 @@ jQuery(document).ready(function ($) {
         echo '</table></div>';
     }
 
-} // end class
+}
