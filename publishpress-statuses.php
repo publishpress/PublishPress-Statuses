@@ -148,6 +148,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             new LibInstanceProtection();
             
             // Disable Reviews library until other plugins are updated to fix conflict
+            // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
             /*
             if (!class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
                 include_once PUBLISHPRESS_STATUSES_DIR. '/lib/vendor/publishpress/wordpress-reviews/ReviewsController.php';
