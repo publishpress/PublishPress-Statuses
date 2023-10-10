@@ -497,16 +497,6 @@ class StatusHandler {
 
         if (!$term || !is_array($updated_status_array) || !isset($updated_status_array['term_id'])) {
             $term_id = (!empty($term)) ? $term->term_id : 0;
-
-            error_log(
-                sprintf(
-                    '[PUBLISHPRESS] Error updating the status term. $status_id: %s, taxonomy: %s, $args: %s',
-                    $term_id,
-                    $taxonomy,
-                    print_r($args, true)
-                )
-            );
-
             return new \WP_Error('custom-status-term_id', esc_html__("Error while updating the status ($name)", 'publishpress-statuses'));
         }
 
