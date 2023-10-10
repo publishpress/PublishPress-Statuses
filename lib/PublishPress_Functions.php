@@ -54,21 +54,16 @@ class PublishPress_Functions
          * Classic editor either disabled or enabled (either via an option or with GET argument).
          * It's a hairy conditional :(
          */
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.NoNonceVerification
         $conditions[] = self::isWp5()
             && ! $pluginsState['classic-editor']
             && ! $pluginsState['gutenberg-ramp']
             && apply_filters('use_block_editor_for_post_type', true, $postType, PHP_INT_MAX);
 
-        $conditions[] = self::isWp5()
-            && $pluginsState['classic-editor']
-            && (get_option('classic-editor-replace') === 'block'
-                && ! isset($_GET['classic-editor__forget']));
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        $conditions[] = self::isWp5() && $pluginsState['classic-editor'] && (get_option('classic-editor-replace') === 'block' && ! isset($_GET['classic-editor__forget']));
 
-        $conditions[] = self::isWp5()
-            && $pluginsState['classic-editor']
-            && (get_option('classic-editor-replace') === 'classic'
-                && isset($_GET['classic-editor__forget']));
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        $conditions[] = self::isWp5() && $pluginsState['classic-editor'] && (get_option('classic-editor-replace') === 'classic' && isset($_GET['classic-editor__forget']));
 
         /**
          * < 5.0 but Gutenberg plugin is active.
