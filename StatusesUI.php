@@ -368,22 +368,22 @@ class StatusesUI {
         /** Statuses screen **/
         } elseif (('publishpress-statuses' === $plugin_page) && (!$action || ('statuses' == $action))) {
             add_action('publishpress_header_button', function() {
-	            $args = [
-	                'action' => 'add-new', 
-	                'status_type' => \PublishPress_Functions::REQUEST_key('status_type')
-	            ];
-	
-	            if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
-	                $args['taxonomy'] = 'post_visibility_pp';
-	            }
-	            
-	            $url = \PublishPress_Statuses::getLink(
-	                $args
-	            );
+                $args = [
+                    'action' => 'add-new', 
+                    'status_type' => \PublishPress_Functions::REQUEST_key('status_type')
+                ];
+    
+                if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
+                    $args['taxonomy'] = 'post_visibility_pp';
+                }
+                
+                $url = \PublishPress_Statuses::getLink(
+                    $args
+                );
 
                 echo '<a class="button primary add-new" title="' 
-                . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
-                . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+                    . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
+                    . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
             });
 
             \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));

@@ -625,12 +625,12 @@ do_action('publishpress_statuses_table_row', $key, []);
             echo '</em></strong>';
         }
 
-            $item_edit_link = \PublishPress_Statuses::getLink(
-                    [
-                        'action' => 'edit-status',
-                        'name' => $item->name,
-                    ]
-                );
+        $item_edit_link = \PublishPress_Statuses::getLink(
+            [
+                'action' => 'edit-status',
+                'name' => $item->name,
+            ]
+        );
         
         $status_obj = $item;
 
@@ -660,6 +660,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         if ($item->name == $this->default_status) {
             echo ' - ' . esc_html__('Default', 'publishpress-statuses');
         }
+
         if (empty($item->_builtin)) {
             echo '</em>';
         }
@@ -667,7 +668,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         echo '</strong>';
 
         $actions = [];
-
+ 
         $status_obj = $item;
 
         if (empty($status_obj) || (empty($status_obj->_builtin))) {

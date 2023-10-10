@@ -724,7 +724,7 @@ class StatusHandler {
         || !current_user_can('manage_options')
         ) {
             wp_die(esc_html__('Cheatin&#8217; uh?'));
-    }
+        }
 
         if (!isset($_POST['action'], $_POST['_wpnonce'], $_POST['option_page'], $_POST['_wp_http_referer'], $_POST['publishpress_module_name'], $_POST['submit']) || !is_admin()) {
             return false;
@@ -743,7 +743,7 @@ class StatusHandler {
         foreach ($module->options as $option_name => $current_val) {
             if ('loaded_once' == $option_name) {
                 continue;
-        }
+            }
 
             if (isset($_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name])) {
                 switch ($option_name) {

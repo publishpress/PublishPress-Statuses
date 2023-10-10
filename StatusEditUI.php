@@ -6,132 +6,132 @@ class StatusEditUI
 {
     public static function display() {
 
-// Check whether the term exists
-$name = \PublishPress_Functions::REQUEST_key('name');
+        // Check whether the term exists
+        $name = \PublishPress_Functions::REQUEST_key('name');
 
-if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
-    echo '<div class="error"><p>' . esc_html($module->messages['status-missing']) . '</p></div>';
-    return;
-}
-
-$url_args = ['action' => 'statuses'];
-
-if ($status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
-    $url_args['status_type'] = $status_type;
-}
-
-$url = \PublishPress_Statuses::getLink($url_args);
-?>
-<div class='pp-edit-status-back'>
-    <a href="<?php echo esc_url($url); ?>"><?php esc_html_e('Back to Statuses', 'publishpress-statuses'); ?></a>
-</div>
-<?php
-
-$edit_status_link = \PublishPress_Statuses::getLink(['action' => 'edit-status', 'name' => $name]);
-
-$status->icon = str_replace('dashicons|', '', $status->icon);
-
-echo "<ul class='nav-tab-wrapper' style='margin-bottom:-0.1em'>";
-
-$class_selected = "nav-tab nav-tab-active";
-$class_unselected = "nav-tab";
-
-$tabs = ['name' => __('Name', 'publishpress-statuses')];
-
-if (empty($status->publish) && empty($status->private) && !in_array($name, ['draft', 'future', 'publish'])) {
-    $tabs['labels'] = __('Labels', 'publishpress-statuses');
-
-    $tabs['roles'] = __('Roles', 'publishpress-statuses');
-
-    if ('pending' != $name) {
-        $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
-    }
-}
-
-$tabs = apply_filters('publishpress_statuses_edit_status_tabs', $tabs, $status->name);
-
-$pp_tab = (!\PublishPress_Functions::empty_REQUEST('pp_tab')) ? \PublishPress_Functions::REQUEST_key('pp_tab') : 'name';
-
-$default_tab = apply_filters('presspermit_edit_status_default_tab', $pp_tab);
-
-if (!in_array($default_tab, array_keys($tabs))) {
-    $default_tab = 'name';
-}
-
-foreach ($tabs as $tab => $caption) {
-    $class = ($default_tab == $tab) ? $class_selected : $class_unselected;  // todo: return to last tab
-
-    echo "<li class='" . esc_attr($class) . "'><a href='#pp-" . esc_attr($tab) . "'>"
-        . esc_html($caption) . '</a></li>';
-}
-
-echo '</ul>';
-?>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(document).ready(function ($) {
-    // Tabs
-    var $tabsWrapper = $('.publishpress-admin ul.nav-tab-wrapper');
-    $tabsWrapper.find('li').click(function (e) {
-        e.preventDefault();
-        $tabsWrapper.children('li').filter('.nav-tab-active').removeClass('nav-tab-active');
-        $(this).addClass('nav-tab-active');
-
-        $('.publishpress-admin table.form-table').hide();
-
-        var panel = $(this).find('a').first().attr('href');
-
-        if ('#pp-name' == panel) {
-            $('div.publishpress-admin form table').show();
-            $('div.publishpress-admin form table.pp-statuses-options').hide();
-        } else {
-            $(panel).show();
-            $(panel).find('table').show();
+        if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
+            echo '<div class="error"><p>' . esc_html($module->messages['status-missing']) . '</p></div>';
+            return;
         }
-    });
-});
-/* ]]> */
-</script>
 
-<div id="ajax-response"></div>
-<form method="post" action="<?php
-        echo esc_url($edit_status_link); ?>">
-    <input type="hidden" name="name" value="<?php
-    echo esc_attr($name); ?>"/>
-    <?php
-    wp_original_referer_field();
-    wp_nonce_field('edit-status');
-    
-    self::mainTabContent(
-        array_intersect_key(
-            (array) $status,
-            array_fill_keys(['name', 'label', 'description', 'color', 'icon'], true)
-        ),
-        $default_tab
-    );
+        $url_args = ['action' => 'statuses'];
 
-    self::tabContent('labels', $status, $default_tab);
-    self::tabContent('roles', $status, $default_tab);
-    self::tabContent('post_types', $status, $default_tab);
+        if ($status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
+            $url_args['status_type'] = $status_type;
+        }
 
-    do_action('publishpress_statuses_edit_status_tab_content', $status, $default_tab);
-    ?>
-
-    <p class="submit">
-        <input type="hidden" name="page" value="publishpress-statuses" />
-        <input type="hidden" name="action" value="edit-status" />
-        <input type="hidden" name="pp_tab" value="<?php echo '#pp-' . esc_attr($default_tab);?>" />
+        $url = \PublishPress_Statuses::getLink($url_args);
+        ?>
+        <div class='pp-edit-status-back'>
+            <a href="<?php echo esc_url($url); ?>"><?php esc_html_e('Back to Statuses', 'publishpress-statuses'); ?></a>
+        </div>
         <?php
-        if (!\PublishPress_Functions::empty_REQUEST('return_module')) :?>
-            <input type="hidden" name="return_module" value="<?php echo esc_attr(\PublishPress_Functions::REQUEST_key('return_module'));?>" />
-        <?php endif;
 
-        submit_button(__('Update Status', 'publishpress-statuses'), 'primary pp-statuses', 'submit', false); ?>
-    </p>
-</form>
+        $edit_status_link = \PublishPress_Statuses::getLink(['action' => 'edit-status', 'name' => $name]);
 
-<?php
+        $status->icon = str_replace('dashicons|', '', $status->icon);
+
+        echo "<ul class='nav-tab-wrapper' style='margin-bottom:-0.1em'>";
+
+        $class_selected = "nav-tab nav-tab-active";
+        $class_unselected = "nav-tab";
+
+        $tabs = ['name' => __('Name', 'publishpress-statuses')];
+
+        if (empty($status->publish) && empty($status->private) && !in_array($name, ['draft', 'future', 'publish'])) {
+            $tabs['labels'] = __('Labels', 'publishpress-statuses');
+
+            $tabs['roles'] = __('Roles', 'publishpress-statuses');
+
+            if ('pending' != $name) {
+                $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
+            }
+        }
+
+        $tabs = apply_filters('publishpress_statuses_edit_status_tabs', $tabs, $status->name);
+
+        $pp_tab = (!\PublishPress_Functions::empty_REQUEST('pp_tab')) ? \PublishPress_Functions::REQUEST_key('pp_tab') : 'name';
+
+        $default_tab = apply_filters('presspermit_edit_status_default_tab', $pp_tab);
+
+        if (!in_array($default_tab, array_keys($tabs))) {
+            $default_tab = 'name';
+        }
+
+        foreach ($tabs as $tab => $caption) {
+            $class = ($default_tab == $tab) ? $class_selected : $class_unselected;  // todo: return to last tab
+
+            echo "<li class='" . esc_attr($class) . "'><a href='#pp-" . esc_attr($tab) . "'>"
+                . esc_html($caption) . '</a></li>';
+        }
+
+        echo '</ul>';
+        ?>
+
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        jQuery(document).ready(function ($) {
+            // Tabs
+            var $tabsWrapper = $('.publishpress-admin ul.nav-tab-wrapper');
+            $tabsWrapper.find('li').click(function (e) {
+                e.preventDefault();
+                $tabsWrapper.children('li').filter('.nav-tab-active').removeClass('nav-tab-active');
+                $(this).addClass('nav-tab-active');
+
+                $('.publishpress-admin table.form-table').hide();
+
+                var panel = $(this).find('a').first().attr('href');
+
+                if ('#pp-name' == panel) {
+                    $('div.publishpress-admin form table').show();
+                    $('div.publishpress-admin form table.pp-statuses-options').hide();
+                } else {
+                    $(panel).show();
+                    $(panel).find('table').show();
+                }
+            });
+        });
+        /* ]]> */
+        </script>
+
+        <div id="ajax-response"></div>
+        <form method="post" action="<?php
+        echo esc_url($edit_status_link); ?>">
+            <input type="hidden" name="name" value="<?php
+            echo esc_attr($name); ?>"/>
+            <?php
+            wp_original_referer_field();
+            wp_nonce_field('edit-status');
+            
+            self::mainTabContent(
+                array_intersect_key(
+                    (array) $status,
+                    array_fill_keys(['name', 'label', 'description', 'color', 'icon'], true)
+                ),
+                $default_tab
+            );
+
+            self::tabContent('labels', $status, $default_tab);
+            self::tabContent('roles', $status, $default_tab);
+            self::tabContent('post_types', $status, $default_tab);
+
+            do_action('publishpress_statuses_edit_status_tab_content', $status, $default_tab);
+            ?>
+
+            <p class="submit">
+                <input type="hidden" name="page" value="publishpress-statuses" />
+                <input type="hidden" name="action" value="edit-status" />
+                <input type="hidden" name="pp_tab" value="<?php echo '#pp-' . esc_attr($default_tab);?>" />
+                <?php
+                if (!\PublishPress_Functions::empty_REQUEST('return_module')) :?>
+                    <input type="hidden" name="return_module" value="<?php echo esc_attr(\PublishPress_Functions::REQUEST_key('return_module'));?>" />
+                <?php endif;
+
+                submit_button(__('Update Status', 'publishpress-statuses'), 'primary pp-statuses', 'submit', false); ?>
+            </p>
+        </form>
+
+    <?php
     } // end function display
 
     public static function mainTabContent($args = [], $default_tab = 'name') {

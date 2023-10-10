@@ -384,18 +384,18 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if ($post_id = \PublishPress_Functions::REQUEST_int('post_id')) {
             if ($workflow_action = \PublishPress_Functions::REQUEST_key('workflow_action')) {
                 if (!wp_verify_nonce(\PublishPress_Functions::POST_key('pp_nonce'),'pp-custom-statuses-nonce')) {
-                exit;
-            }
+                    exit;
+                }
 
                 if (!current_user_can('edit_post', $post_id)) {
-                exit;
-            }
+                    exit;
+                }
 
                 update_user_meta($current_user->ID, "_pp_statuses_workflow_action_" . $post_id, sanitize_key($workflow_action));
 
-            \PublishPress_Functions::printAjaxResponse('success', '', [], []);
+                \PublishPress_Functions::printAjaxResponse('success', '', [], []);
+            }
         }
-    }
     }
 
     public static function isStatusManagement() {
@@ -838,13 +838,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             $status_name = $statuses[$status_name]->name;
 
-                foreach (get_object_vars($statuses[$status_name]) as $prop => $val) {
-                    if (isset($wp_post_statuses[$status_name])) {
-                        if (!isset($wp_post_statuses[$status_name]->$prop)) {
-                            $wp_post_statuses[$status_name]->$prop = $val;
-                        }
+            foreach (get_object_vars($statuses[$status_name]) as $prop => $val) {
+                if (isset($wp_post_statuses[$status_name])) {
+                    if (!isset($wp_post_statuses[$status_name]->$prop)) {
+                        $wp_post_statuses[$status_name]->$prop = $val;
                     }
                 }
+            }
         }
 
         return ($return_args['output'] == 'object') ? $statuses : array_keys($statuses);
@@ -1257,17 +1257,17 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             $status_name = $status_by_position[$key]->name;
 
-                foreach (get_object_vars($status_by_position[$key]) as $prop => $val) {
-                    if (isset($wp_post_statuses[$status_name])) {
-                        if (!isset($wp_post_statuses[$status_name]->$prop)) {
+            foreach (get_object_vars($status_by_position[$key]) as $prop => $val) {
+                if (isset($wp_post_statuses[$status_name])) {
+                    if (!isset($wp_post_statuses[$status_name]->$prop)) {
+                        $wp_post_statuses[$status_name]->$prop = $val;
+                    } else {
+                        if ('labels' == $prop) {
                             $wp_post_statuses[$status_name]->$prop = $val;
-                        } else {
-                            if ('labels' == $prop) {
-                                $wp_post_statuses[$status_name]->$prop = $val;
-                            }
                         }
                     }
                 }
+            }
         }
 
         $this->custom_statuses_cache[$arg_hash] = $status_by_position;
