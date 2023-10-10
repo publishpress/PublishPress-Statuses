@@ -10,11 +10,11 @@ Stable tag: 1.0-beta9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-PublishPress Statuses allows you to create custom post statuses and post status groups.
+PublishPress Statuses allows you to customize the publication workflow by creating and configuring custom post statuses.
 
 == Description ==
 
-PublishPress Statuses allows you to create custom post statuses and post status groups.
+PublishPress Statuses allows you to customize the publication workflow by creating and configuring custom post statuses.
 
 = Bug Reports =
 
