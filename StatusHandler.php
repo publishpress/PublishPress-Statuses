@@ -380,14 +380,6 @@ class StatusHandler {
             wp_die(esc_html__('Error updating post status.', 'publishpress-statuses'));
         }
 
-        // Saving custom settings for native statuses
-        if (!empty($status_obj) && !empty($status_obj->_builtin)) {
-            $name = sanitize_title($_GET['label']);
-
-            update_option("psppno_status_{$name}_color", $color);
-            update_option("psppno_status_{$name}_icon", $icon);
-        }
-
         wp_redirect($redirect_url);
         exit;
     }
