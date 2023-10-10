@@ -931,11 +931,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             return $this->process_return_array($this->custom_statuses_cache[$arg_hash], $status_args, $return_args, $function_args);
         }
 
-        $mirror_to_wp_statuses = true; // empty($function_args);
-        $core_statuses = $this->get_default_statuses(self::TAXONOMY_CORE_STATUS, compact('mirror_to_wp_statuses'));
+        $core_statuses = $this->get_default_statuses(self::TAXONOMY_CORE_STATUS);
         $pseudo_statuses = $this->get_default_statuses(self::TAXONOMY_PSEUDO_STATUS);
-        $default_moderation_statuses = $this->get_default_statuses(self::TAXONOMY_PRE_PUBLISH, compact('mirror_to_wp_statuses'));
-        $default_privacy_statuses = $this->get_default_statuses(self::TAXONOMY_PRIVACY, compact('mirror_to_wp_statuses'));
+        $default_moderation_statuses = $this->get_default_statuses(self::TAXONOMY_PRE_PUBLISH);
+        $default_privacy_statuses = $this->get_default_statuses(self::TAXONOMY_PRIVACY);
 
         $all_statuses = array_merge($core_statuses, $pseudo_statuses, $default_moderation_statuses, $default_privacy_statuses);
 
