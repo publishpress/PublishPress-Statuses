@@ -28,6 +28,9 @@ class PostEditClassic
 
         if ('attachment' != $post_type) {
             if (!empty($wp_meta_boxes[$post_type]['side']['core']['submitdiv'])) {
+                // Classic Editor: override WP submit metabox with a compatible equivalent (applying the same hooks as core post_submit_meta_box()
+
+                // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
                 $wp_meta_boxes[$post_type]['side']['core']['submitdiv']['callback'] = [$this, 'post_submit_meta_box'];
             }
         }
