@@ -1441,7 +1441,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
      *
      * @return object|WP_Error|false $status
      */
-    public function get_custom_status_by($field, $value)
+    public function get_custom_status_by($field, $value, $args = [])
     {
         if (! in_array($field, ['id', 'slug', 'name', 'label'])) {
             return false;
@@ -1456,7 +1456,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $value = 'draft';
         }
 
-        $custom_statuses = $this->getPostStatuses([], 'object', ['show_disabled' => self::isStatusManagement()]);
+        $custom_statuses = $this->getPostStatuses(
+            [], 
+            'object', 
+            ['show_disabled' => !empty($args['show_disabled']) || self::isStatusManagement()]
+        );
 
         $custom_status = wp_filter_object_list($custom_statuses, [$field => $value]);
 
