@@ -28,6 +28,9 @@ class PostEditClassic
 
         if ('attachment' != $post_type) {
             if (!empty($wp_meta_boxes[$post_type]['side']['core']['submitdiv'])) {
+                // Classic Editor: override WP submit metabox with a compatible equivalent (applying the same hooks as core post_submit_meta_box()
+
+                // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
                 $wp_meta_boxes[$post_type]['side']['core']['submitdiv']['callback'] = [$this, 'post_submit_meta_box'];
             }
         }
@@ -60,13 +63,14 @@ class PostEditClassic
             // Only add the script to Edit Post and Edit Page pages -- don't want to bog down the rest of the admin with unnecessary javascript
             if (! empty($post)) {
                 //get raw post so custom post status is included
-                $post = get_post($post);
+                $_post = get_post($post);
+
                 // Get the status of the current post
-                if ($post->ID == 0 || $post->post_status == 'auto-draft' || $pagenow == 'edit.php') {
+                if ($_post->ID == 0 || $_post->post_status == 'auto-draft' || $pagenow == 'edit.php') {
                     // TODO: check to make sure that the default exists
                     $selected = \PublishPress_Statuses::DEFAULT_STATUS;
                 } else {
-                    $selected = $post->post_status;
+                    $selected = $_post->post_status;
                 }
 
                 if (empty($selected)) {

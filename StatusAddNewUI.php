@@ -15,13 +15,13 @@ method='post' id='addstatus' name='addstatus'>
     <input type="hidden" name="action" value="add-status" />
 
     <?php 
-    if (!$taxonomy = \PublishPress_Functions::REQUEST_key('taxonomy')) {
+    if (!$_taxonomy = \PublishPress_Functions::REQUEST_key('taxonomy')) {
         if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
-            $taxonomy = 'post_visibility_pp';
+            $_taxonomy = 'post_visibility_pp';
         }
     }
     
-    if (\PublishPress_Statuses::TAXONOMY_PRIVACY === $taxonomy) :?>
+    if (\PublishPress_Statuses::TAXONOMY_PRIVACY === $_taxonomy) :?>
     <input type="hidden" name="taxonomy" value="<?php echo esc_attr(\PublishPress_Statuses::TAXONOMY_PRIVACY);?>" />
     <?php endif;?>
 

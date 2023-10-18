@@ -6,7 +6,7 @@ Tags: statuses
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.3
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,6 +32,11 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.1] - 17 Oct 2023 =
+* Fixed : If running without Permissions Pro, users who cannot set a status were not blocked from editing or deleting posts of that status
+* Fixed : Capabilities Pro integration - Typo in PublishPress Statuses tab caption
+* Code : Improved scan results
 
 = [1.0.0] - 10 Oct 2023 =
 * Added : Initial wordpress.org submission
