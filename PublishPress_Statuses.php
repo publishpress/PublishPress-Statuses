@@ -169,7 +169,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public function fltRegisterCapabilities($cme_caps) {
-        $cme_caps[__('PublishPress Statues', 'publishpress-statues')] = ['pp_manage_statuses'];
+        $cme_caps[__('PublishPress Statuses', 'publishpress-statuses')] = ['pp_manage_statuses'];
 
         return $cme_caps;
     }
