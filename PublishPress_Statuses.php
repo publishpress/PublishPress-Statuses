@@ -59,6 +59,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public $module;
     public $doing_rest = false;
 
+    private $all_moderation_statuses = [];
+
     public $last_error = '';
     public $form_errors = [];
 
@@ -109,6 +111,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 4);
             add_filter('presspermit_order_statuses', [$this, 'orderStatuses'], 10, 2);
         }
+
+        add_action('user_has_cap', [$this, 'fltUserHasCap'], 20, 3);
 
         add_filter('rest_pre_dispatch', [$this, 'fltRestPreDispatch'], 10, 3);
         add_action('rest_api_init', [$this, 'actRestInit'], 1);
@@ -303,6 +307,49 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         */
 
         do_action('pp_statuses_init');
+    }
+
+    // Capability filter applied by WP_User->has_cap (usually via WP current_user_can function)
+    //
+    // $wp_sitecaps = current user's site-wide capabilities
+    // $reqd_caps = primitive capabilities being tested / requested
+    // $args = array with:
+    //      $args[0] = original capability requirement passed to current_user_can (possibly a meta cap)
+    //      $args[1] = user being tested
+    //      $args[2] = post id (could be a post_id, link_id, term_id or something else)
+    //
+    public function fltUserHasCap($wp_sitecaps, $orig_reqd_caps, $args)
+    {
+        $args = (array)$args;
+        $orig_cap = (isset($args[0])) ? sanitize_key($args[0]) : '';
+
+        if (isset($args[2]) && is_object($args[2])) {
+            $args[2] = (isset($args[2]->ID)) ? $args[2]->ID : 0;
+        }
+
+        $post_id = (isset($args[2])) ? (int) $args[2] : 0;
+
+        if ($post_id && in_array($orig_cap, ['edit_post', 'edit_page', 'delete_post', 'delete_page'])) {
+
+            // Block users who who cannot set a status from editing or deleting posts of that status either, 
+            // unless another plugin is applying a different status capability model.
+            if (!defined('PRESSPERMIT_STATUSES_VERSION') && apply_filters('publishpress_statuses_postmeta_cap_check', true, $post_id, $args)) {
+                if (!self::isContentAdministrator()) {
+                    if ($_post = get_post($post_id)) {
+                        if (!in_array($_post->post_status, ['draft', 'auto-draft', 'future']) && in_array($_post->post_status, $this->all_moderation_statuses)) {
+                            if (!\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $_post->post_status)) {
+                                $wp_sitecaps = array_diff_key(
+                                    $wp_sitecaps,
+                                    array_fill_keys($orig_reqd_caps, true)
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $wp_sitecaps;
     }
 
     /**
@@ -1081,6 +1128,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             if (!empty($status->moderation)) {
                 $all_statuses[$status_name] = $this->apply_moderation_status_properties($all_statuses[$status_name]);
+                $this->all_moderation_statuses[]= $status_name;
+
             } elseif (!empty($status->private)) {
                 $all_statuses[$status_name] = $this->apply_visibility_status_properties($all_statuses[$status_name]);
             }
