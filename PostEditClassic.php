@@ -60,13 +60,14 @@ class PostEditClassic
             // Only add the script to Edit Post and Edit Page pages -- don't want to bog down the rest of the admin with unnecessary javascript
             if (! empty($post)) {
                 //get raw post so custom post status is included
-                $post = get_post($post);
+                $_post = get_post($post);
+
                 // Get the status of the current post
-                if ($post->ID == 0 || $post->post_status == 'auto-draft' || $pagenow == 'edit.php') {
+                if ($_post->ID == 0 || $_post->post_status == 'auto-draft' || $pagenow == 'edit.php') {
                     // TODO: check to make sure that the default exists
                     $selected = \PublishPress_Statuses::DEFAULT_STATUS;
                 } else {
-                    $selected = $post->post_status;
+                    $selected = $_post->post_status;
                 }
 
                 if (empty($selected)) {
