@@ -49,6 +49,7 @@
 
 .publishpress-admin-wrapper .nav-tab-wrapper .nav-tab {
     color: inherit;
+    margin-bottom: 0;
 }
 
 .publishpress-admin-wrapper .nav-tab-wrapper .nav-tab-active,
