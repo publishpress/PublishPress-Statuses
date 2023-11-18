@@ -1563,8 +1563,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             	$args['page'] = 'publishpress-statuses';
                 $args['_wpnonce'] = wp_create_nonce($args['action']);
                 break;
+                
             default:
-                $args['page'] = 'publishpress-statuses';
+                if (empty($args['page'])) {
+                    $args['page'] = 'publishpress-statuses';
+                }
+
                 break;
         }
 
