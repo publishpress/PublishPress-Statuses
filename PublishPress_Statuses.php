@@ -898,22 +898,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     /**
-     * BACK COMPAT for PublishPress Planner: Returns status name as 'slug', status label as 'name'
+     * Alias for getPostStatuses()
      * 
-     * If the module is disabled, we display only the native statuses.
-     *
      * @return array
      */
-    public function get_post_statuses($args = [])
+    public function get_post_statuses($args = [], $return_args = [], $function_args = [])
     {
-        $statuses = $this->getPostStatuses($args);
-
-        foreach ($statuses as $status_name => $status) {
-            $statuses[$status_name]->slug = $status->name;
-            $statuses[$status_name]->name = $status->label;
-        }
-
-        return $statuses;
+        return $this->getPostStatuses($args, $return_args, $function_args);
     }
 
     public static function getCustomStatuses($status_args = [], $return_args = [], $function_args = []) {
