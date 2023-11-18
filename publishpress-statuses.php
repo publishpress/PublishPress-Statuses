@@ -90,7 +90,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                 ?>
                 <div class="notice error">
                     <p><?php echo sprintf(
-                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Plannner to version %s or higher.', 'publishpress_statuses'),
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Planner to version %s or higher.', 'publishpress_statuses'),
                         '4.0-beta4'
                     ); 
                     ?></p>
