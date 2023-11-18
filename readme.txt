@@ -34,8 +34,9 @@ This section describes how to install the plugin and get it working.
 == Changelog ==
 
 = [1.0.2] =
-* Compat : Permissions / Capabilities - Avoid redundant execution of status capabilities update handler 
+* Fixed : Redirect back to Planner Calendar settings after editing a status
 * Fixed : Statuses Admin UI - Minor styling fix for tabs
+* Compat : Permissions / Capabilities - Avoid redundant execution of status capabilities update handler
 
 = [1.0.1] - 17 Oct 2023 =
 * Fixed : If running without Permissions Pro, users who cannot set a status were not blocked from editing or deleting posts of that status
