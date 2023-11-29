@@ -2192,6 +2192,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $status_obj = get_post_status_object($post_status);
 
+        if (!empty($status_obj->private)) { // This filter only deals with pre-publication workflow statuses
+            return $post_status;
+        }
+
         $is_administrator = \PublishPress_Statuses::isContentAdministrator();
 
         if ($stored_status = get_post_field('post_status', $post_id)) {
