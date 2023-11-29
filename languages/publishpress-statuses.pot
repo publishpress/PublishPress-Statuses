@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the PublishPress Statuses plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.0.2-rc2\n"
+"Project-Id-Version: PublishPress Statuses 1.0.2-rc3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-18T05:28:25+00:00\n"
+"POT-Creation-Date: 2023-11-29T23:17:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -289,7 +289,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: StatusEditUI.php:42
+#: StatusEditUI.php:43
 msgid "Labels"
 msgstr ""
 
@@ -298,79 +298,79 @@ msgstr ""
 msgid "Roles"
 msgstr ""
 
-#: StatusEditUI.php:47
-#: StatusEditUI.php:322
+#: StatusEditUI.php:48
+#: StatusEditUI.php:323
 #: StatusListTable.php:127
 msgid "Post Types"
 msgstr ""
 
-#: StatusEditUI.php:130
+#: StatusEditUI.php:131
 msgid "Update Status"
 msgstr ""
 
-#: StatusEditUI.php:149
+#: StatusEditUI.php:150
 msgid "Status Label"
 msgstr ""
 
-#: StatusEditUI.php:163
+#: StatusEditUI.php:164
 msgid "The name is used to identify the status. (Max: 20 characters)"
 msgstr ""
 
-#: StatusEditUI.php:174
+#: StatusEditUI.php:175
 msgid "Slug"
 msgstr ""
 
-#: StatusEditUI.php:186
+#: StatusEditUI.php:187
 msgid "The slug is the unique ID for the status and is changed when the name is changed."
 msgstr ""
 
-#: StatusEditUI.php:197
+#: StatusEditUI.php:198
 #: StatusListTable.php:128
 msgid "Description"
 msgstr ""
 
-#: StatusEditUI.php:209
+#: StatusEditUI.php:210
 msgid "The description is primarily for administrative use, to give you some context on what the custom status is to be used for."
 msgstr ""
 
-#: StatusEditUI.php:218
+#: StatusEditUI.php:219
 msgid "Color"
 msgstr ""
 
-#: StatusEditUI.php:230
+#: StatusEditUI.php:231
 msgid "The color is used to identify the status."
 msgstr ""
 
-#: StatusEditUI.php:236
+#: StatusEditUI.php:237
 #: StatusListTable.php:125
 msgid "Icon"
 msgstr ""
 
-#: StatusEditUI.php:252
+#: StatusEditUI.php:253
 msgid "Select Icon"
 msgstr ""
 
-#: StatusEditUI.php:258
+#: StatusEditUI.php:259
 msgid "The icon is used to visually represent the status."
 msgstr ""
 
-#: StatusEditUI.php:286
+#: StatusEditUI.php:287
 msgid "Assign Status"
 msgstr ""
 
-#: StatusEditUI.php:289
+#: StatusEditUI.php:290
 msgid "Choose which user roles can assign this status to a post."
 msgstr ""
 
-#: StatusEditUI.php:357
+#: StatusEditUI.php:358
 msgid "All Post Types"
 msgstr ""
 
-#: StatusEditUI.php:404
+#: StatusEditUI.php:405
 msgid "Save As Label"
 msgstr ""
 
-#: StatusEditUI.php:412
+#: StatusEditUI.php:413
 msgid "Submit Button Label"
 msgstr ""
 
