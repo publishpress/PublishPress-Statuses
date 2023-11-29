@@ -36,6 +36,8 @@ This section describes how to install the plugin and get it working.
 = [1.0.2] =
 * Fixed : Redirect back to Planner Calendar settings after editing a status
 * Fixed : Statuses Admin UI - Minor styling fix for tabs
+* Fixed (Pro) : Visibility Statuses - workflow statuses filtering interfered with selection in some cases
+* Change (Pro) : Visibility Statuses - allow selection of Post Types in Edit Status screen
 * Compat : Permissions / Capabilities - Avoid redundant execution of status capabilities update handler
 
 = [1.0.1] - 17 Oct 2023 =
