@@ -306,8 +306,10 @@ class PostEditClassicSubmitMetabox
             } elseif (time() < strtotime($post->post_date_gmt . ' +0000')) { // draft, 1 or more saves, future date specified
                 printf(esc_html__('Schedule for: %s%s%s'), '<strong>', esc_html($date), '</strong>');
 
-            } else { // draft, 1 or more saves, date specified
+            } elseif ((strtotime($post->post_date_gmt) > agp_time_gmt()) || !function_exists('rvy_in_revision_workflow') || !rvy_in_revision_workflow($post->ID)) { // draft, 1 or more saves, date specified
                 printf(esc_html__('Publish on: %s%s%s'), '<strong>', esc_html($date), '</strong>');
+            } else {
+                printf(esc_html__('Publish %son approval%s', 'publishpress-statuses'), '<b>', '</b>');
             }
         } else { // draft (no saves, and thus no date specified)
             printf(
