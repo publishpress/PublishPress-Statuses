@@ -409,6 +409,10 @@ margin-top: 10px;
 
 
 /* Edit Status: Role Capabilities */
+#pp-post_access_table div.pp-subtext {
+margin-top: 10px;
+}
+
 table.pp-statuses-options table.cme-typecaps {
 margin-top: 20px;
 }
