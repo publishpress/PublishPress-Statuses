@@ -64,6 +64,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public $last_error = '';
     public $form_errors = [];
 
+    public $version;
+    public $slug;
+    public $name;
+
     private static $instance = null;
 
     public static function instance() {
