@@ -526,7 +526,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     'pitch' => (object) [
                         'label' => __('Pitch', 'publishpress-statuses'),
-                        'labels' => (object) ['publish' => __('Throw Pitch', 'publishpress-statuses')],
+                        'labels' => (object) ['publish' => __('Pitch', 'publishpress-statuses')],
                         'description' => __('Idea proposed; waiting for acceptance.', 'publishpress-statuses'),
                         'color' => '#887618',
                         'icon' => 'dashicons-lightbulb',
