@@ -4,6 +4,9 @@ namespace PublishPress_Statuses;
 // Custom Status admin menus, shared javascript and CSS
 class Admin
 {
+    public $menu_slug;
+    public $using_permissions_menu;
+
     function __construct() {
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 

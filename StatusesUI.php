@@ -4,6 +4,7 @@ namespace PublishPress_Statuses;
 // Custom Status management: Statuses Screen
 class StatusesUI {
     private static $instance = null;
+    private $version;
 
     public static function instance() {
         if ( is_null(self::$instance) ) {
