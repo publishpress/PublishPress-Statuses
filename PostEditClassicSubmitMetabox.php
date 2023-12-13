@@ -77,6 +77,7 @@ class PostEditClassicSubmitMetabox
                     <?php endif; ?>
 
                     <?php do_action('post_submitbox_misc_actions', $post); ?>
+
                 </div> <?php // misc-publishing-actions ?>
 
                 <div class="clear"></div>
@@ -306,7 +307,7 @@ class PostEditClassicSubmitMetabox
             } elseif (time() < strtotime($post->post_date_gmt . ' +0000')) { // draft, 1 or more saves, future date specified
                 printf(esc_html__('Schedule for: %s%s%s'), '<strong>', esc_html($date), '</strong>');
 
-            } elseif ((strtotime($post->post_date_gmt) > agp_time_gmt()) || !function_exists('rvy_in_revision_workflow') || !rvy_in_revision_workflow($post->ID)) { // draft, 1 or more saves, date specified
+            } elseif (!function_exists('rvy_in_revision_workflow') || !rvy_in_revision_workflow($post->ID) || (strtotime($post->post_date_gmt) > agp_time_gmt())) { // draft, 1 or more saves, date specified
                 printf(esc_html__('Publish on: %s%s%s'), '<strong>', esc_html($date), '</strong>');
             } else {
                 printf(esc_html__('Publish %son approval%s', 'publishpress-statuses'), '<b>', '</b>');
