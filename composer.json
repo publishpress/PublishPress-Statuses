@@ -67,9 +67,9 @@
         "check:php80": "phpcs --standard=.phpcs-php-compatibility.xml --runtime-set testVersion 8.0",
         "check:php81": "phpcs --standard=.phpcs-php-compatibility.xml --runtime-set testVersion 8.1",
         "check:php82": "phpcs --standard=.phpcs-php-compatibility.xml --runtime-set testVersion 8.2",
-        "pre-autoload-dump": "composer dumpautoload --working-dir=./lib",
-        "pre-update-cmd": "composer update --working-dir=./lib",
-        "pre-install-cmd": "composer install --working-dir=./lib",
+        "-pre-autoload-dump": "composer dumpautoload --working-dir=./lib",
+        "-pre-update-cmd": "composer update --working-dir=./lib",
+        "-pre-install-cmd": "composer install --working-dir=./lib",
         "web:start": "cd dev-workspace && ./web",
         "web:stop": "cd dev-workspace/docker && docker compose down web db",
         "web:restart": [
