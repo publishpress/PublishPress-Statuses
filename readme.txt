@@ -33,7 +33,7 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
-= [1.0.2] =
+= [1.0.2] - 13 Dec 2023 =
 * Fixed : Redirect back to Planner Calendar settings after editing a status
 * Fixed : Statuses Admin UI - Minor styling fix for tabs
 * Fixed (Pro) : Visibility Statuses - workflow statuses filtering interfered with selection in some cases
