@@ -370,12 +370,14 @@ class StatusesUI {
         /** Statuses screen **/
         } elseif (('publishpress-statuses' === $plugin_page) && (!$action || ('statuses' == $action))) {
             add_action('publishpress_header_button', function() {
+                $status_type = \PublishPress_Functions::REQUEST_key('status_type');
+                
                 $args = [
                     'action' => 'add-new', 
-                    'status_type' => \PublishPress_Functions::REQUEST_key('status_type')
+                    'status_type' => $status_type
                 ];
     
-                if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
+                if ('visibility' == $status_type) {
                     $args['taxonomy'] = 'post_visibility_pp';
                 }
                 
@@ -383,9 +385,11 @@ class StatusesUI {
                     $args
                 );
 
-                echo '<a class="button primary add-new" title="' 
-                    . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
-                    . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+                if (('visibility' != $status_type) || defined('PRESSPERMIT_STATUSES_VERSION')) {
+                    echo '<a class="button primary add-new" title="' 
+                        . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
+                        . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+                }
             });
 
             \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));
@@ -441,6 +445,10 @@ class StatusesUI {
         <?php 
         /** Add New Status **/
         } elseif (isset($plugin_page) && ('publishpress-statuses-add-new' === $plugin_page)) {
+            if (('post_visibility_pp'== \PublishPress_Functions::REQUEST_key('taxonomy')) && ! defined('PRESSPERMIT_STATUSES_VERSION')) {
+                return;
+            }
+
             $title = ('post_visibility_pp' == \PublishPress_Functions::REQUEST_key('taxonomy')) 
             ?  __('Add New Visibility Status', 'publishpress-statuses')
             :  __('Add New Pre-Publication Status', 'publishpress-statuses');
