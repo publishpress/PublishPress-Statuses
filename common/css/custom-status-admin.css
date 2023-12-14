@@ -172,6 +172,12 @@ padding: 0;
 color: black !important;
 }
 
+#status_row__disabled table.status-row td,
+#status_row__disabled table.status-row td a
+{
+color: #777 !important;
+}
+
 
 /* Statuses Table: Moderation Statuses section */
 #the_status_list li.moderation-status, 
