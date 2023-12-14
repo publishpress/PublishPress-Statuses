@@ -127,6 +127,9 @@
 				nextItem,
 				helperIsNotSibling;
 
+			// PublishPress Statuses
+			$('li.ui-temp-placeholder').attr('style', 'display: none !important;');
+
 			//Compute the helpers position
 			this.position = this._generatePosition(event);
 			this.positionAbs = this._convertPositionTo("absolute");
@@ -588,6 +591,9 @@
 			this._pid_current = $(this.domPosition.parent).parent().attr("id");
 			this._sort_current = this.domPosition.prev ? $(this.domPosition.prev).next().index() : 0;
 			$.ui.sortable.prototype._mouseStop.apply(this, arguments); //asybnchronous execution, @see _clear for the relocate event.
+
+			// PublishPress Statuses
+			//$('li.ui-temp-placeholder').attr('style', '');
 		},
 
 		// mjs - this function is slightly modified

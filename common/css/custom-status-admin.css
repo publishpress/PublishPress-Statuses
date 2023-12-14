@@ -65,7 +65,6 @@ border-radius:3px
 .pp-nested-list ol li{
 margin:0;
 border-top:1px solid #e1e1e1;
-background-color:#0074a2
 }
 
 .pp-nested-list ol ol{
@@ -91,8 +90,6 @@ width:100%
 width: 100%;
 vertical-align: middle;
 }
-
-
 
 /* Add New Status button */
 div.publishpress-admin-wrapper a.add-new {
@@ -154,9 +151,30 @@ background-color:#effaff;
 margin:0
 }
 
+.pp-nested-list .ui-temp-placeholder {
+border-color: #999 !important;
+}
+
+#the_status_list li.section-row table.status-row td.name, 
+.pp-nested-list .ui-temp-placeholder table.status-row td {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+font-size: 16px;
+}
+
+.pp-nested-list .ui-temp-placeholder table.status-row td {
+font-style: italic;
+color: #777;
+padding: 0;
+}
+
+.pp-nested-list .disabled-status table.status-row td,
+.pp-nested-list .disabled-status table.status-row td a {
+color: black !important;
+}
 
 
 /* Statuses Table: Moderation Statuses section */
+#the_status_list li.moderation-status, 
 #the_status_list li.moderation-status div.tpl-default {
 background-color: #fcfbe8;
 }
@@ -164,7 +182,9 @@ background-color: #fcfbe8;
 
 
 /* Statuses Table: Alternate Moderation Statuses section */
-#the_status_list li.alternate-moderation-status div.tpl-default {
+#the_status_list li.alternate-moderation-status div.tpl-default,
+#the_status_list li.alternate-moderation-status 
+{
 background-color: #f9f4e5;
 }
 
@@ -190,6 +210,7 @@ display: none;
 opacity: 100%;
 }
 
+#the_status_list li.disabled-status,
 #the_status_list li.disabled-status div.tpl-default {
 background-color: #f4f4f4;
 }
