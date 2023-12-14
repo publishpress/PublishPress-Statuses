@@ -93,7 +93,10 @@
                     // Don't allow anything before Draft
                     if (typeof (placeholder.prop('nextElementSibling') != 'undefined')) {
                         targetStatus = $(placeholder.prop('nextElementSibling')).prop('id');
-                        targetStatus = targetStatus.replace('status_row_', '');
+                        
+                        if (typeof targetStatus != 'undefined') {
+                            targetStatus = targetStatus.replace('status_row_', '');
+                        }
 
                         if (targetStatus == 'draft' || targetStatus == '_pre-publish') {
                             return false;
