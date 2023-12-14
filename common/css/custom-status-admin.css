@@ -116,12 +116,6 @@ width:1px
 #the_status_list ol .child-toggle {
 width: 30px;
 }
-/*
-.pp-nested-list ol li ol li ol .row-inner {
-padding-left:20px
-}
-*/
-
 
 
 /* Status Row Drag Handle */
@@ -165,8 +159,6 @@ margin:0
 /* Statuses Table: Moderation Statuses section */
 #the_status_list li.moderation-status div.tpl-default {
 background-color: #fcfbe8;
-/*background-color: #fcfacc;*/
-/*background-color: #f9f5ed; */
 }
 
 
@@ -174,7 +166,6 @@ background-color: #fcfbe8;
 /* Statuses Table: Alternate Moderation Statuses section */
 #the_status_list li.alternate-moderation-status div.tpl-default {
 background-color: #f9f4e5;
-/*background-color: #fcf5e3;*/
 }
 
 
@@ -280,14 +271,6 @@ width: 15%;
 {
 content: '\2014\00a0';
 }
-
-/*
-table.status-row td.description, table.status-row th.description {
-width: 35%;
-}
-*/
-
-
 
 /* Statuses Table: Row content inside indentation structure */ 
 #the_status_list li.section-row div.row-inner {
