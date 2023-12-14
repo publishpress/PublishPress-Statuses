@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-13T18:03:20+00:00\n"
+"POT-Creation-Date: 2023-12-14T02:49:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -37,82 +37,82 @@ msgstr ""
 msgid "https://publishpress.com/"
 msgstr ""
 
-#: Admin.php:112
+#: Admin.php:115
 msgid "Are you sure you want to delete the post status? All posts with this status will be assigned to the default status."
 msgstr ""
 
-#: Admin.php:165
-#: Admin.php:166
+#: Admin.php:168
+#: Admin.php:169
 #: PublishPress_Statuses.php:211
 msgid "Statuses"
 msgstr ""
 
-#: Admin.php:176
-#: Admin.php:177
+#: Admin.php:179
+#: Admin.php:180
 msgid "Add New"
 msgstr ""
 
-#: Admin.php:185
-#: Admin.php:186
+#: Admin.php:188
+#: Admin.php:189
 msgid "Settings"
 msgstr ""
 
 #. translators: %s is the post count
-#: Admin.php:252
-#: Admin.php:253
+#: Admin.php:255
+#: Admin.php:256
 msgid "%s <span class=\"count\">()</span>"
 msgstr ""
 
-#: Admin.php:264
+#: Admin.php:267
 msgid "Submit for Review"
 msgstr ""
 
-#: Admin.php:266
+#: Admin.php:269
 #: PublishPress_Statuses.php:569
 msgid "Approve"
 msgstr ""
 
-#: Admin.php:268
+#: Admin.php:271
 #: PublishPress_Statuses.php:545
 msgid "Assign"
 msgstr ""
 
-#: Admin.php:270
+#: Admin.php:273
 msgid "Mark In Progress"
 msgstr ""
 
-#: Admin.php:272
-#: Admin.php:346
+#: Admin.php:275
+#: Admin.php:349
 #: PostEditClassic.php:159
 #: PostEditGutenberg.php:62
 msgid "Publish"
 msgstr ""
 
-#: Admin.php:274
+#: Admin.php:277
 #: PostEditGutenberg.php:63
 msgid "Schedule"
 msgstr ""
 
-#: Admin.php:277
+#: Admin.php:280
 msgid "Submit"
 msgstr ""
 
 #. translators: %s is the status label
-#: Admin.php:280
+#: Admin.php:283
 msgid "Set to %s"
 msgstr ""
 
 #. translators: %s is the status label
-#: Admin.php:283
+#: Admin.php:286
 #: PostEditClassic.php:203
 msgid "Submit as %s"
 msgstr ""
 
-#: Admin.php:290
+#: Admin.php:293
 msgid "Save as Pending"
 msgstr ""
 
-#: Admin.php:347
+#: Admin.php:350
 #: PostEditClassic.php:160
 #: PostEditGutenberg.php:64
 #: PostEditGutenberg.php:169
@@ -578,49 +578,61 @@ msgstr ""
 msgid "Pre-Publication Workflow Sequence:"
 msgstr ""
 
-#: StatusListTable.php:289
+#: StatusListTable.php:239
+msgid "Drop any status here to include in main workflow for new posts."
+msgstr ""
+
+#: StatusListTable.php:285
+msgid "Drop any status here for alternate workflows."
+msgstr ""
+
+#: StatusListTable.php:304
+msgid "Drop any status here to disable."
+msgstr ""
+
+#: StatusListTable.php:344
 msgid "Standard Publication:"
 msgstr ""
 
-#: StatusListTable.php:296
+#: StatusListTable.php:351
 msgid "Visibility Statuses for Private Publication:"
 msgstr ""
 
-#: StatusListTable.php:303
-msgid "Manually Selectable Pre-Publication Statuses (may be dragged to desired sequence position):"
+#: StatusListTable.php:358
+msgid "Manually Selectable Pre-Publication Statuses:"
 msgstr ""
 
 #. translators: %s is the opening and closing <span> tags
-#: StatusListTable.php:314
+#: StatusListTable.php:369
 msgid "Disabled Statuses (drag to re-enable):"
 msgstr ""
 
 #. translators: %s is the list of post types
-#: StatusListTable.php:473
+#: StatusListTable.php:528
 msgid "%s, more..."
 msgstr ""
 
-#: StatusListTable.php:508
+#: StatusListTable.php:563
 msgid "Standard"
 msgstr ""
 
 #. translators: %s is the name of the status that has the same capabilities
-#: StatusListTable.php:522
+#: StatusListTable.php:577
 msgid "(same as %s)"
 msgstr ""
 
-#: StatusListTable.php:592
+#: StatusListTable.php:647
 msgid "No custom statuses found."
 msgstr ""
 
-#: StatusListTable.php:661
+#: StatusListTable.php:716
 msgid "Default"
 msgstr ""
 
-#: StatusListTable.php:675
+#: StatusListTable.php:730
 msgid "Disable"
 msgstr ""
 
-#: StatusListTable.php:679
+#: StatusListTable.php:734
 msgid "X"
 msgstr ""
