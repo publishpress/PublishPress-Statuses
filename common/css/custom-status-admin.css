@@ -65,7 +65,6 @@ border-radius:3px
 .pp-nested-list ol li{
 margin:0;
 border-top:1px solid #e1e1e1;
-background-color:#0074a2
 }
 
 .pp-nested-list ol ol{
@@ -92,8 +91,6 @@ width: 100%;
 vertical-align: middle;
 }
 
-
-
 /* Add New Status button */
 div.publishpress-admin-wrapper a.add-new {
 margin-left: 10px;
@@ -116,12 +113,6 @@ width:1px
 #the_status_list ol .child-toggle {
 width: 30px;
 }
-/*
-.pp-nested-list ol li ol li ol .row-inner {
-padding-left:20px
-}
-*/
-
 
 
 /* Status Row Drag Handle */
@@ -160,21 +151,47 @@ background-color:#effaff;
 margin:0
 }
 
+.pp-nested-list .ui-temp-placeholder {
+border-color: #999 !important;
+}
+
+#the_status_list li.section-row table.status-row td.name, 
+.pp-nested-list .ui-temp-placeholder table.status-row td {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+font-size: 14px;
+}
+
+.pp-nested-list .ui-temp-placeholder table.status-row td {
+font-style: italic;
+color: #777;
+padding: 0;
+}
+
+.pp-nested-list .disabled-status table.status-row td,
+.pp-nested-list .disabled-status table.status-row td a {
+color: black !important;
+}
+
+#status_row__disabled table.status-row td,
+#status_row__disabled table.status-row td a
+{
+color: #777 !important;
+}
 
 
 /* Statuses Table: Moderation Statuses section */
+#the_status_list li.moderation-status, 
 #the_status_list li.moderation-status div.tpl-default {
 background-color: #fcfbe8;
-/*background-color: #fcfacc;*/
-/*background-color: #f9f5ed; */
 }
 
 
 
 /* Statuses Table: Alternate Moderation Statuses section */
-#the_status_list li.alternate-moderation-status div.tpl-default {
+#the_status_list li.alternate-moderation-status div.tpl-default,
+#the_status_list li.alternate-moderation-status 
+{
 background-color: #f9f4e5;
-/*background-color: #fcf5e3;*/
 }
 
 
@@ -199,6 +216,7 @@ display: none;
 opacity: 100%;
 }
 
+#the_status_list li.disabled-status,
 #the_status_list li.disabled-status div.tpl-default {
 background-color: #f4f4f4;
 }
@@ -280,14 +298,6 @@ width: 15%;
 {
 content: '\2014\00a0';
 }
-
-/*
-table.status-row td.description, table.status-row th.description {
-width: 35%;
-}
-*/
-
-
 
 /* Statuses Table: Row content inside indentation structure */ 
 #the_status_list li.section-row div.row-inner {
