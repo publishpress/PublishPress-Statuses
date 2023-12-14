@@ -227,7 +227,7 @@ class StatusListTable extends \WP_List_Table
         $class = (!empty($args['class'])) ? $args['class'] : '';
         $label = (!empty($args['label'])) ? $args['label'] : $key;
 
-        if (in_array($key, ['_pre-publish-alternate'])) :?>
+        if (($key == '_pre-publish-alternate') && (\PublishPress_Functions::empty_REQUEST('status_type') || 'moderation' == \PublishPress_Functions::REQUEST_key('status_type'))) :?>
             <li class="ui-sortable-placeholder moderation-status ui-temp-placeholder" style="height: 50px;">
             <div class="row tpl-default">
                 <div class="child-toggle" style="padding-left: 0">
@@ -273,7 +273,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         <?php
         switch ($key) {
             case '_pre-publish-alternate':
-                ?>
+                if (\PublishPress_Functions::empty_REQUEST('status_type') || 'moderation' == \PublishPress_Functions::REQUEST_key('status_type')) :?>
                 <li class="ui-sortable-placeholder alternate-moderation-status ui-temp-placeholder" style="height: 50px;">
                 <div class="row tpl-default">
                     <div class="child-toggle" style="padding-left: 0">
@@ -288,7 +288,7 @@ do_action('publishpress_statuses_table_row', $key, []);
                 </div>
                 </li>
 
-                <?php
+                <?php endif;
                 break;
 
             case '_disabled':

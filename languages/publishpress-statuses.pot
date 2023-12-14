@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-14T02:49:50+00:00\n"
+"POT-Creation-Date: 2023-12-14T05:06:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -452,44 +452,44 @@ msgstr ""
 msgid "Edit Status: %s"
 msgstr ""
 
-#: StatusesUI.php:387
-#: StatusesUI.php:446
+#: StatusesUI.php:390
+#: StatusesUI.php:454
 msgid "Add New Pre-Publication Status"
 msgstr ""
 
-#: StatusesUI.php:391
+#: StatusesUI.php:395
 msgid "Click any status property to edit. Drag to re-order, nest, or move to a different section."
 msgstr ""
 
-#: StatusesUI.php:406
+#: StatusesUI.php:410
 msgid "Pre-Publication"
 msgstr ""
 
-#: StatusesUI.php:414
+#: StatusesUI.php:418
 msgid "Visibility"
 msgstr ""
 
-#: StatusesUI.php:423
+#: StatusesUI.php:427
 msgid "Revision"
 msgstr ""
 
-#: StatusesUI.php:445
+#: StatusesUI.php:453
 msgid "Add New Visibility Status"
 msgstr ""
 
-#: StatusesUI.php:449
+#: StatusesUI.php:457
 msgid "This status can be assigned to a post as a different form of Private Publication with its own capability requirements."
 msgstr ""
 
-#: StatusesUI.php:450
+#: StatusesUI.php:458
 msgid "This status can be assigned to an unpublished post using the Post Status dropdown."
 msgstr ""
 
-#: StatusesUI.php:459
+#: StatusesUI.php:467
 msgid "PublishPress Statuses Settings"
 msgstr ""
 
-#: StatusesUI.php:460
+#: StatusesUI.php:468
 msgid "Note: Post types can also be specified for each individual status."
 msgstr ""
 
