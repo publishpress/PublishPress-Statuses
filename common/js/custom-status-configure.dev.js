@@ -103,6 +103,17 @@
                         }
                     }
 
+                    // Don't allow Pending to be disabled or moved to alternate
+                    if (typeof (placeholder.prop('nextElementSibling') != 'undefined')) {
+                        if ($(currentItem).attr('id') == 'status_row_pending') {
+                            if ($(placeholder.prop('previousElementSibling')).hasClass('disabled-status')
+                            || $(placeholder.prop('previousElementSibling')).hasClass('alternate-moderation-status')
+                            ) {
+                                return false;
+                            }
+                        }
+                    }
+
                     if (typeof (placeholder.prop('previousElementSibling') != 'undefined')) {
                         targetStatus = $(placeholder.prop('previousElementSibling')).prop('id');
 
