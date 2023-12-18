@@ -188,6 +188,25 @@ class StatusHandler {
 
         $status_obj = $existing_status;
 
+        // Prime the term_meta records if they don't already exist
+        // Doing this in advance prevents seletions from being overridden by defaults.
+        if (!empty($status_obj->_builtin) && !in_array($status_obj->name, ['pending'])) {
+            $taxonomy = \PublishPress_Statuses::TAXONOMY_CORE_STATUS;
+
+        } elseif (in_array($name, ['_pre-publish-alternate', '_disabled'])) {
+            $taxonomy = \PublishPress_Statuses::TAXONOMY_PSEUDO_STATUS;
+
+        } elseif (!empty($status_obj->private)) {
+            $taxonomy = \PublishPress_Statuses::TAXONOMY_PRIVACY;
+
+        } else {
+            $taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
+        }
+
+        if (!$term = get_term_by('slug', $name, $taxonomy)) {
+            \PublishPress_Statuses::instance()->addStatus($taxonomy, $status_obj->label, ['slug' => $name]);
+        }
+
         $form_errors = [];
 
         if (isset($_REQUEST['description'])) {
