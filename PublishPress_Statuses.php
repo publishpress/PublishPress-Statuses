@@ -2180,6 +2180,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         global $current_user;
 
+        if ('auto-draft' == $post_status) {
+            return $post_status;
+        }
+
         $post_id = \PublishPress_Functions::getPostID();
 
         if ($_post = get_post($post_id)) {
