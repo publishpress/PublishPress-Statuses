@@ -1080,7 +1080,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        // retore previously merged status positions (@todo: restore any other properties?)
+        // restore previously merged status positions (@todo: restore any other properties?)
         foreach ($all_statuses as $status_name => $status) {
             if (isset($stored_status_positions[$status_name])) {
                 // Deal with deactivation / reactivation of custom privacy statuses due to Status Control module deactivation / re-activation
