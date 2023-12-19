@@ -939,6 +939,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         $plugin_page = \PublishPress_Functions::getPluginPage();
         
+        if (!is_array($function_args)) {
+            $function_args = [$function_args => $function_args];
+        }
+
         // $status_args: filtering of return array based on status properties, applied outside the cache by function process_return_array()
         //
 
