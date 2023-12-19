@@ -227,6 +227,22 @@ class StatusListTable extends \WP_List_Table
         $class = (!empty($args['class'])) ? $args['class'] : '';
         $label = (!empty($args['label'])) ? $args['label'] : $key;
 
+        if (($key == '_pre-publish-alternate') && (\PublishPress_Functions::empty_REQUEST('status_type') || 'moderation' == \PublishPress_Functions::REQUEST_key('status_type'))) :?>
+            <li class="ui-sortable-placeholder moderation-status ui-temp-placeholder" style="height: 50px;">
+            <div class="row tpl-default">
+                <div class="child-toggle" style="padding-left: 0">
+                    <div class="child-toggle-spacer"></div>
+                </div>
+
+                <div class="row-inner">
+                    <table class="status-row" style="width:100%"><tbody><tr>
+                    <td colspan="7" style="text-align: center"><?php _e('Drop any status here to include in main workflow for new posts.', 'publishpress-statuses');?></td>
+                    </tr></tbody></table>
+                </div>
+            </div>
+            </li>
+        <?php endif;
+
         if (!$status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
             $status_type = 'moderation';
         }
@@ -255,6 +271,45 @@ do_action('publishpress_statuses_table_row', $key, []);
 </tr></tbody></table>
 </div></div></li>
         <?php
+        switch ($key) {
+            case '_pre-publish-alternate':
+                if (\PublishPress_Functions::empty_REQUEST('status_type') || 'moderation' == \PublishPress_Functions::REQUEST_key('status_type')) :?>
+                <li class="ui-sortable-placeholder alternate-moderation-status ui-temp-placeholder" style="height: 50px;">
+                <div class="row tpl-default">
+                    <div class="child-toggle" style="padding-left: 0">
+                        <div class="child-toggle-spacer"></div>
+                    </div>
+    
+                    <div class="row-inner">
+                        <table class="status-row" style="width:100%"><tbody><tr>
+                        <td colspan="7" style="text-align: center"><?php _e('Drop any status here for alternate workflows.', 'publishpress-statuses');?></td>
+                        </tr></tbody></table>
+                    </div>
+                </div>
+                </li>
+
+                <?php endif;
+                break;
+
+            case '_disabled':
+                ?>
+                <li class="ui-sortable-placeholder disabled-status ui-temp-placeholder" style="height: 50px;">
+                <div class="row tpl-default">
+                    <div class="child-toggle" style="padding-left: 0">
+                        <div class="child-toggle-spacer"></div>
+                    </div>
+    
+                    <div class="row-inner">
+                        <table class="status-row" style="width:100%"><tbody><tr>
+                        <td colspan="7" style="text-align: center"><?php _e('Drop any status here to disable.', 'publishpress-statuses');?></td>
+                        </tr></tbody></table>
+                    </div>
+                </div>
+                </li>
+
+                <?php
+                break;
+        }
     }
 
 	/**
@@ -300,7 +355,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         } elseif ('_pre-publish-alternate' == $item->name) {
             $this->display_section_row('_pre-publish-alternate', 
             [
-                'label' => __('Manually Selectable Pre-Publication Statuses (may be dragged to desired sequence position):', 'publishpress-statuses'),
+                'label' => __('Manually Selectable Pre-Publication Statuses:', 'publishpress-statuses'),
                 'class' => 'alternate-moderation-status'
             ]);
 

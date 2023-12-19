@@ -44,7 +44,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     const DEFAULT_STATUS = 'draft';
 
-    const DEFAULT_COLOR = '#78645a';
+    const DEFAULT_COLOR = '#888';
     const DEFAULT_ICON = 'dashicons-welcome-add-page';
 
     const TAXONOMY_PRE_PUBLISH = 'post_status';
@@ -63,6 +63,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     public $last_error = '';
     public $form_errors = [];
+
+    public $version;
+    public $slug;
+    public $name;
 
     private static $instance = null;
 
@@ -109,6 +113,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             add_action('wp_ajax_pp_delete_custom_status', [$this, 'handle_ajax_delete_custom_status']);
 
             add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 4);
+            add_filter('_presspermit_get_post_statuses', [$this, '_flt_get_post_statuses'], 99, 4);
+
             add_filter('presspermit_order_statuses', [$this, 'orderStatuses'], 10, 2);
         }
 
@@ -526,7 +532,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     'pitch' => (object) [
                         'label' => __('Pitch', 'publishpress-statuses'),
-                        'labels' => (object) ['publish' => __('Throw Pitch', 'publishpress-statuses')],
+                        'labels' => (object) ['publish' => __('Pitch', 'publishpress-statuses')],
                         'description' => __('Idea proposed; waiting for acceptance.', 'publishpress-statuses'),
                         'color' => '#887618',
                         'icon' => 'dashicons-lightbulb',
@@ -898,22 +904,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     /**
-     * BACK COMPAT for PublishPress Planner: Returns status name as 'slug', status label as 'name'
+     * Alias for getPostStatuses()
      * 
-     * If the module is disabled, we display only the native statuses.
-     *
      * @return array
      */
-    public function get_post_statuses($args = [])
+    public function get_post_statuses($args = [], $return_args = [], $function_args = [])
     {
-        $statuses = $this->getPostStatuses($args);
-
-        foreach ($statuses as $status_name => $status) {
-            $statuses[$status_name]->slug = $status->name;
-            $statuses[$status_name]->name = $status->label;
-        }
-
-        return $statuses;
+        return $this->getPostStatuses($args, $return_args, $function_args);
     }
 
     public static function getCustomStatuses($status_args = [], $return_args = [], $function_args = []) {
@@ -942,6 +939,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         $plugin_page = \PublishPress_Functions::getPluginPage();
         
+        if (!is_array($function_args)) {
+            $function_args = [$function_args => $function_args];
+        }
+
         // $status_args: filtering of return array based on status properties, applied outside the cache by function process_return_array()
         //
 
@@ -1083,7 +1084,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        // retore previously merged status positions (@todo: restore any other properties?)
+        // restore previously merged status positions (@todo: restore any other properties?)
         foreach ($all_statuses as $status_name => $status) {
             if (isset($stored_status_positions[$status_name])) {
                 // Deal with deactivation / reactivation of custom privacy statuses due to Status Control module deactivation / re-activation
@@ -1399,7 +1400,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }
 
-            return apply_filters('presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
+            return apply_filters('_presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
 
         } elseif (isset($return_args['output']) && in_array($return_args['output'], ['label'])) {
             foreach (array_keys($status_by_position) as $key) {
@@ -1410,10 +1411,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }
 
-            return apply_filters('presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
+            return apply_filters('_presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
 
         } elseif ($return_key_order_val) {
-            return apply_filters('presspermit_get_post_statuses', $status_by_position, $status_args, $return_args, $function_args);
+            return apply_filters('_presspermit_get_post_statuses', $status_by_position, $status_args, $return_args, $function_args);
         }
     
         // While maintaining the same array ordering, return array keys will be changed to status name (slug) unless this function arg is set to 'order'
@@ -1430,10 +1431,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        return apply_filters('presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
+        return apply_filters('_presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
     }
 
+    // filter PublishPress Permissions Pro results
     function flt_get_post_statuses($statuses, $status_args, $return_args, $function_args) {
+        return $this->getPostStatuses($status_args, $return_args, $function_args);
+    }
+
+    // filter our own results
+    function _flt_get_post_statuses($statuses, $status_args, $return_args, $function_args) {
         global $current_user;
         
         if (self::isContentAdministrator() || self::disable_custom_statuses_for_post_type()) {
@@ -1563,8 +1570,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             	$args['page'] = 'publishpress-statuses';
                 $args['_wpnonce'] = wp_create_nonce($args['action']);
                 break;
+                
             default:
-                $args['page'] = 'publishpress-statuses';
+                if (empty($args['page'])) {
+                    $args['page'] = 'publishpress-statuses';
+                }
+
                 break;
         }
 
@@ -2181,6 +2192,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         global $current_user;
 
+        if ('auto-draft' == $post_status) {
+            return $post_status;
+        }
+
         $post_id = \PublishPress_Functions::getPostID();
 
         if ($_post = get_post($post_id)) {
@@ -2196,6 +2211,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         $status_obj = get_post_status_object($post_status);
+
+        if (!empty($status_obj->private)) { // This filter only deals with pre-publication workflow statuses
+            return $post_status;
+        }
 
         $is_administrator = \PublishPress_Statuses::isContentAdministrator();
 

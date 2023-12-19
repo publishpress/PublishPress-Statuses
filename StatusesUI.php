@@ -4,6 +4,7 @@ namespace PublishPress_Statuses;
 // Custom Status management: Statuses Screen
 class StatusesUI {
     private static $instance = null;
+    private $version;
 
     public static function instance() {
         if ( is_null(self::$instance) ) {
@@ -369,12 +370,14 @@ class StatusesUI {
         /** Statuses screen **/
         } elseif (('publishpress-statuses' === $plugin_page) && (!$action || ('statuses' == $action))) {
             add_action('publishpress_header_button', function() {
+                $status_type = \PublishPress_Functions::REQUEST_key('status_type');
+                
                 $args = [
                     'action' => 'add-new', 
-                    'status_type' => \PublishPress_Functions::REQUEST_key('status_type')
+                    'status_type' => $status_type
                 ];
     
-                if ('visibility' == \PublishPress_Functions::REQUEST_key('status_type')) {
+                if ('visibility' == $status_type) {
                     $args['taxonomy'] = 'post_visibility_pp';
                 }
                 
@@ -382,12 +385,61 @@ class StatusesUI {
                     $args
                 );
 
-                echo '<a class="button primary add-new" title="' 
-                    . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
-                    . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+                if (('visibility' != $status_type) || (defined('PRESSPERMIT_STATUSES_VERSION') && get_option('presspermit_privacy_statuses_enabled') )) {
+                    echo '<a class="button primary add-new" title="' 
+                        . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
+                        . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+                }
             });
 
-            \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses'));
+            $status_type = \PublishPress_Functions::REQUEST_key('status_type');
+
+            if (('visibility' == $status_type) && (!defined('PRESSPERMIT_PRO_VERSION') || !defined('PRESSPERMIT_STATUSES_VERSION') || !get_option('presspermit_privacy_statuses_enabled'))) {
+                $headline = '';
+            } else {
+                $headline = esc_html__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses');
+            }
+
+            \PublishPress\ModuleAdminUI_Base::instance()->default_header($headline);
+
+            if ('visibility' == $status_type) {
+                if (!defined('PRESSPERMIT_PRO_VERSION')) :?>
+                    <div class="pp-statuses-config-notice">
+                    <?php
+                    printf(
+                        esc_html__('Note: The %1$sPublishPress Permissions Pro%2$s plugin is required for custom Visibility Statuses, but %3$sis not active%4$s.', 'publishpress-statuses'),
+                        '<a href="https://publishpress.com/permissions/" target="_blank">',
+                        '</a>',
+                        '<a href="' . esc_url(admin_url('plugins.php')) . '">',
+                        '</a>'
+                    );
+                    ?>
+                    </div>
+
+                <?php elseif (!defined('PRESSPERMIT_STATUSES_VERSION')) :?>
+                    <div class="pp-statuses-config-notice">
+                    <?php
+                    printf(
+                        esc_html__('For custom Visibility Statuses, please %1$senable the Status Control module%2$s of Permissions Pro.', 'publishpress-statuses'),
+                        '<a href="' . esc_url(admin_url('admin.php?page=presspermit-settings&pp_tab=modules')) . '">',
+                        '</a>'
+                    );
+                    ?>
+                    </div>
+
+                <?php elseif (!get_option('presspermit_privacy_statuses_enabled')) :?>
+                    <div class="pp-statuses-config-notice">
+                    <?php
+                    printf(
+                        esc_html__('Note: Custom Visibility Statuses are %1$sdisabled%2$s.', 'publishpress-permissions'),
+                        '<a href="' . esc_url(admin_url('admin.php?page=presspermit-settings&pp_tab=statuses')) . '">',
+                        '</a>'
+                    );
+                    ?>
+                    </div>
+
+                <?php endif;
+            }
             
             // @todo: adapt old nav tab for status types (Pre-publication, Publication & Privacy, Revision Statuses)
             ?>
@@ -440,6 +492,10 @@ class StatusesUI {
         <?php 
         /** Add New Status **/
         } elseif (isset($plugin_page) && ('publishpress-statuses-add-new' === $plugin_page)) {
+            if (('post_visibility_pp'== \PublishPress_Functions::REQUEST_key('taxonomy')) && ! defined('PRESSPERMIT_STATUSES_VERSION')) {
+                return;
+            }
+
             $title = ('post_visibility_pp' == \PublishPress_Functions::REQUEST_key('taxonomy')) 
             ?  __('Add New Visibility Status', 'publishpress-statuses')
             :  __('Add New Pre-Publication Status', 'publishpress-statuses');

@@ -194,7 +194,7 @@ function PPCS_RecaptionButton(btnSelector, btnCaption) {
     node.addClass(hideClass).hide().css('z-index', -999);
 
     // Clone the stock button
-    node.after('<span class="presspermit-save-button">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-save-draft').removeAttr('aria-disabled').css('position', 'relative').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
+    node.after('<span class="presspermit-save-button">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-save-draft').removeAttr('disabled').removeAttr('aria-disabled').css('white-space', 'nowrap').css('position', 'relative').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
 
     node.addClass(hideClass).attr('aria-disabled', true);
   }

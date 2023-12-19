@@ -4,6 +4,9 @@ namespace PublishPress_Statuses;
 // Custom Status admin menus, shared javascript and CSS
 class Admin
 {
+    public $menu_slug;
+    public $using_permissions_menu;
+
     function __construct() {
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 
@@ -87,9 +90,12 @@ class Admin
                 ['jquery', 'jquery-ui-sortable'], 
                 PUBLISHPRESS_STATUSES_VERSION
             );
+
+            $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+
             wp_enqueue_script(
                 'nested-sortable-mjs-pp', 
-                PUBLISHPRESS_STATUSES_URL . 'common/libs/jquery.mjs.nestedSortable-pp/jquery.mjs.nestedSortable-pp.js', 
+                PUBLISHPRESS_STATUSES_URL . "common/libs/jquery.mjs.nestedSortable-pp/jquery.mjs.nestedSortable-pp{$suffix}.js", 
                 ['jquery', 'jquery-ui-sortable'], 
                 PUBLISHPRESS_STATUSES_VERSION
             );

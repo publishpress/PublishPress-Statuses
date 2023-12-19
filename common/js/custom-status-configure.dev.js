@@ -93,10 +93,24 @@
                     // Don't allow anything before Draft
                     if (typeof (placeholder.prop('nextElementSibling') != 'undefined')) {
                         targetStatus = $(placeholder.prop('nextElementSibling')).prop('id');
-                        targetStatus = targetStatus.replace('status_row_', '');
+                        
+                        if (typeof targetStatus != 'undefined') {
+                            targetStatus = targetStatus.replace('status_row_', '');
+                        }
 
                         if (targetStatus == 'draft' || targetStatus == '_pre-publish') {
                             return false;
+                        }
+                    }
+
+                    // Don't allow Pending to be disabled or moved to alternate
+                    if (typeof (placeholder.prop('nextElementSibling') != 'undefined')) {
+                        if ($(currentItem).attr('id') == 'status_row_pending') {
+                            if ($(placeholder.prop('previousElementSibling')).hasClass('disabled-status')
+                            || $(placeholder.prop('previousElementSibling')).hasClass('alternate-moderation-status')
+                            ) {
+                                return false;
+                            }
                         }
                     }
 

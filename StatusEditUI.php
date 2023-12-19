@@ -38,10 +38,11 @@ class StatusEditUI
 
         $tabs = ['name' => __('Name', 'publishpress-statuses')];
 
-        if (empty($status->publish) && empty($status->private) && !in_array($name, ['draft', 'future', 'publish'])) {
-            $tabs['labels'] = __('Labels', 'publishpress-statuses');
-
-            $tabs['roles'] = __('Roles', 'publishpress-statuses');
+        if (empty($status->publish) && !in_array($name, ['draft', 'future', 'publish', 'private'])) {
+            if (empty($status->private)) {
+                $tabs['labels'] = __('Labels', 'publishpress-statuses');
+                $tabs['roles'] = __('Roles', 'publishpress-statuses');
+            }
 
             if ('pending' != $name) {
                 $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
