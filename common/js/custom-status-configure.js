@@ -10,6 +10,7 @@
     if($(currentItem).hasClass('private-status')){return false;}
     if($(currentItem).attr('id')=='status_row_pending'){return false;}}else{if(typeof(placeholder.prop('nextElementSibling')!='undefined')){targetStatus=$(placeholder.prop('nextElementSibling')).prop('id');if(typeof targetStatus!='undefined'){targetStatus=targetStatus.replace('status_row_','');}
     if(targetStatus=='draft'||targetStatus=='_pre-publish'){return false;}}
+    if(typeof(placeholder.prop('nextElementSibling')!='undefined')){if($(currentItem).attr('id')=='status_row_pending'){if($(placeholder.prop('previousElementSibling')).hasClass('disabled-status')||$(placeholder.prop('previousElementSibling')).hasClass('alternate-moderation-status')){return false;}}}
     if(typeof(placeholder.prop('previousElementSibling')!='undefined')){targetStatus=$(placeholder.prop('previousElementSibling')).prop('id');if(typeof(targetStatus)!='undefined'){targetStatus=targetStatus.replace('status_row_','');}
     targetIsVisibility=$(placeholder.prop('previousElementSibling')).hasClass('private-status');targetIsDisabled=$(placeholder.prop('previousElementSibling')).hasClass('disabled-status');targetIsChild=$(placeholder.prop('previousElementSibling')).parents('ol.pp-nested-list').length;if((isVisibility!=targetIsVisibility)&&(!targetIsDisabled||!targetIsChild)){return false;}
     if(isVisibility&&targetIsDisabled){ppRestoreElement=currentItem;setTimeout(function(){$(ppRestoreElement).removeClass('moderation-status').addClass('private-status');},100);}

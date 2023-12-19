@@ -77,7 +77,18 @@ box-shadow:none;
 border-top:1px solid #e1e1e1
 }
 
+.pp-statuses-config-notice {
+margin-top: 15px;
+font-size: 16px;
+}
 
+.pp-statuses-config-notice a,
+.pp-statuses-config-notice a:link,
+.pp-statuses-config-notice a:active,
+.pp-statuses-config-notice a:visited
+{
+font-weight: bold;
+}
 
 /* Statuses Table Section Rows */
 .pp-nested-list .row {
