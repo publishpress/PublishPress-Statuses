@@ -6,7 +6,7 @@ Tags: statuses
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.2
+Stable tag: 1.0.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,6 +32,15 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.2.1] - 19 Dec 2023 =
+* Fixed : Non-Administrator login caused Auto Draft publication
+* Fixed : Pending status draggable to Disabled even though disabling is prevented
+* Fixed : Edit Status - First update overrides Roles selection with defaults
+* Fixed : Non-Administrator login causes Auto Draft publication
+* Fixed : Safari - Post Status dropdown shows a blank item
+* Fixed : Permissions Pro - Visibility Status button, form displayed without required Permissions Pro module
+* Fixed : Permissions Pro - Disabled Visibility Statuses still available
 
 = [1.0.2] - 13 Dec 2023 =
 * Fixed : Redirect back to Planner Calendar settings after editing a status
