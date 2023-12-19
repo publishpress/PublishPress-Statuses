@@ -113,6 +113,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             add_action('wp_ajax_pp_delete_custom_status', [$this, 'handle_ajax_delete_custom_status']);
 
             add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 4);
+            add_filter('_presspermit_get_post_statuses', [$this, '_flt_get_post_statuses'], 99, 4);
+
             add_filter('presspermit_order_statuses', [$this, 'orderStatuses'], 10, 2);
         }
 
@@ -1394,7 +1396,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }
 
-            return apply_filters('presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
+            return apply_filters('_presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
 
         } elseif (isset($return_args['output']) && in_array($return_args['output'], ['label'])) {
             foreach (array_keys($status_by_position) as $key) {
@@ -1405,10 +1407,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }
 
-            return apply_filters('presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
+            return apply_filters('_presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
 
         } elseif ($return_key_order_val) {
-            return apply_filters('presspermit_get_post_statuses', $status_by_position, $status_args, $return_args, $function_args);
+            return apply_filters('_presspermit_get_post_statuses', $status_by_position, $status_args, $return_args, $function_args);
         }
     
         // While maintaining the same array ordering, return array keys will be changed to status name (slug) unless this function arg is set to 'order'
@@ -1425,10 +1427,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        return apply_filters('presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
+        return apply_filters('_presspermit_get_post_statuses', $return_arr, $status_args, $return_args, $function_args);
     }
 
+    // filter PublishPress Permissions Pro results
     function flt_get_post_statuses($statuses, $status_args, $return_args, $function_args) {
+        return $this->getPostStatuses($status_args, $return_args, $function_args);
+    }
+
+    // filter our own results
+    function _flt_get_post_statuses($statuses, $status_args, $return_args, $function_args) {
         global $current_user;
         
         if (self::isContentAdministrator() || self::disable_custom_statuses_for_post_type()) {
