@@ -316,7 +316,7 @@ class StatusesUI {
             esc_attr($checked)
         ) . ' ';
 
-        esc_html_e('If some statuses are nested, de-clutter the dropdown by hiding statuses outside current branch', 'publishpress-statuses');
+        esc_html_e('De-clutter the dropdown by hiding statuses outside current branch (if defaulting by sequence and some statuses are nested)', 'publishpress-statuses');
 
         echo '</div>';
     }
