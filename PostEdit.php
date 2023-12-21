@@ -164,11 +164,14 @@ class PostEdit
             foreach ($status_terms as $status_term) {
                 if (!empty($status_term->slug) && ($status_term->slug == $status)) {
                     if (('pending' == $status) && \PublishPress_Functions::isBlockEditorActive()) {
+                        $status_obj = get_post_status_object('pending');
+                        $status_label = (empty($status_obj)) ? $status_obj->label : esc_html__('Pending Review', 'publishpress-statuses');
+
                         // Alternate item to allow use of "Save as Pending" button
                         //
                         // This will allow different behavior from the Submit button, 
                         // which may default to next/highest available workflow status.
-                        $return[]= (object)['name' => '_pending', 'label' => esc_html__('Pending')];
+                        $return[]= (object)['name' => '_pending', 'label' => $status_label];
                     }
 
                     $return[]= $status_term;

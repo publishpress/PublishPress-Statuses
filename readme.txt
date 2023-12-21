@@ -36,6 +36,7 @@ This section describes how to install the plugin and get it working.
 = [1.0.2.2] - 20 Dec 2023 =
 * Change : In Workflow (Pre-Publish) panel, display selectable radio option for next status even if not defaulting to it
 * Change : Force usage of Pre-Publish panel (unless disabled by constant)
+* Fixed : Explicitly selected Pending Review status did not save correctly (since 1.0.2.1)
 * Fixed : Classic Editor - Visibility selector was missing
 * Fixed : Classic Editor - Explicit selection of Published status was ignored if using Default to Next Status mode
 * Fixed : Classic Editor - Numerous captioning and display toggle issues in post publish metabox
