@@ -20,6 +20,18 @@ jQuery(document).ready(function ($) {
         });
     }
 
+    $('a.save-timestamp').click(function () {
+        setTimeout(() => {
+            updateStatusCaptions();
+        }, 100);
+    });
+
+    $('#save-post, #publish').click(function () {
+        setTimeout(() => {
+            $('#save-post').hide();
+        }, 100);
+    });
+
     var is_workflow_status = true;
     var postStatus = $('#hidden_post_status').val();
     var publishedStatuses = ['publish', 'private', 'future'];
@@ -89,6 +101,12 @@ jQuery(document).ready(function ($) {
                 }
             }, 200);
         });
+
+        if ('future' == postStatus) {
+            setTimeout(() => {
+                $('#publish').val(ppObjEdit.update);
+            }, 100);
+        }
     }
 
     // Advanced Custom Fields compat
@@ -150,9 +168,13 @@ function updateStatusDropdownElements() {
             $('.edit-post-status', '#misc-publishing-actions').hide();
         } else {
 			if (postL10n.publish) {
-				$('#publish').val(postL10n.publish);
+                if ($('#publish').val() != postL10n.schedule) {
+					$('#publish').val(postL10n.publish);
+                }
 			} else {
-            	$('#publish').val(ppObjEdit.publish);
+                if ($('#publish').val() != ppObjEdit.schedule) {
+            		$('#publish').val(ppObjEdit.publish);
+                }
 			}
 
             if ($('#original_post_status').val() == 'future') {
@@ -163,8 +185,10 @@ function updateStatusDropdownElements() {
             } else {
                 optPublish.html(ppObjEdit.published);
             }
-            if (postStatus.is(':hidden'))
+            
+            if (postStatus.is(':hidden')) {
                 $('.edit-post-status', '#misc-publishing-actions').show();
+        	}
         }
 
         return true;
