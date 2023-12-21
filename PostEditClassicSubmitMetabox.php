@@ -289,7 +289,7 @@ class PostEditClassicSubmitMetabox
                 <select name='post_status' id='post_status' tabindex='4' autocomplete='off'>
 
                     <?php if ($post_status_obj->public || $post_status_obj->private || ('future' == $post_status)) : ?>
-                        <option <?php selected(true, true); ?> value='publish'>
+                        <option <?php selected(true, true); ?> value='_public'>
                         <?php echo esc_html($post_status_obj->labels->caption) ?>
                         </option>
                     <?php endif; ?>

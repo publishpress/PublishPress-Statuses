@@ -185,7 +185,8 @@ class PostEditClassic
             'published' => esc_html__('Published'),
             'privatelyPublished' => esc_html__('Privately Published'),
             'publish' => esc_html__('Publish'),
-            'publishSticky' => esc_html__('Published, Sticky')
+            'publishSticky' => esc_html__('Published, Sticky'),
+            'defaultBySequence' => $default_by_sequence
         ];
 
         if (!empty($post)) {
