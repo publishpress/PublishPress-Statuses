@@ -70,6 +70,11 @@ class PostEditGutenbergStatuses
             }
         }
 
+        // Now that logic is done, pass actual Next Status object even if not defaulting to it
+        if (!$args['workflowSequence'] && !defined('PP_STATUSES_SUPPRESS_NEXT_STATUS_SELECTION')) {
+            $next_status_obj = \PublishPress_Statuses::defaultStatusProgression(0, ['default_by_sequence' => true]);
+        }
+
         $args = array_merge($args, ['publish' => $publish_label, 'saveAs' => $save_as_label, 'nextStatus' => $next_status_obj->name, 'maxStatus' => $max_status_obj->name, 'defaultBySequence' => !empty($default_by_sequence)]);
 
         if (!$is_administrator = \PublishPress_Statuses::isContentAdministrator()) {
