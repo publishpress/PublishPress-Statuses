@@ -219,7 +219,7 @@ class PostEditClassicSubmitMetabox
         <?php
         if ($post_status_obj->public) {
             $preview_link = esc_url(get_permalink($post->ID));
-            $preview_button = \PublishPress_Statuses::__wp('Preview Changes');
+            $preview_button = \PublishPress_Statuses::__wp('Preview');
             $preview_title = '';
         } else {
             $preview_link = esc_url(apply_filters(
@@ -272,7 +272,7 @@ class PostEditClassicSubmitMetabox
         else
             echo esc_html($post_status_obj->label);
         ?>
-        </span>&nbsp;
+        </span> 
         <?php
 
         // multiple moderation stati are selectable or a single non-current moderation stati is selectable
