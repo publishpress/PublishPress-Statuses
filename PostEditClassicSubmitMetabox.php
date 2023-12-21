@@ -44,6 +44,63 @@ class PostEditClassicSubmitMetabox
                         <?php self::post_status_display($post, $_args); ?>
                     </div>
 
+                    <div class="misc-pub-section misc-pub-visibility" id="visibility">
+                        <?php _e( 'Visibility:' ); ?>
+                        <span id="post-visibility-display">
+                            <?php
+                            if ( 'private' === $post->post_status ) {
+                                $post->post_password = '';
+                                $visibility          = 'private';
+                                $visibility_trans    = __( 'Private' );
+                            } elseif ( ! empty( $post->post_password ) ) {
+                                $visibility       = 'password';
+                                $visibility_trans = __( 'Password protected' );
+                            } elseif ( 'post' === $post->post_type && is_sticky( $post->ID ) ) {
+                                $visibility       = 'public';
+                                $visibility_trans = __( 'Public, Sticky' );
+                            } else {
+                                $visibility       = 'public';
+                                $visibility_trans = __( 'Public' );
+                            }
+
+                            echo esc_html( $visibility_trans );
+                            ?>
+                        </span>
+
+                        <?php if ( $can_publish ) { ?>
+                            <a href="#visibility" class="edit-visibility hide-if-no-js" role="button"><span aria-hidden="true"><?php _e( 'Edit' ); ?></span> <span class="screen-reader-text">
+                                <?php
+                                /* translators: Hidden accessibility text. */
+                                _e( 'Edit visibility' );
+                                ?>
+                            </span></a>
+
+                            <div id="post-visibility-select" class="hide-if-js">
+                                <input type="hidden" name="hidden_post_password" id="hidden-post-password" value="<?php echo esc_attr( $post->post_password ); ?>" />
+                                <?php if ( 'post' === $post->post_type ) : ?>
+                                    <input type="checkbox" style="display:none" name="hidden_post_sticky" id="hidden-post-sticky" value="sticky" <?php checked( is_sticky( $post->ID ) ); ?> />
+                                <?php endif; ?>
+
+                                <input type="hidden" name="hidden_post_visibility" id="hidden-post-visibility" value="<?php echo esc_attr( $visibility ); ?>" />
+                                <input type="radio" name="visibility" id="visibility-radio-public" value="public" <?php checked( $visibility, 'public' ); ?> /> <label for="visibility-radio-public" class="selectit"><?php _e( 'Public' ); ?></label><br />
+
+                                <?php if ( 'post' === $post->post_type && current_user_can( 'edit_others_posts' ) ) : ?>
+                                    <span id="sticky-span"><input id="sticky" name="sticky" type="checkbox" value="sticky" <?php checked( is_sticky( $post->ID ) ); ?> /> <label for="sticky" class="selectit"><?php _e( 'Stick this post to the front page' ); ?></label><br /></span>
+                                <?php endif; ?>
+
+                                <input type="radio" name="visibility" id="visibility-radio-password" value="password" <?php checked( $visibility, 'password' ); ?> /> <label for="visibility-radio-password" class="selectit"><?php _e( 'Password protected' ); ?></label><br />
+                                <span id="password-span"><label for="post_password"><?php _e( 'Password:' ); ?></label> <input type="text" name="post_password" id="post_password" value="<?php echo esc_attr( $post->post_password ); ?>"  maxlength="255" /><br /></span>
+
+                                <input type="radio" name="visibility" id="visibility-radio-private" value="private" <?php checked( $visibility, 'private' ); ?> /> <label for="visibility-radio-private" class="selectit"><?php _e( 'Private' ); ?></label><br />
+
+                                <p>
+                                    <a href="#visibility" class="save-post-visibility hide-if-no-js button"><?php _e( 'OK' ); ?></a>
+                                    <a href="#visibility" class="cancel-post-visibility hide-if-no-js button-cancel"><?php _e( 'Cancel' ); ?></a>
+                                </p>
+                            </div>
+                        <?php } ?>
+                    </div>
+
                     <?php do_action('pp_statuses_post_submitbox_misc_sections', $post, $_args); ?>
 
                     <?php
