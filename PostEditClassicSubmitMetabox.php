@@ -44,6 +44,7 @@ class PostEditClassicSubmitMetabox
                         <?php self::post_status_display($post, $_args); ?>
                     </div>
 
+                    <?php if (!defined('PRESSPERMIT_STATUSES_VERSION') || !get_option('presspermit_privacy_statuses_enabled')):?>
                     <div class="misc-pub-section misc-pub-visibility" id="visibility">
                         <?php _e( 'Visibility:' ); ?>
                         <span id="post-visibility-display">
@@ -100,6 +101,7 @@ class PostEditClassicSubmitMetabox
                             </div>
                         <?php } ?>
                     </div>
+                    <?php endif;?>
 
                     <?php do_action('pp_statuses_post_submitbox_misc_sections', $post, $_args); ?>
 
