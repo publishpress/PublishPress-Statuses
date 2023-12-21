@@ -139,7 +139,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 'page' => 1,
             ],
             'supplemental_cap_moderate_any' => 0,
-            'moderation_statuses_default_by_sequence' => 0
+            'moderation_statuses_default_by_sequence' => 0,
+            'status_dropdown_show_current_branch_only' => 0,
         ];
 
         $this->post_type_support_slug = 'pp_custom_statuses'; // This has been plural in all of our docs

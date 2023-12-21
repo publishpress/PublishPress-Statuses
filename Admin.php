@@ -363,7 +363,7 @@ class Admin
         $_args = ['include_status' => $post_status_obj->name];
 
         if ($post) {
-            if ($default_by_sequence) {
+            if ($default_by_sequence && \PublishPress_Statuses::instance()->options->status_dropdown_show_current_branch_only) {
                 if (!empty($post_status_obj->status_parent)) {
                     // If current status is a sub-status, only offer:
                     // * other sub-statuses in the same workflow branch
