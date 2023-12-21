@@ -137,11 +137,14 @@ class PostEditGutenberg
                 $_ordered []= $status_obj;
 
                 if ('pending' == $status_obj->name) {
+                    $status_obj = get_post_status_object('pending');
+                    $status_label = (empty($status_obj)) ? $status_obj->label : esc_html__('Pending Review', 'publishpress-statuses');
+
                     // Alternate item to allow use of "Save as Pending" button
                     //
                     // This will allow different behavior from the Submit button, 
                     // which may default to next/highest available workflow status.
-                    $_ordered[]= (object)['name' => '_pending', 'label' => esc_html__('Pending')];
+                    $_ordered[]= (object)['name' => '_pending', 'label' => $status_label];
                 } 
             }
 

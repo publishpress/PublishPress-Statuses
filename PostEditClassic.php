@@ -185,7 +185,8 @@ class PostEditClassic
             'published' => esc_html__('Published'),
             'privatelyPublished' => esc_html__('Privately Published'),
             'publish' => esc_html__('Publish'),
-            'publishSticky' => esc_html__('Published, Sticky')
+            'publishSticky' => esc_html__('Published, Sticky'),
+            'defaultBySequence' => $default_by_sequence
         ];
 
         if (!empty($post)) {
@@ -194,7 +195,7 @@ class PostEditClassic
                 ['default_by_sequence' => $default_by_sequence, 'post_status' => $post->post_status]
             );
 
-            if ($next_status_obj && !in_array($next_status_obj->name, ['publish', 'private'])) {
+            if ($next_status_obj && !in_array($next_status_obj->name, ['publish', 'private', 'future'])) {
                 if (!empty($next_status_obj->labels->publish)) {
                     $args['publish'] = $next_status_obj->labels->publish;
                 } elseif (!empty($next_status_obj->labels->save_as)) {
@@ -202,6 +203,8 @@ class PostEditClassic
                 } else {
                     $args['publish'] = sprintf(__('Submit as %s', 'publishpress-statuses'), $next_status_obj->label);
                 }
+
+                $args['schedule'] = $args['publish'];
             }
         }
 

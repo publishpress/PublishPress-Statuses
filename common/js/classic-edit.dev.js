@@ -3,6 +3,113 @@ jQuery(document).ready(function ($) {
 
     updateStatusDropdownElements();
 
+    currentDate = new Date($('#cur_aa').val(), $('#cur_mm').val() - 1, $('#cur_jj').val(), $('#cur_hh').val(), $('#cur_mn').val());
+    postDate = new Date($('#hidden_aa').val(), $('#hidden_mm').val() - 1, $('#hidden_jj').val(), $('#hidden_hh').val(), $('#hidden_mn').val());
+
+    if ((postDate < currentDate) || ppObjEdit.defaultBySequence) {
+        ppObjEdit.publishButtonCaption = $('#publish').val();
+
+        $('a.save-post-status, a.save-post-visibility, a.save-timestamp').click(function () {
+            setTimeout(() => {
+                if ('_public' != $('#post_status').val() || ppObjEdit.defaultBySequence) {
+                    if ($('#visibility-radio-public:checked').length) {
+                        $('#publish').val(ppObjEdit.publishButtonCaption);
+                    }
+                }
+            }, 100);
+        });
+    }
+
+    $('a.save-timestamp').click(function () {
+        setTimeout(() => {
+            updateStatusCaptions();
+        }, 100);
+    });
+
+    $('#save-post, #publish').click(function () {
+        setTimeout(() => {
+            $('#save-post').hide();
+            $('#publish').hide();
+        }, 100);
+    });
+
+    var is_workflow_status = true;
+    var postStatus = $('#hidden_post_status').val();
+    var publishedStatuses = ['publish', 'private', 'future'];
+
+    if (publishedStatuses.indexOf(postStatus) != -1) {
+        is_workflow_status = false;
+    } else {
+        var pvt_stati = jQuery.parseJSON(ppObjEdit.pvtStati.replace(/&quot;/g, '"'));
+
+        $(pvt_stati).each(function (i) {
+            if (pvt_stati[i].name == postStatus) {
+                is_workflow_status = false;
+            }
+        });
+    }
+
+    if (is_workflow_status) {
+        $('a.edit-post-status, #post_status').click(function (e) {
+            if ($('#post_status option[value="publish"]').length) {
+                if ('publish' == $('#post_status').val()) {
+                    $('#post_status').val('_public');
+                }
+
+                $('#post_status option[value="_public"]').html($('#post_status option[value="publish"]').html());
+
+                $('#post_status option[value="publish"]').hide();
+            }
+        });
+
+        $('a.save-post-visibility').click(function() {
+            setTimeout(() => {
+                if ($('#visibility-radio-public:checked').length) {
+                    var pub_stati = jQuery.parseJSON(ppObjEdit.pubStati.replace(/&quot;/g, '"'));
+
+                    $(pub_stati).each(function (i) {
+                        if (pub_stati[i].name == 'publish') {
+                            publishCaption = pub_stati[i].publish;
+                        }
+                    });
+
+                    $('#save-post').val(publishCaption).show();
+                }
+            }, 100);
+        });
+    } else {
+        $('a.save-post-status, a.save-post-visibility').click(function() {
+            setTimeout(() => {
+                if (null == $('#post_status').val()) {
+                    $('#post_status').val('_public');
+                    $('#post-status-display').html($('#post_status [value="_public"]').html());
+                }
+
+                if ($('#visibility-radio-public:checked').length) {
+                    $('#save-post').toggle($('#post_status').val() != '_public');
+    
+                    if ($('#post_status').val() != '_public') {
+                        $('#publish').val(ppObjEdit.publish);
+                    }
+                }
+            }, 200);
+        });
+
+        $('a.save-timestamp').click(function () {
+            setTimeout(() => {
+                if ($('#visibility-radio-public:checked').length) {
+                    $('#save-post').toggle($('#post_status').val() != '_public');
+                }
+            }, 200);
+        });
+
+        if ('future' == postStatus) {
+            setTimeout(() => {
+                $('#publish').val(ppObjEdit.update);
+            }, 100);
+        }
+    }
+
     // Advanced Custom Fields compat
     if (typeof acf != 'undefined') {
         if (typeof acf.add_filter == 'function') { // ACF 5 API
@@ -43,8 +150,6 @@ function updateStatusDropdownElements() {
         var is_private = false;
         var pvt_stati = jQuery.parseJSON(ppObjEdit.pvtStati.replace(/&quot;/g, '"'));
 
-        //console.log('updateStatusDropdownElements');
-
         $(pvt_stati).each(function (i) {
             if (pvt_stati[i].name == status_val) {
                 is_private = true;
@@ -63,26 +168,28 @@ function updateStatusDropdownElements() {
             $('option[value="publish"]', postStatus).prop('selected', true);
             $('.edit-post-status', '#misc-publishing-actions').hide();
         } else {
-            //console.log($('#post_status').val());
-
 			if (postL10n.publish) {
-				$('#publish').val(postL10n.publish);
+                if ($('#publish').val() != postL10n.schedule) {
+				    $('#publish').val(postL10n.publish);
+                }
 			} else {
-            	$('#publish').val(ppObjEdit.publish);
+                if ($('#publish').val() != ppObjEdit.schedule) {
+            	    $('#publish').val(ppObjEdit.publish);
+                }
 			}
 
-            if ($('#original_post_status').val() == 'future' || $('#original_post_status').val() == 'dr-aft') {
+            if ($('#original_post_status').val() == 'future') {
                 if (optPublish.length) {
-                    optPublish.remove();    // @todo
+                    optPublish.remove();
                     postStatus.val($('#hidden_post_status').val());
                 }
             } else {
                 optPublish.html(ppObjEdit.published);
-
-                //$('option[value="public"]', postStatus).prop('selected', true);
             }
-            if (postStatus.is(':hidden'))
+            
+            if (postStatus.is(':hidden')) {
                 $('.edit-post-status', '#misc-publishing-actions').show();
+        	}
         }
 
         return true;
@@ -126,8 +233,6 @@ function updateStatusCaptions() {
                 status_type = 'private';
             }
         });
-
-        $('#publish').toggle(status_val != '_public');
 
         switch (status_type) {
             case 'public':
@@ -230,14 +335,13 @@ jQuery(document).ready(function ($) {
 
             $('#publish').val(ppObjEdit.update);
             if (optPublish.length == 0) {
-                postStatus.append('<option value="publish">' + ppObjEdit.privatelyPublished + '</option>');
+                postStatus.append('<option value="_public">' + ppObjEdit.privatelyPublished + '</option>');
             } else {
                 optPublish.html(ppObjEdit.privatelyPublished);
             }
-            $('option[value="publish"]', postStatus).prop('selected', true);
+            $('option[value="_public"]', postStatus).prop('selected', true);
             $('.edit-post-status', '#misc-publishing-actions').hide();
         } else {
-            //if ($('#original_post_status').val() == 'future' || $('#original_post_status').val() == 'draft') {
             if ($('#original_post_status').val() == 'future') {
                 if (optPublish.length) {
                     optPublish.remove();
@@ -317,11 +421,7 @@ jQuery(document).ready(function ($) {
         return false;
     });
 
-    //$('#post-status-select').on('click', function (e) {
     $('#save-post-status').on('click', function (e) {
-        //$('#post-status-select').slideUp("fast");
-
-        //$('#post-status-select').siblings('a.edit-post-status').show();
         updateStatusCaptions();
         return false;
     });

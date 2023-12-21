@@ -120,6 +120,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         add_action('user_has_cap', [$this, 'fltUserHasCap'], 20, 3);
 
+        add_filter('get_user_metadata', [$this, 'fltForcePrepublishPanel'], 10, 5);
         add_filter('rest_pre_dispatch', [$this, 'fltRestPreDispatch'], 10, 3);
         add_action('rest_api_init', [$this, 'actRestInit'], 1);
         add_filter('pre_post_status', [$this, 'fltPostStatus'], 20);
@@ -138,7 +139,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 'page' => 1,
             ],
             'supplemental_cap_moderate_any' => 0,
-            'moderation_statuses_default_by_sequence' => 0
+            'moderation_statuses_default_by_sequence' => 0,
+            'status_dropdown_show_current_branch_only' => 0,
         ];
 
         $this->post_type_support_slug = 'pp_custom_statuses'; // This has been plural in all of our docs
@@ -176,6 +178,35 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $init_priority = (defined('PUBLISHPRESS_ACTION_PRIORITY_INIT')) ? PUBLISHPRESS_ACTION_PRIORITY_INIT : 10;
             add_action('init', [$this, 'init'], $init_priority);
         }
+    }
+
+    public function fltForcePrepublishPanel($meta_value, $object_id, $meta_key, $single, $meta_type) {
+        if (('wp_persisted_preferences' != $meta_key) && !defined('PP_STATUSES_NO_FORCED_PREPUBLISH') || \PublishPress_Statuses::DisabledForPostType()) {
+            return $meta_value;
+        }
+
+        $meta_cache = wp_cache_get( $object_id, $meta_type . '_meta' );
+
+        if ( ! $meta_cache ) {
+            $meta_cache = update_meta_cache( $meta_type, array( $object_id ) );
+            if ( isset( $meta_cache[ $object_id ] ) ) {
+                $meta_cache = $meta_cache[ $object_id ];
+            } else {
+                $meta_cache = null;
+            }
+        }
+
+        if ( isset( $meta_cache[ $meta_key ] ) ) {
+            $meta_value = array_map( 'maybe_unserialize', $meta_cache[ $meta_key ] );
+        }
+
+        if ($meta_value) {
+            if (isset($meta_value[0]) && isset($meta_value[0]['core/edit-post']) && isset($meta_value[0]['core/edit-post']['isPublishSidebarEnabled']) && !$meta_value[0]['core/edit-post']['isPublishSidebarEnabled']) {
+                $meta_value[0]['core/edit-post']['isPublishSidebarEnabled'] = true;
+            }
+        }
+
+        return $meta_value;
     }
 
     public function fltRegisterCapabilities($cme_caps) {
@@ -2225,6 +2256,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if (('_public' === \PublishPress_Functions::REQUEST_key('post_status'))
         && !\PublishPress_Functions::isBlockEditorActive()) {
             $_post_status = 'public';
+            $classic_explicit_publish = true;
         } else {
         	$_post_status = \PublishPress_Functions::POST_key('post_status');
         }
@@ -2259,6 +2291,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         // Also skip retain normal WP editor behavior if the newly posted status is privately published or future.
         if (
             (in_array($selected_status, ['publish', 'pending', 'future']) && !in_array($stored_status, ['publish', 'private', 'future']) 
+            && empty($classic_explicit_publish)
             && empty($stored_status_obj->public) && empty($stored_status_obj->private))
         ) {
             // Gutenberg REST gives no way to distinguish between Publish and Save request. Treat as Publish (next workflow progression) if any of the following:

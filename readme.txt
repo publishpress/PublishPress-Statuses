@@ -6,7 +6,7 @@ Tags: statuses
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.2.1
+Stable tag: 1.0.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,6 +32,15 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.2.2] - 20 Dec 2023 =
+* Change : In Workflow (Pre-Publish) panel, display selectable radio option for next status even if not defaulting to it
+* Change : Force usage of Pre-Publish panel (unless disabled by constant)
+* Change : New plugin setting "De-clutter status dropdown by hiding statuses outside current branch"; no longer do this by default
+* Fixed : Explicitly selected Pending Review status did not save correctly (since 1.0.2.1)
+* Fixed : Classic Editor - Visibility selector was missing
+* Fixed : Classic Editor - Explicit selection of Published status was ignored if using Default to Next Status mode
+* Fixed : Classic Editor - Numerous captioning and display toggle issues in post publish metabox
 
 = [1.0.2.1] - 19 Dec 2023 =
 * Fixed : Non-Administrator login caused Auto Draft publication

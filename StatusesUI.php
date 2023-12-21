@@ -218,6 +218,14 @@ class StatusesUI {
                 $group_name . '_general'
             );
 
+            add_settings_field(
+                'status_dropdown_show_current_branch_only',
+                __('Status dropdown:', 'publishpress-statuses'),
+                [$this, 'settings_status_dropdown_show_current_branch_only_option'],
+                $group_name,
+                $group_name . '_general'
+            );
+
             if (function_exists('presspermit') && defined('PRESSPERMIT_COLLAB_VERSION') && defined('PRESSPERMIT_STATUSES_VERSION')) {
                 add_settings_field(
                     'supplemental_cap_moderate_any',
@@ -288,6 +296,29 @@ class StatusesUI {
         esc_html_e('Publish button defaults to next status in publication workflow', 'publishpress-statuses');
 
         echo '</div></div>';
+    }
+
+    public function settings_status_dropdown_show_current_branch_only_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        echo '<div class="c-input-group">';
+
+        echo sprintf(
+            '<input type="hidden" name="%s" value="0" />',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[status_dropdown_show_current_branch_only]'
+        ) . ' ';
+
+        $checked = $module->options->status_dropdown_show_current_branch_only ? 'checked' : '';
+
+        echo sprintf(
+            '<input type="checkbox" name="%s" value="1" autocomplete="off" %s>',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[status_dropdown_show_current_branch_only]',
+            esc_attr($checked)
+        ) . ' ';
+
+        esc_html_e('De-clutter the dropdown by hiding statuses outside current branch (if defaulting by sequence and some statuses are nested)', 'publishpress-statuses');
+
+        echo '</div>';
     }
 
     public function settings_post_types_option($post_types = [])

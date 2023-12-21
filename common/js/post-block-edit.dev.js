@@ -220,7 +220,7 @@ jQuery(document).ready(function ($) {
                 }
 
                 // Blank option for Safari, which cannot hide it
-                $('div.publishpress-extended-post-status select > option[value="pending"]').html('').hide().wrap('<span></span>');
+                $('div.publishpress-extended-post-status select > option[value="pending"]').html('').hide().appendTo('div.publishpress-extended-post-status select');
 
                 $(document).on('click', 'div.publishpress-extended-post-status select option[value="pending"]', function() {
                     $('div.publishpress-extended-post-status select').val('_pending');
