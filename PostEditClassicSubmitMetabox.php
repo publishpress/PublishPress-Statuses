@@ -311,6 +311,8 @@ class PostEditClassicSubmitMetabox
 
                 </select>
                 <a href="#post_status" class="save-post-status hide-if-no-js button"><?php echo esc_html(\PublishPress_Statuses::__wp('OK')); ?></a>
+
+                <div class="pp-status-cancel">
                 <a href="#post_status" class="pp-cancel-post-status hide-if-no-js"><?php echo esc_html(\PublishPress_Statuses::__wp('Cancel')); ?></a>
                 <?php
 
@@ -318,9 +320,10 @@ class PostEditClassicSubmitMetabox
                 && (current_user_can('pp_define_post_status') || current_user_can('pp_define_moderation'))
                 ) {
                     $url = admin_url('admin.php?page=publishpress-statuses-add-new');
-                    echo "<br /><a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'publishpress-statuses') . '</a>';
+                    echo " <a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'publishpress-statuses') . '</a>';
                 }
                 ?>
+                </div>
             </div>
 
         <?php }
