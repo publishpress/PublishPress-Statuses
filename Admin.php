@@ -276,14 +276,14 @@ class Admin
             } elseif ('future' == $status->name) {
                 $status->labels->publish = esc_html__('Schedule', 'publishpress-statuses');
             } else {
-                if (strlen($status->label) > 16) {
+                $submit_caption_length_limit = (defined('PP_STATUSES_CLASSIC_EDITOR_MAX_BUTTON_CAPTION_LENGTH'))
+                ? PP_STATUSES_CLASSIC_EDITOR_MAX_BUTTON_CAPTION_LENGTH : 16;
+
+                if (strlen($status->label) > $submit_caption_length_limit) {
                     $status->labels->publish = __('Submit', 'publishpress-statuses');
-                } elseif (strlen($status->label) > 13) {
-                    // translators: %s is the status label
-                    $status->labels->publish = esc_attr(sprintf(__('Set to %s', 'publishpress-statuses'), $status->label));
                 } else {
                     // translators: %s is the status label
-                    $status->labels->publish = esc_attr(sprintf(__('Submit as %s', 'publishpress-statuses'), $status->label));
+                    $status->labels->publish = esc_attr(sprintf(__('Set to %s', 'publishpress-statuses'), $status->label));
                 }
             }
         }

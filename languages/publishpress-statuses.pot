@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-21T04:34:11+00:00\n"
+"POT-Creation-Date: 2023-12-21T04:57:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -93,19 +93,13 @@ msgstr ""
 msgid "Schedule"
 msgstr ""
 
-#: Admin.php:280
+#: Admin.php:283
 msgid "Submit"
 msgstr ""
 
 #. translators: %s is the status label
-#: Admin.php:283
-msgid "Set to %s"
-msgstr ""
-
-#. translators: %s is the status label
 #: Admin.php:286
-#: PostEditClassic.php:204
-msgid "Submit as %s"
+msgid "Set to %s"
 msgstr ""
 
 #: Admin.php:293
@@ -142,6 +136,10 @@ msgstr ""
 
 #: PostEditClassic.php:182
 msgid "Current Time"
+msgstr ""
+
+#: PostEditClassic.php:204
+msgid "Submit as %s"
 msgstr ""
 
 #: PostEditClassicSubmitMetabox.php:323
