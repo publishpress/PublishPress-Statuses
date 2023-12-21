@@ -29,6 +29,7 @@ jQuery(document).ready(function ($) {
     $('#save-post, #publish').click(function () {
         setTimeout(() => {
             $('#save-post').hide();
+            $('#publish').hide();
         }, 100);
     });
 
@@ -169,11 +170,11 @@ function updateStatusDropdownElements() {
         } else {
 			if (postL10n.publish) {
                 if ($('#publish').val() != postL10n.schedule) {
-					$('#publish').val(postL10n.publish);
+				    $('#publish').val(postL10n.publish);
                 }
 			} else {
                 if ($('#publish').val() != ppObjEdit.schedule) {
-            		$('#publish').val(ppObjEdit.publish);
+            	    $('#publish').val(ppObjEdit.publish);
                 }
 			}
 
