@@ -3,7 +3,7 @@
  * @package PublishPress
  * @author  PublishPress
  *
- * Copyright (c) 2023 PublishPress
+ * Copyright (c) 2024 PublishPress
  *
  * ------------------------------------------------------------------------------
  * Portions of this code were originally derived from the Edit Flow plugin
