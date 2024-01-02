@@ -1227,7 +1227,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 if (!in_array($status->slug, $core_statuses) && !in_array($status->slug, $pseudo_statuses)) {
                     if ($status->position >= $all_statuses['_disabled']->position) {
                         $status->disabled = true; // Fallback in case the disabled_statuses array is missing or out of sync (privacy statuses are pulled from a different taxonomy)
-                    
+
                     } elseif (!empty($status->moderation)) { 
                         // Alternate workflow statuses will be displayed right before the Future and Published / Private statuses in the management list, 
                         // de-emphasized in status selection UI and not included in any status workflow auto-progression.
