@@ -1358,6 +1358,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     // Simple filtering / structuring applied to the statuses post-cache
     private function process_return_array($status_by_position, $status_args, $return_args, $function_args) {
+        
         // $status_args: filtering of return array based on status properties
         //
         if (!is_array($status_args)) {
