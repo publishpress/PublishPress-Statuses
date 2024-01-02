@@ -17,6 +17,10 @@ class PostEditGutenbergStatuses
         
         wp_enqueue_script('publishpress-statuses-post-block-edit', PUBLISHPRESS_STATUSES_URL . "common/js/post-block-edit{$suffix}.js", ['jquery', 'jquery-form'], PUBLISHPRESS_STATUSES_VERSION, true);
 
+        if (!defined('PP_STATUSES_ALLOW_PREPUBLISH_DISABLE')) {
+            wp_enqueue_style('publishpress-statuses-post-block-edit', PUBLISHPRESS_STATUSES_URL . '/common/css/post-block-edit.css', [], PUBLISHPRESS_STATUSES_VERSION);
+        }
+        
         //div.editor-post-publish-panel button.editor-post-publish-button
 
         $current_status = get_post_field('post_status', $post_id);
