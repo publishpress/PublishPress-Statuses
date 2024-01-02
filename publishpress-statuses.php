@@ -5,11 +5,11 @@
  * Description: Manage and create post statuses to customize your editorial workflow
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
- * Version: 1.0.2.2
+ * Version: 1.0.2.3
  * Requires at least: 5.5
  * Requires PHP: 7.2.5
  *
- * Copyright (c) 2023 PublishPress
+ * Copyright (c) 2024 PublishPress
  *
  * GNU General Public License, Free Software Foundation <https://www.gnu.org/licenses/gpl-3.0.html>
  *
@@ -28,7 +28,7 @@
  *
  * @package     PublishPress Statuses
  * @author      PublishPress
- * @copyright   Copyright (c) 2023 PublishPress. All rights reserved.
+ * @copyright   Copyright (c) 2024 PublishPress. All rights reserved.
  *
  **/
 
@@ -134,7 +134,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         } 
         
         if (empty($interrupt_load)) {
-            define('PUBLISHPRESS_STATUSES_VERSION', '1.0.2.2');
+            define('PUBLISHPRESS_STATUSES_VERSION', '1.0.2.3');
 
             define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
             define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
