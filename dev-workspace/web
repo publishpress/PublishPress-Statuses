@@ -3,9 +3,6 @@
 # Create empty cache files if not exists.
 [[ -d cache/html ]] || mkdir -p cache/html
 
-DOCKER_HOST_IP=$(php ./scripts/getip)
-export DOCKER_HOST_IP
-
 is_online() {
     echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
 
@@ -21,7 +18,7 @@ pull_image() {
 }
 
 run_wp_service() {
-    DOCKER_HOST_IP=$DOCKER_HOST_IP docker compose -f docker/compose.yaml up web "$@"
+    docker compose -f docker/compose.yaml up web "$@"
 }
 
 if [ "$(is_online)" -eq 1 ]; then
