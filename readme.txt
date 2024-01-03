@@ -6,7 +6,7 @@ Tags: statuses
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.2.2
+Stable tag: 1.0.2.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,6 +32,9 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.2.4] - 3 Jan 2024 =
+* Change : Don't allow pre-publish checks to be disabled (unless forced by constant)
 
 = [1.0.2.2] - 20 Dec 2023 =
 * Change : In Workflow (Pre-Publish) panel, display selectable radio option for next status even if not defaulting to it

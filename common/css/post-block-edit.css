@@ -1,3 +1,7 @@
 div.interface-preferences-modal #tab-panel-0-general-view fieldset:first-of-type div:first-of-type {
 display: none;
 }
+
+div.editor-post-publish-panel__footer div.components-checkbox-control div:first-of-type {
+display: none;
+}

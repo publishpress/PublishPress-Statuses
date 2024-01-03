@@ -20,10 +20,6 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock
             - html:/var/www/html
             - db:/var/lib/mysql
-        extra_hosts:
-            - "dockerhost:${DOCKER_HOST_IP}"
-        environment:
-            - DOCKER_HOST_IP=${DOCKER_HOST_IP}
 
     web:
         image: wordpress:6.3.1-apache

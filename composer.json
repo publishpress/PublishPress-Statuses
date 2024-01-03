@@ -49,7 +49,7 @@
         ],
         "get:version": "ppbuild version",
         "gen:mo": "wp i18n make-mo ./languages ./languages --allow-root",
-        "gen:pot": "wp i18n make-pot . languages/publishpress-statuses.pot --domain=publishpress-statuses --exclude=dev-workspace,.wordpress-org,.github,dist,tests, --allow-root",
+        "gen:pot": "wp i18n make-pot . languages/publishpress-statuses.pot --domain=publishpress-statuses --exclude=dev-workspace,.wordpress-org,.github,dist,tests,lib,language,vendor --allow-root",
         "check:longpath": "longpath .",
         "check:lint": "phplint",
         "check:phpcs": "phpcs",
