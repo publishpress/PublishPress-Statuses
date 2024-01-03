@@ -134,6 +134,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         } 
         
         if (empty($interrupt_load)) {
+
             define('PUBLISHPRESS_STATUSES_VERSION', '1.0.2.4');
 
             define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
