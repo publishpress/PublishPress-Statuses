@@ -189,6 +189,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $this->load_options(self::SETTINGS_SLUG);
 
+        $this->maybeGrantPendingStatusCap();
+        
         if (is_admin()) {
             // Status Administration (@todo: separate modules for Add New, Settings)
             if (isset($plugin_page) && (0 === strpos($plugin_page, 'publishpress-statuses'))) {
@@ -384,6 +386,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
+        $this->maybeGrantPendingStatusCap();
+
+        do_action('pp_statuses_init');
+    }
+
+    function maybeGrantPendingStatusCap() {
         global $current_user;
 
         if (!\PublishPress_Statuses::instance()->options->pending_status_regulation) {
@@ -394,8 +402,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         } elseif (current_user_can('administrator')) {
             $current_user->allcaps['status_change_pending'] = true;
         }
-
-        do_action('pp_statuses_init');
     }
 
     // Capability filter applied by WP_User->has_cap (usually via WP current_user_can function)
