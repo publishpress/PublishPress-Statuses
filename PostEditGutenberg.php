@@ -116,6 +116,14 @@ class PostEditGutenberg
             ['future' => (object)['name' => 'future', 'label' => esc_html(\PublishPress_Statuses::__wp('Scheduled'))]]
         );
 
+        $can_set_status = \PublishPress_Statuses::getUserStatusPermissions('set_status', $post_type, $ordered_statuses);
+        
+        if (!empty($post)) {
+            $can_set_status[$post->post_status] = true;
+        }
+
+        $ordered_statuses = array_intersect_key($ordered_statuses, array_filter($can_set_status));
+
         // compat with js usage of term properties
         foreach($ordered_statuses as $key => $status_obj) {
             if (!isset($status_obj->slug)) {

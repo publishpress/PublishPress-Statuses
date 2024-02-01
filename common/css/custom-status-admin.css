@@ -415,7 +415,9 @@ padding-right: 50px;
 font-size: 14px;
 }
 
-td.set-status-roles div {
+td.set-status-roles div,
+#pp-post_types_table div.agp-vspaced_input
+{
 padding-top: 5px;
 padding-bottom: 5px;
 }
