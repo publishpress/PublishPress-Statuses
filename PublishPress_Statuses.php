@@ -143,6 +143,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             'status_dropdown_show_current_branch_only' => 0,
             'force_editor_detection' => '',
             'label_storage' => '',
+            'pending_status_regulation' => ''
         ];
 
         $this->post_type_support_slug = 'pp_custom_statuses'; // This has been plural in all of our docs
@@ -348,6 +349,17 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     new \PublishPress_Statuses\PostEdit();
                 }
             }
+        }
+
+        global $current_user;
+
+        if (!\PublishPress_Statuses::instance()->options->pending_status_regulation) {
+            if (!empty($current_user) && !empty($current_user->allcaps['read'])) {
+                // post editing capability will be checked separately; this just prevents an additional requirement
+                $current_user->allcaps['status_change_pending'] = true;
+            }
+        } elseif (current_user_can('administrator')) {
+            $current_user->allcaps['status_change_pending'] = true;
         }
 
         do_action('pp_statuses_init');

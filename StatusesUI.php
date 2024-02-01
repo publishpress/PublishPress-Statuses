@@ -228,6 +228,14 @@ class StatusesUI {
                 $group_name . '_general'
             );
 
+            add_settings_field(
+                'status_dropdown_pending_status_regulation',
+                __('Pending Review Status:', 'publishpress-statuses'),
+                [$this, 'settings_pending_status_regulation_option'],
+                $group_name,
+                $group_name . '_general'
+            );
+
             if (function_exists('presspermit') && defined('PRESSPERMIT_COLLAB_VERSION') && defined('PRESSPERMIT_STATUSES_VERSION')) {
                 add_settings_field(
                     'supplemental_cap_moderate_any',
@@ -344,6 +352,47 @@ class StatusesUI {
         esc_html_e('De-clutter the dropdown by hiding statuses outside current branch (if defaulting by sequence and some statuses are nested)', 'publishpress-statuses');
         echo '</label>';
 
+        echo '</div>';
+    }
+
+    public function settings_pending_status_regulation_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        echo '<div class="c-input-group">';
+
+        $option_val = !empty($module->options->pending_status_regulation) ? $module->options->pending_status_regulation : '';
+
+        echo sprintf(
+            '<select id="pending_status_regulation" name="%s" autocomplete="off">',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[pending_status_regulation]'
+        );
+
+        ?>
+        <option value='' <?php if (empty($option_val)) echo "selected";?>><?php esc_html_e('Available to all users', 'publishpress-statuses');?></option>
+        <option value='1' <?php if ($option_val) echo "selected";?>><?php esc_html_e('Available to specified roles only', 'publishpress-statuses');?></option>
+        </select> 
+
+        <p class="pp-option-footnote">
+        <?php
+        if ($option_val) {
+            esc_html_e('Users can only assign a custom status to a post if their role allows it. With this setting, the same control is applied to the Pending Review status.', 'publishpress-statuses');
+        } else {
+            esc_html_e('Users can only assign a custom status to a post if their role allows it. Currently, those limitations will not be applied for the Pending Review status.', 'publishpress-statuses');
+        }
+        ?>
+        </p>
+
+        <p class="pp-option-footnote pp-pending-specified" <?php if (!$option_val) echo 'style="display:none;"';?>>
+        <?php
+        printf(
+            esc_html__('View or set roles at %1$s Statuses > Statuses > Pending Review > Roles %2$s', 'publishpress-statuses'),
+            '<a href="' . esc_url(admin_url('admin.php?action=edit-status&name=pending&page=publishpress-statuses&pp_tab=roles')) . '">',
+            '</a>'
+        );
+        ?>
+        </p>
+
+        <?php
         echo '</div>';
     }
 

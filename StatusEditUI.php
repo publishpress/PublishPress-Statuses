@@ -59,7 +59,9 @@ class StatusEditUI
                 }
             }
 
-            if (empty($status->private)) {
+            if (empty($status->private)
+            && (('pending' != $name) || \PublishPress_Statuses::instance()->options->pending_status_regulation)
+            ) {
                 $tabs['roles'] = __('Roles', 'publishpress-statuses');
             }
 
