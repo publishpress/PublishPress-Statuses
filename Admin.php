@@ -508,4 +508,621 @@ class Admin
 
         return $moderation_statuses;
     }
+
+    // Archive the wp_terms description field as stored by PublishPress Planner, then import encoded properties from it
+    public static function apply_status_maintenance($terms, $taxonomy) {
+        global $pagenow;
+
+        static $busy;
+
+        if (!empty($busy)) {
+            return $terms;
+        }
+
+        $busy = true;
+
+        if (!is_admin()
+        || (!empty($pagenow) && in_array($pagenow, ['index.php', 'plugins.php', 'plugin-install.php', 'plugin-editor.php', 'update.php', 'update-core.php', 'options.php', 'options-general.php', 'themes.php', 'theme-editor.php', 'customize.php', 'users.php', 'user-new.php']))
+        || (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses'))
+        ) {
+            $busy = false;
+            return $terms;
+        }
+
+        // This is the only status taxonomy that existed in Planner 3.x
+        // The related Permissions Pro Status Control properties are also based on these Planner 3.x status definitions.
+        if ((\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $taxonomy)) {
+            $busy = false;
+        	return $terms;
+    	}
+    
+        if (!$terms) {
+            if (!$terms = get_terms(self::TAXONOMY_PRE_PUBLISH, ['hide_empty' => false])) {
+                $busy = false;
+                return $terms;
+            }
+        }
+
+        if (get_transient('publishpress_statuses_maintenance')) {
+            $busy = false;
+            return $terms;
+        }
+
+        // Just in case this function terminates abnormally due to external factors, use a transient even though we'll clear it manually
+        set_transient('publishpress_statuses_maintenance', true, 20);
+
+        // We are re-using the option row of Planner 3.x Custom Statuses module, but storing switch values as 1 / 0 instead of "on" / "off"
+        // Re-check on each execution to make sure Planner 3.x wasn't re-activated and updated the array.
+        $options = \PublishPress_Statuses::instance()->options;
+
+        if (is_object($options) && !empty($options->post_types)) {
+            foreach ($options->post_types as $post_type => $val) {
+                if ('on' === $val) {
+                    $options->post_types[$post_type] = 1;
+                    $do_option_update = true;
+
+                } elseif ('off' === $val) {
+                    $options->post_types[$post_type] = 0;
+                    $do_option_update = true;
+                }
+            }
+
+            if (!empty($do_option_update)) {
+                update_option('publishpress_custom_status_options', $options);
+            }
+        }
+
+        // This is a backup of encoded Planner properties previously stored to term->description
+        if (!$archived_term_descriptions = get_option('pp_statuses_archived_term_properties')) {
+            $archived_term_descriptions = [];
+        }
+
+        if (!is_array($archived_term_descriptions)) {
+            $archived_term_descriptions = (array) $archived_term_descriptions;
+        }
+
+        if ($force_planner_import = get_option('pp_statuses_force_planner_import')) {
+            delete_option('pp_statuses_force_planner_import');
+
+            // Back up the encoded Planner properties before potentially overwriting them with Planner-stored values
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['color', 'icon', 'labels', 'post_type'] as $prop) {
+                    if (isset($term_meta[$prop]) && !isset($term_meta["{$prop}_backup"])) {
+                        $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                        update_term_meta($term->term_id, "{$prop}_backup_", maybe_unserialize($value));
+                        update_term_meta($term->term_id, "{$prop}_backup_preimport", maybe_unserialize($value));
+                    }
+                }
+            }
+
+            if ($original_archived = (array) get_option('pp_statuses_original_archived_term_properties')) {
+                foreach ($original_archived as $term_id => $val) {
+                    if (!isset($archived_term_descriptions[$term_id]) || defined('PP_STATUSES_USE_ORIGINAL_PLANNER_IMPORT_PROPERTIES')) {
+                        $archived_term_descriptions[$term_id] = $val;
+                    }
+                }
+
+                update_option('pp_statuses_archived_term_properties', $archived_term_descriptions);
+            }
+        }
+
+        // Apply backup / restore / default request from settings. @todo: move?
+        self::applyBackupOperations($terms, $taxonomy);
+
+        $stored_status_positions = (array) get_option('publishpress_status_positions', []);
+
+        $queued_term_descriptions = (array) get_option('pp_statuses_queued_term_properties', []);
+
+        $new_queued_descriptions = 0;
+        $new_archived_descriptions = 0;
+
+        foreach ($terms as $k => $term) {
+            // Extra precaution in case terms were passed from the wrong taxonomy
+            if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                continue;
+            }
+
+            $this_status_new = false;
+
+            // Archive and clear the description field only if it's encoded
+            if (!empty($term->description) && preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description) 
+            && (strlen($term->description) > 80) && (false === strpos($term->description, ' '))
+            ) {
+                // If this status was already imported from Planner with the same encoded properties, don't let it trigger a new import
+                // (But do support import of additional statuses created by Planner 3.x when re-activated after initial Statuses install)
+                if (empty($archived_term_descriptions[$term->term_id])
+                || ($archived_term_descriptions[$term->term_id] != $term->description)
+                ) {
+                    $status_obj = get_post_status_object($term->slug);
+
+                    $archived_term_descriptions[$term->term_id] = $term->description;
+                    $new_archived_descriptions++;
+                    $this_status_new = true;
+                }
+
+                // Now that we've logged the encoded Planner properties, clear the field so it can support actual description storage
+                wp_update_term($term->term_id, $term->taxonomy, ['description' => '']);
+                $terms[$k]->description = '';
+            }
+
+            // Queue the status for import processing if it user-created and encoded properties are new / changed to Statuses, 
+            // but also if no status positions have been saved in PP Statuses, or if forcing Planner import (by selection in Statuses > Settings)
+            // 
+            // Regardless of this, updated Planner-stored properties will still be available for a forced input later.
+            if (($this_status_new && empty($status_obj->pp_builtin)) || !$stored_status_positions || $force_planner_import) {
+                $queued_term_descriptions[$term->term_id] = true;
+                $new_queued_descriptions++;
+            }
+        }
+
+        if ($new_archived_descriptions) {
+            update_option('pp_statuses_archived_term_properties', $archived_term_descriptions);
+        }
+
+        if ($new_queued_descriptions) {
+            update_option('pp_statuses_queued_term_properties', $queued_term_descriptions);
+        }
+
+        // Save a backup of the original Planner term properties archive. 
+        // This can be useful in distinguishing Planner-created statuses from Statuses-based entries which Planner re-saved after being re-activated.
+        if ($archived_term_descriptions && !get_option('pp_statuses_original_archived_term_properties')) {
+            update_option('pp_statuses_original_archived_term_properties', maybe_unserialize($archived_term_descriptions));
+        }
+
+        // Auto-import failsafe
+        if ($auto_import = \PublishPress_Statuses::instance()->options->auto_import) {
+            // Presence of this option indicates last import did not exit normally, so disable auto-import
+            if ($last_import_time = get_option('publishpress_statuses_planner_import_gmt')) {
+                if (time() - strtotime($last_import_time) > 10) {
+                    $options = \PublishPress_Statuses::instance()->options;
+                    $options->auto_import = 0;
+                    update_option('publishpress_custom_status_options', $options);
+
+                    $auto_import = 0;
+                }
+            }
+        }
+
+        // Plugin version from last import run
+        $import_run_version = get_option('publishpress_statuses_planner_import');
+
+        if (is_array($import_run_version) && isset($import_run_version['version'])) {
+            $import_run_version = $import_run_version['version'];
+        }
+
+        if ($force_planner_import || (
+        $auto_import                     // Statuses < 1.0.3.2 updated archive array without performing import, and earlier versions did not save import version
+        && ($queued_term_descriptions || empty($import_run_version) || version_compare($import_run_version, '1.0.3.2', '<')) 
+        && (!defined('PUBLISHPRESS_STATUSES_NO_AUTO_IMPORT')) && (!defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT'))
+        )) {
+            // Failsafe mechanism will disable auto-import if this option is not deleted by the Planner import function.
+            update_option('publishpress_statuses_planner_import_gmt', gmdate("Y-m-d H:i:s"));
+
+            require_once(__DIR__ . '/PlannerImport.php');
+            $import = new \PP_Statuses_PlannerImport();
+
+            if ($terms = $import->applyRequestedImport(
+                $terms, 
+                [
+                    'archived_term_descriptions' => $archived_term_descriptions,
+                    'queued_term_descriptions' => $queued_term_descriptions,
+                    'new_archived_descriptions' => $new_archived_descriptions,
+                    'force_planner_import' => !empty($force_planner_import),
+                    'did_options_update' => !empty($do_options_update),
+                    'last_import_run_version' => !empty($import_run_version) && is_scalar($import_run_version) ? $import_run_version : ''
+                ]
+            )) {
+            	// Ensure stases reload following import
+                wp_cache_delete('publishpress_status_positions', 'options');
+
+                if (('admin.php' == $pagenow) && \PublishPress_Functions::is_REQUEST('publishpress-statuses')) {
+                    \PublishPress_Statuses::instance(true);
+                }
+            }
+        }
+    
+        delete_transient('publishpress_statuses_maintenance');
+
+    	$busy = false;
+
+        return $terms;
+    }
+
+    public static function applyBackupOperations($terms, $taxonomy, $args = []) {
+        if (get_option('pp_statuses_set_backup_props')) {
+            delete_option('pp_statuses_set_backup_props');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                foreach (['color', 'icon', 'labels', 'post_type'] as $prop) {
+                    if ($meta_val = get_term_meta($term->term_id, $prop, true)) {
+                        update_term_meta($term->term_id, "{$prop}_backup", maybe_unserialize($meta_val));
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_backup_colors')) {
+            delete_option('pp_statuses_restore_backup_colors');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['color'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup"])) {
+                        $value = (is_array($term_meta["{$prop}_backup"])) ? reset($term_meta["{$prop}_backup"]) : $term_meta["{$prop}_backup"];
+                        update_term_meta($term->term_id, $prop, $value);
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_backup_icons')) {
+            delete_option('pp_statuses_restore_backup_icons');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['icon'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup"])) {
+                        $value = (is_array($term_meta["{$prop}_backup"])) ? reset($term_meta["{$prop}_backup"]) : $term_meta["{$prop}_backup"];
+                        update_term_meta($term->term_id, $prop, $value);
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_backup_labels')) {
+            delete_option('pp_statuses_restore_backup_labels');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['labels'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup"])) {
+                        $value = (is_array($term_meta["{$prop}_backup"])) ? reset($term_meta["{$prop}_backup"]) : $term_meta["{$prop}_backup"];
+                        update_term_meta($term->term_id, $prop, maybe_unserialize($value));
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_backup_post_types')) {
+            delete_option('pp_statuses_restore_backup_post_types');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['post_type'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup"])) {
+                        $value = (is_array($term_meta["{$prop}_backup"])) ? reset($term_meta["{$prop}_backup"]) : $term_meta["{$prop}_backup"];
+                        update_term_meta($term->term_id, $prop, maybe_unserialize($value));
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_autobackup_colors')) {
+            delete_option('pp_statuses_restore_autobackup_colors');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['color'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup_"])) {
+                        $value = (is_array($term_meta["{$prop}_backup_"])) ? reset($term_meta["{$prop}_backup_"]) : $term_meta["{$prop}_backup_"];
+                        update_term_meta($term->term_id, $prop, $value);
+
+                        // Swap current value into autobackup slot
+                        if (isset($term_meta[$prop])) {
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_autobackup_icons')) {
+            delete_option('pp_statuses_restore_autobackup_icons');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['icon'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup_"])) {
+                        $value = (is_array($term_meta["{$prop}_backup_"])) ? reset($term_meta["{$prop}_backup_"]) : $term_meta["{$prop}_backup_"];
+                        update_term_meta($term->term_id, $prop, $value);
+
+                        // Swap current value into autobackup slot
+                        if (isset($term_meta[$prop])) {
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_autobackup_labels')) {
+            delete_option('pp_statuses_restore_autobackup_labels');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['labels'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup_"])) {
+                        $value = (is_array($term_meta["{$prop}_backup_"])) ? reset($term_meta["{$prop}_backup_"]) : $term_meta["{$prop}_backup_"];
+                        update_term_meta($term->term_id, $prop, maybe_unserialize($value));
+
+                        // Swap current value into autobackup slot
+                        if (isset($term_meta[$prop])) {
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", maybe_unserialize($value));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_restore_autobackup_post_types')) {
+            delete_option('pp_statuses_restore_autobackup_post_types');
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (['post_type'] as $prop) {
+                    if (isset($term_meta["{$prop}_backup_"])) {
+                        $value = (is_array($term_meta["{$prop}_backup_"])) ? reset($term_meta["{$prop}_backup_"]) : $term_meta["{$prop}_backup_"];
+                        update_term_meta($term->term_id, $prop, maybe_unserialize($value));
+
+                        // Swap current value into autobackup slot
+                        if (isset($term_meta[$prop])) {
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", maybe_unserialize($value));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_default_colors')) {
+            delete_option('pp_statuses_default_colors');
+
+            $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                if (!empty($statuses[$term->slug]) && (!empty($statuses[$term->slug]->pp_builtin) || !empty($statuses[$term->slug]->_builtin))) {
+                    $term_meta = get_term_meta($term->term_id);
+
+                    foreach (['color'] as $prop) {
+                        if (isset($term_meta[$prop])) {
+                            // Auto-backup current value before reverting to default
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+
+                            delete_term_meta($term->term_id, $prop);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_default_icons')) {
+            delete_option('pp_statuses_default_icons');
+
+            $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                if (!empty($statuses[$term->slug]) && (!empty($statuses[$term->slug]->pp_builtin) || !empty($statuses[$term->slug]->_builtin))) {
+                    
+
+                    $term_meta = get_term_meta($term->term_id);
+
+                    foreach (['icon'] as $prop) {
+                        if (isset($term_meta[$prop])) {
+                            // Auto-backup current value before reverting to default
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+
+                            delete_term_meta($term->term_id, $prop);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_default_labels')) {
+            delete_option('pp_statuses_default_labels');
+
+            $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                if (!empty($statuses[$term->slug]) && (!empty($statuses[$term->slug]->pp_builtin) || !empty($statuses[$term->slug]->_builtin))) {
+                    $term_meta = get_term_meta($term->term_id);
+
+                    foreach (['labels'] as $prop) {
+                        if (isset($term_meta[$prop])) {
+                            // Auto-backup current value before reverting to default
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+
+                            delete_term_meta($term->term_id, $prop);
+                        }
+                    }
+
+                    if (!empty($status_obj->default_label)) {
+                        wp_update_term(
+                            $term->term_id, $term->taxonomy, ['name' => $status_obj->default_label]
+                        );
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_default_post_types')) {
+            delete_option('pp_statuses_default_post_types');
+
+            $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                if (!empty($statuses[$term->slug]) && (!empty($statuses[$term->slug]->pp_builtin) || !empty($statuses[$term->slug]->_builtin))) {
+                    $term_meta = get_term_meta($term->term_id);
+
+                    foreach (['post_type'] as $prop) {
+                        if (isset($term_meta[$prop])) {
+                            // Auto-backup current value before reverting to default
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+
+                            delete_term_meta($term->term_id, $prop);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_default_planner_colors')) {
+            delete_option('pp_statuses_default_planner_colors');
+
+            $planner_colors = [
+                'pitch' => '#cc0000',
+                'assigned' => '#00bcc5',
+                'in-progress' => '#ccc500',
+                'draft' => '#f91d84',
+                'pending' => '#d87200',
+                'future' => '#655997',
+                'private' => '#000000',
+                'publish' => '#655997',
+            ];
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                if (isset($planner_colors[$term->slug])) {
+                    $term_meta = get_term_meta($term->term_id);
+
+                    foreach (['color'] as $prop) {
+                        if (isset($term_meta[$prop])) {
+                            // Auto-backup current value before switching to Planner default
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+                        }
+
+                        update_term_meta($term->term_id, $prop, $planner_colors[$term->slug]);
+                    }
+                }
+            }
+        }
+
+        if (get_option('pp_statuses_default_planner_icons')) {
+            delete_option('pp_statuses_default_planner_icons');
+
+            $planner_icons = [
+                'pitch' => 'dashicons-post-status',
+                'assigned' => 'dashicons-admin-users',
+                'in-progress' => 'dashicons-format-status',
+                'draft' => 'dashicons-media-default',
+                'pending' => 'dashicons-clock',
+                'future' => 'dashicons-calendar-alt',
+                'private' => 'dashicons-lock',
+                'publish' => 'dashicons-yes',
+            ];
+
+            foreach ($terms as $k => $term) {
+                // Extra precaution in case terms were passed from the wrong taxonomy
+                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                    continue;
+                }
+
+                if (isset($planner_icons[$term->slug])) {
+                    $term_meta = get_term_meta($term->term_id);
+
+                    foreach (['icon'] as $prop) {
+                        if (isset($term_meta[$prop])) {
+                            // Auto-backup current value before switching to Planner default
+                            $value = (is_array($term_meta[$prop])) ? reset($term_meta[$prop]) : $term_meta[$prop];
+                            update_term_meta($term->term_id, "{$prop}_backup_", $value);
+                        }
+
+                        update_term_meta($term->term_id, $prop, $planner_icons[$term->slug]);
+                    }
+                }
+            }
+        }
+    }
 }

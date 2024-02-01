@@ -221,6 +221,14 @@ class StatusesUI {
             );
 
             add_settings_field(
+                'post_types',
+                __('Use on these Post Types:', 'publishpress-statuses'),
+                [$this, 'settings_post_types_option'],
+                $group_name,
+                $group_name . '_general',
+                ['class' => 'pp-settings-space-top pp-settings-separation-bottom']
+            );
+            add_settings_field(
                 'status_dropdown_pending_status_regulation',
                 __('Pending Review Status:', 'publishpress-statuses'),
                 [$this, 'settings_pending_status_regulation_option'],
@@ -256,12 +264,12 @@ class StatusesUI {
             );
 
             add_settings_field(
-                'post_types',
-                __('Use on these post types:', 'publishpress-statuses'),
-                [$this, 'settings_post_types_option'],
+                'backup_operation',
+                __('Backup / Restore:', 'publishpress-statuses'),
+                [$this, 'settings_backup_operation_option'],
                 $group_name,
                 $group_name . '_general',
-                ['class' => 'pp-settings-separation']
+                (!empty($show_import_setting)) ? [] : ['class' => 'pp-settings-separation-top']
             );
         }
     }
@@ -497,6 +505,114 @@ class StatusesUI {
         }
 
         echo '</div>';
+    public function settings_backup_operation_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        $meta_missing = array_fill_keys(['color', 'icon', 'labels', 'post_type', 'backup_color', 'backup_icon', 'backup_labels', 'backup_post_type', 'backup_color_', 'backup_icon_', 'backup_labels_', 'backup_post_type_'], true);
+
+        $all_statuses = \PublishPress_Statuses::getPostStati(['internal' => false], 'object');
+
+        $_terms = get_terms(\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, ['hide_empty' => false]);
+
+        if ($_terms) {
+            foreach($_terms as $term) {
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (array_keys($meta_missing) as $prop) {
+                    if (!empty($term_meta[$prop])) {
+                        if (in_array($prop, ['color', 'icon', 'labels', 'post_types'])) {
+                            // "Use defaults" operation only applies to our built-in statuses
+                            if (empty($all_statuses[$term->slug]) || empty($all_statuses[$term->slug]->pp_builtin)) {
+                                continue;
+                            }
+                        }
+
+                        unset($meta_missing[$prop]);
+                    }
+                }
+
+                if (!$meta_missing) {
+                    break;
+                }
+            }
+        }
+        ?>
+
+        <div class="c-input-group">
+
+        <select name="publishpress_statuses_backup_operation" autocomplete="off">
+
+        <option value=''><?php esc_html_e('Select...', 'publishpress-statuses');?></option>
+
+        <option value='backup_status_properties'><?php esc_html_e('Back up current colors, icons, labels and post types', 'publishpress-statuses');?></option>
+
+        <option value=''></option>
+
+        <?php if (empty($backup_missing['backup_color'])):?>
+        <option value='restore_status_colors'><?php esc_html_e('Restore backup of status colors', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_icon'])):?>
+        <option value='restore_status_icons'><?php esc_html_e('Restore backup of status icons', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_labels'])):?>
+        <option value='restore_status_labels'><?php esc_html_e('Restore backup of status labels', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_post_type'])):?>
+        <option value='restore_status_post_types'><?php esc_html_e('Restore backup of status post types', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <option value=''></option>
+
+        <?php if (empty($backup_missing['backup_color_'])):?>
+        <option value='restore_status_colors_auto'><?php esc_html_e('Restore auto-backup of status colors', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_icon_'])):?>
+        <option value='restore_status_icons_auto'><?php esc_html_e('Restore auto-backup of status icons', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_labels_'])):?>
+        <option value='restore_status_labels_auto'><?php esc_html_e('Restore auto-backup of status labels', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_post_type_'])):?>
+        <option value='restore_status_post_types_auto'><?php esc_html_e('Restore auto-backup of status post types', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+
+        <option value=''></option>
+
+        <?php if (empty($backup_missing['color'])):?>
+        <option value='default_status_colors'><?php esc_html_e('Use default status colors', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['icon'])):?>
+        <option value='default_status_icons'><?php esc_html_e('Use default status icons', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['labels'])):?>
+        <option value='default_status_labels'><?php esc_html_e('Use default status labels', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['post_type'])):?>
+        <option value='default_status_post_types'><?php esc_html_e('Use default status post types', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (get_option('publishpress_version') || defined('PP_STATUSES_OFFER_PLANNER_DEFAULTS')):?>
+        <option value='default_status_colors_planner'><?php esc_html_e("Use Planner plugin's default status colors", 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (get_option('publishpress_version') || defined('PP_STATUSES_OFFER_PLANNER_DEFAULTS')):?>
+        <option value='default_status_icons_planner'><?php esc_html_e("Use Planner plugin's default status icons", 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        </select> 
+
+        </div>
+        <?php
     }
 
     public function fltEditStatusDefaultTab($default_tab) {

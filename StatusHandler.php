@@ -835,6 +835,64 @@ class StatusHandler {
         // Cast our object and save the data.
         update_option('publishpress_custom_status_options', (object) $new_options);
         
+        // Import / Backup Operations
+        if (\PublishPress_Functions::is_POST('publishpress_statuses_import_operation', 'do_status_control_import')) {
+            update_option('pp_statuses_force_status_control_import', true);
+            update_option('pp_statuses_force_planner_import', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_import_operation', 'do_planner_import')) {
+            update_option('pp_statuses_force_planner_import', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_import_operation', 'do_planner_import_only')) {
+            update_option('pp_statuses_skip_status_control_import', true);
+            update_option('pp_statuses_force_planner_import', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'backup_status_properties')) {
+            update_option('pp_statuses_set_backup_props', true);
+            
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_colors')) {
+            update_option('pp_statuses_restore_backup_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_icons')) {
+            update_option('pp_statuses_restore_backup_icons', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_labels')) {
+            update_option('pp_statuses_restore_backup_labels', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_post_types')) {
+            update_option('pp_statuses_restore_backup_post_types', true);
+        
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_colors_auto')) {
+            update_option('pp_statuses_restore_autobackup_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_icons_auto')) {
+            update_option('pp_statuses_restore_autobackup_icons', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_labels_auto')) {
+            update_option('pp_statuses_restore_autobackup_labels', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_post_types_auto')) {
+            update_option('pp_statuses_restore_autobackup_post_types', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_colors')) {
+            update_option('pp_statuses_default_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_icons')) {
+            update_option('pp_statuses_default_icons', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_labels')) {
+            update_option('pp_statuses_default_labels', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_post_types')) {
+            update_option('pp_statuses_default_post_types', true);
+        
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_colors_planner')) {
+            update_option('pp_statuses_default_planner_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_icons_planner')) {
+            update_option('pp_statuses_default_planner_icons', true);
+        }
+
         // Redirect back to the settings page that was submitted without any previous messages
         $goback = add_query_arg('message', 'settings-updated', remove_query_arg(['message'], wp_get_referer()));
         wp_safe_redirect($goback);
