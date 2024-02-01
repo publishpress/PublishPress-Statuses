@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -70,6 +70,12 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.6] - 17 Jan 2024 =
+* Fixed : Post permalink for new posts defaulted to plain format regardless of permalink settings
+* Fixed : Author could not change permalink
+* Fixed : Default statuses did not show post count on Posts / Pages screen
+* Fixed : PHP Warning on Edit Status screen
 
 = [1.0.5] - 16 Jan 2024 =
 * Lang : Some Publish and Save As button labels were not translated if saved (in Statuses > Edit Status) with default values
