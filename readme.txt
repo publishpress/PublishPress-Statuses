@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.3.5
+Stable tag: 1.0.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -70,6 +70,18 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.4] - 9 Jan 2024 =
+* Fixed : Lang - Native WordPress status captions and editor button captions were not translated correctly
+* Fixed : Lang - Statuses imported from Planner did not have translations applied
+* Feature : Lang - Option to apply stored labels for user-defined statuses only
+* Fixed : Classic Editor - Publish caption was missing if "default to next status" setting not enabled
+* Fixed : Classic Editor - Some status and button captions did not refresh correctly based on new selections
+* Fixed : Classic Editor - Bypass Sequence checkbox was displayed even if "default to next status" setting not enabled
+* Fixed : Statuses disabled for post type were included in workflow sequence
+* Compat : Permissions Pro - Prevent Permissions from causing a fatal error on Theme Customizer access
+* Compat : Permissions Pro - Duplicate Visibility div in Classic Editor if Status Control enabled but Visibility Statuses disabled
+* Compat : Permissions Pro - Current Visibility Status not displayed on load in Classic Editor
 
 = [1.0.3.5] - 8 Jan 2024 =
 * Compat : Yoast Duplicate Post - Rewrite & Republish function failed if PP Statuses is active
