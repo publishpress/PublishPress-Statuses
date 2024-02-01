@@ -1311,9 +1311,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                                 // Disregard the stored value if plugin is not configured to use stored labels with this status
                                 switch ($label_storage) {
-                                    //case 'all':
-                                    //    break;
-
                                     case 'user':
                                         if (!empty($all_statuses[$status_name]->pp_builtin) || !empty($all_statuses[$status_name]->_builtin)
                                         || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
@@ -1581,9 +1578,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                             // Disregard the stored value if plugin is not configured to use stored labels with this status
                             switch ($label_storage) {
-                                //case 'all':
-                                //    break;
-
                                 case 'user':
                                     if (!empty($all_statuses[$status_name]->pp_builtin) || !empty($all_statuses[$status_name]->_builtin)
                                     || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
