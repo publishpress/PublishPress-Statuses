@@ -20,7 +20,9 @@ class Admin
             delete_option('publishpress_statuses_activate');
         }
 
-        if (!get_option('publishpress_statuses_version') || $activated) {
+        $last_statuses_version = get_option('publishpress_statuses_version');
+
+        if (!$last_statuses_version || $activated) {
             add_action('pp_statuses_init', [$this, 'assignDefaultRoleCapabilities']);
         }
         
