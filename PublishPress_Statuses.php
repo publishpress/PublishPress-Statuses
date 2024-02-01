@@ -1331,7 +1331,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         // de-emphasized in status selection UI and not included in any status workflow auto-progression.
                         if ($status->position >= $all_statuses['_pre-publish-alternate']->position) {
                             $status->alternate = true;
-                        
+
                         } elseif ($status->position >= $all_statuses['pending']->position) {
                             $status->post_pending = true;
                         }
@@ -1753,26 +1753,26 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        $import_done_version = get_option('pp_statuses_planner_import_done');
+        $import_run_version = get_option('publishpress_statuses_planner_import');
 
-        // Statuses < 1.0.3.1 updated archive array without performing import
-        if ($new_archived_descriptions || !$import_done_version || version_compare($import_done_version, '1.0.3', '<')
+        // Statuses < 1.0.3.2 updated archive array without performing import
+        if ($new_archived_descriptions || !$import_run_version || version_compare($import_run_version, '1.0.3.2', '<')
         ) {
             update_option('pp_statuses_archived_term_properties', maybe_serialize($archived_term_descriptions));
 
             if (('post_status' == $taxonomy)) {
-                if (!defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
-                    if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
-                        require_once(__DIR__ . '/PermissionsImport.php');
-                        \PublishPress_Statuses\PermissionsImport::import($terms);
-                    }
-                }
-
                 if (!defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT')) {
                     require_once(__DIR__ . '/PlannerImport.php');
                     $import = new \PP_Statuses_PlannerImport();
                     if ($planner_import_done = $import->importEncodedProperties($terms)) {
                         wp_cache_delete('publishpress_status_positions', 'options');
+                    }
+                }
+
+                if (!defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
+                    if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
+                        require_once(__DIR__ . '/PermissionsImport.php');
+                        \PublishPress_Statuses\PermissionsImport::import($terms);
                     }
                 }
             }
