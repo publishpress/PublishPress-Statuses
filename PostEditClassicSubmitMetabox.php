@@ -19,6 +19,15 @@ class PostEditClassicSubmitMetabox
             $post_status_obj = get_post_status_object('draft');
         }
 
+        if (!empty($post_status_obj->private) && ('private' != $post_status)) {
+            // visibility property may be used by Permissions Pro
+            if (!empty($post_status_obj->labels) && is_object($post_status_obj->labels)) {
+                if (empty($post_status_obj->labels->visibility)) {
+                    $post_status_obj->labels->visibility = $post_status_obj->label;
+                }
+            }
+        }
+
         $moderation_statuses = Admin::get_selectable_statuses($post, $args);
         $moderation_statuses = array_diff_key($moderation_statuses, array_fill_keys(['_public', 'publish', 'private', 'future'], true)); // entry for current post status added downstream
 
@@ -104,7 +113,12 @@ class PostEditClassicSubmitMetabox
                     </div>
                     <?php endif;?>
 
-                    <?php do_action('pp_statuses_post_submitbox_misc_sections', $post, $_args); ?>
+                    <?php 
+                    // Prevent Permissions Pro Status control from adding a second Visibility div
+                    if (!defined('PRESSPERMIT_STATUSES_VERSION') || version_compare(PRESSPERMIT_STATUSES_VERSION, '4.0.8', '>') || get_option('presspermit_privacy_statuses_enabled')) {
+                        do_action('pp_statuses_post_submitbox_misc_sections', $post, $_args);
+                    }
+                    ?>
 
                     <?php
                     if (!empty($args['args']['revisions_count'])) :
@@ -167,6 +181,7 @@ class PostEditClassicSubmitMetabox
                 global $current_user;
 
                 if ((empty($post_status_obj) || (empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status)))
+                && \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence
                 && (current_user_can('administrator') 
                 || (!empty($type_obj->cap->publish_posts) && current_user_can($type_obj->cap->publish_posts)) 
                 || current_user_can('pp_bypass_status_sequence'))
@@ -201,7 +216,7 @@ class PostEditClassicSubmitMetabox
         ?>
         <?php
         // @todo: confirm we don't need a hidden save button when current status is private */
-        if (!$post_status_obj->public && !$post_status_obj->private && !$post_status_obj->moderation && ('future' != $post_status_obj->name)) :
+        if (!$post_status_obj->public && empty($post_status_obj->private) && empty($post_status_obj->moderation) && ('future' != $post_status_obj->name)) :
             if (!empty($post_status_obj->labels->update)) {
                 $save_as = $post_status_obj->labels->update;
             } else {
@@ -211,11 +226,23 @@ class PostEditClassicSubmitMetabox
             ?>
             <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($save_as) ?>"
                    tabindex="4" class="button button-highlighted"/>
-        <?php elseif ($post_status_obj->moderation && ('future' != $post_status_obj->name)) :
-            if (apply_filters('presspermit_display_save_as_button', true, $post, $args)):?>
-            <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($post_status_obj->labels->save_as) ?>"
-                   tabindex="4" class="button button-highlighted"/>
-            <?php 
+        <?php elseif (!empty($post_status_obj->moderation) && ('future' != $post_status_obj->name)) :
+            if (apply_filters('presspermit_display_save_as_button', true, $post, $args)):
+
+                $save_caption = isset($post_status_obj->labels->save_as) ? $post_status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save');
+
+                // For legacy behavior, use Submit caption if status is Pending and user cannot publish
+                /*
+                if (('pending' == $post->post_status) && empty($args['can_publish']) && !defined('PP_STATUSES_PENDING_STATUS_CONSISTENT_SAVE_LABEL')) {
+                    $save_caption = isset($post_status_obj->labels->publish) 
+                    ? $post_status_obj->labels->publish 
+                    : \PublishPress_Statuses::__wp('Submit for Review');
+                }
+                */
+                ?>
+                <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($save_caption) ?>"
+                    tabindex="4" class="button button-highlighted"/>
+                <?php 
             endif;
             ?>
         <?php else : ?>
@@ -289,9 +316,9 @@ class PostEditClassicSubmitMetabox
         ?>
         <span id="post-status-display">
         <?php
-        if ($post_status_obj->private)
+        if (!empty($post_status_obj->private))
             echo esc_html(\PublishPress_Statuses::__wp('Privately Published'));
-        elseif ($post_status_obj->public)
+        elseif (!empty($post_status_obj->public))
             echo esc_html(\PublishPress_Statuses::__wp('Published'));
         elseif (!empty($post_status_obj->labels->caption))
             echo esc_html($post_status_obj->labels->caption);
@@ -304,9 +331,9 @@ class PostEditClassicSubmitMetabox
         // multiple moderation stati are selectable or a single non-current moderation stati is selectable
         $select_moderation = (count($moderation_statuses) > 1 || ($post_status != key($moderation_statuses)));
 
-        if ($post_status_obj->public || $post_status_obj->private || $can_publish || $select_moderation) { ?>
+        if (!empty($post_status_obj->public) || !empty($post_status_obj->private) || $can_publish || $select_moderation) { ?>
             <a href="#post_status"
-            <?php if ($post_status_obj->private || ($post_status_obj->public && 'publish' != $post_status)) { ?>style="display:none;"
+            <?php if (!empty($post_status_obj->private) || (!empty($post_status_obj->public) && 'publish' != $post_status)) { ?>style="display:none;"
             <?php } ?>class="edit-post-status hide-if-no-js" tabindex='4'><?php echo esc_html(\PublishPress_Statuses::__wp('Edit')) ?></a>
 
             <div id="post-status-select" class="hide-if-js">
@@ -314,14 +341,18 @@ class PostEditClassicSubmitMetabox
                     value="<?php echo esc_attr($post_status); ?>"/>
                 <select name='post_status' id='post_status' tabindex='4' autocomplete='off'>
 
-                    <?php if ($post_status_obj->public || $post_status_obj->private || ('future' == $post_status)) : ?>
+                    <?php if (!empty($post_status_obj->public) || !empty($post_status_obj->private) || ('future' == $post_status)) : ?>
                         <option <?php selected(true, true); ?> value='_public'>
                         <?php echo esc_html($post_status_obj->labels->caption) ?>
                         </option>
                     <?php endif; ?>
 
                     <?php
-                    foreach ($moderation_statuses as $_status => $_status_obj) : ?>
+                    foreach ($moderation_statuses as $_status => $_status_obj) : 
+                        if (!empty($_status_obj->public) || !empty($_status_obj->private) || ('future' == $_status)) {
+                            continue;
+                        }
+                    ?>
                         <option <?php selected($post_status, $_status); ?> value='<?php echo esc_attr($_status) ?>'>
                         <?php 
                         $caption = (!empty($_status_obj->status_parent) && !empty($moderation_statuses[$_status_obj->status_parent])) 
@@ -331,22 +362,12 @@ class PostEditClassicSubmitMetabox
                         echo esc_html($caption);
                         ?>
                         </option>
-                    <?php endforeach ?>
-
+                    <?php endforeach;?>
                 </select>
                 <a href="#post_status" class="save-post-status hide-if-no-js button"><?php echo esc_html(\PublishPress_Statuses::__wp('OK')); ?></a>
 
                 <div class="pp-status-cancel">
                 <a href="#post_status" class="pp-cancel-post-status hide-if-no-js"><?php echo esc_html(\PublishPress_Statuses::__wp('Cancel')); ?></a>
-                <?php
-
-                if (('draft' == $post_status_obj->name || $post_status_obj->moderation) 
-                && (current_user_can('pp_define_post_status') || current_user_can('pp_define_moderation'))
-                ) {
-                    $url = admin_url('admin.php?page=publishpress-statuses-add-new');
-                    echo " <a href='" . esc_url($url) . "' class='pp-postsubmit-add-moderation' target='_blank'>" . esc_html__('add workflow status', 'publishpress-statuses') . '</a>';
-                }
-                ?>
                 </div>
 
                 <span id="pp_statuses_ui_rendered" style="display:none"></span>
@@ -425,7 +446,7 @@ class PostEditClassicSubmitMetabox
         <span class="spinner" style="display:none"></span>
 
         <?php
-        if ((!$post_status_obj->public && !$post_status_obj->private && ('future' != $post_status_obj->name))) {
+        if ((empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status_obj->name))) {
             $status_obj = \PublishPress_Statuses::defaultStatusProgression($post);
 
             if (!empty($status_obj->public) || !empty($status_obj->private)) :

@@ -253,7 +253,18 @@ class PostEditClassic
 
                     $args['maxSchedule'] = $args['maxPublish'];
                 }
+            } else {
+                $args['nextPublish'] = $args['publish'];
+                $args['maxPublish'] = $args['publish'];
             }
+        }
+
+        if (empty($args['nextSchedule'])) {
+            $args['nextSchedule'] = $args['schedule'];
+        }
+        
+        if (empty($args['maxSchedule'])) {
+            $args['maxSchedule'] = $args['schedule'];
         }
 
         wp_localize_script('publishpress-statuses-classic-edit', 'ppObjEdit', $args);
