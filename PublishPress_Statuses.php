@@ -1129,8 +1129,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
      */
     public static function disable_custom_statuses_for_post_type($post_type = null)
     {
-        global $pagenow;
-
         // Only allow deregistering on 'edit.php' and 'post.php'
         if (self::isStatusManagement()) {
             return false;

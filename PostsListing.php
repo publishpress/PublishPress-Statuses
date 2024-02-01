@@ -86,6 +86,7 @@ class PostsListing
         global $typenow;
 
         $screen = get_current_screen();
+        
         $post_type_object = get_post_type_object($screen->post_type);
             
         if (empty($post_type_object) || \PublishPress_Statuses::DisabledForPostType($screen->post_type)) {

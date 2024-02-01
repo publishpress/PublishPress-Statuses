@@ -29,7 +29,7 @@ class PostEditClassic
         if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
             return;
         }
-
+    
         if (!empty($post)) {
             if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
             || \PublishPress_Statuses::isPostBlacklisted($post->ID)
