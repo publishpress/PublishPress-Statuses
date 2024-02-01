@@ -24,10 +24,12 @@ class PostEditClassic
     {
         global $post, $pagenow, $current_user;
 
-        if (\PublishPress_Statuses::DisabledForPostType()) {
+		$post_type = (!empty($post)) ? $post->post_type : \PublishPress_Statuses::getCurrentPostType();
+
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
             return;
         }
-
+    
         if (!empty($post)) {
             if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
             || \PublishPress_Statuses::isPostBlacklisted($post->ID)
@@ -123,6 +125,12 @@ class PostEditClassic
             ) {
                 return;
             }
+        }
+
+        $post_type = (!empty($post)) ? $post->post_type : \PublishPress_Statuses::getCurrentPostType();
+
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
+            return;
         }
 
         $stati = [];

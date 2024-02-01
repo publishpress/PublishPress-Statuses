@@ -299,14 +299,6 @@ setInterval(function () {
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-published').toggle(isPublished && ('future' != status) && !updateDisabled);
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-scheduled').toggle(('future' == status) && !updateDisabled);
 
-    /*
-    if (! $('span.presspermit-editor-toggle button').length
-    && (status == ppLastPostStatus)
-    ) {
-      return;
-    }
-    */
-
     sideEffectL10nManipulation(status);
   });
 }, 250);
@@ -319,8 +311,8 @@ var lastWorkflowStatusMax = '';
 var lastSelectedStatus = '';
 
 setInterval(function () {
-  $('div.editor-post-publish-panel__prepublish div:not([class])').hide();
-  $('div.editor-post-publish-panel__prepublish p:not([class])').hide();
+  $('div.editor-post-publish-panel__prepublish > div:not([class])').hide();
+  $('div.editor-post-publish-panel__prepublish > p:not([class])').hide();
 
   var currentStatus = wp.data.select('core/editor').getCurrentPostAttribute('status');
   var currentStatusPublished = -1 !== PPCustomStatuses.publishedStatuses.indexOf(currentStatus);

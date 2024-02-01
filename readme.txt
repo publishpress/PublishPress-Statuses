@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review, extended post 
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.6.3
+Stable tag: 1.0.6.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,6 +100,11 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
+= [1.0.6.4] - 24 Jan 2024 =
+* Compat : PublishPress Checklists - Blockage / Warning messages for content requirements were not displayed on Pre-Publish panel
+* Fixed : Some status filtering was still applied even if plugin is disabled for the post type
+* Lang : Updated translations
+
 = [1.0.6.3] - 22 Jan 2024 =
 * Change : Edit Status, Add Status screens - Distinct html titles for browser tab navigation
 * Change : Swap the position of Post Types, Roles tabs on Edit Status screen
@@ -123,7 +128,7 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 * Fixed : Author could not change permalink
 * Fixed : Default statuses did not show post count on Posts / Pages screen
 * Fixed : PHP Warning on Edit Status screen
-
+           
 = [1.0.5] - 16 Jan 2024 =
 * Lang : Some Publish and Save As button labels were not translated if saved (in Statuses > Edit Status) with default values
 * Fixed : Gutenberg editor - Using Post Status dropdown to select Pending status, followed by "Selected status" Workflow selection, caused post to be saved with an invalid status value, making it inaccessible
