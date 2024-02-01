@@ -64,8 +64,14 @@ jQuery(document).ready(function ($) {
 
     $('#save-post, #publish').click(function () {
         setTimeout(() => {
-            $('#save-post').hide();
-            $('#publish').hide();
+            $('#save-post').prop('disabled', true);
+            $('#publish').prop('disabled', true);
+        }, 100);
+
+        setInterval(function() {
+            if ($('#publish').val() != ppObjEdit.publish) {
+                $('#publish').val(ppObjEdit.publish);
+            }
         }, 100);
     });
 
