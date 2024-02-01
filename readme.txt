@@ -6,7 +6,7 @@ Tags: statuses
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.2.4
+Stable tag: 1.0.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -33,7 +33,24 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
-= [1.0.2.4] - 3 Jan 2024 =
+= [1.0.3] - 6 Jan 2024 =
+* Fixed : PublishPress Planner status properties (color, icon, position, description) were not imported
+* Compat : Pods - Could not enable Pods-defined custom post types for custom statuses
+* Fixed : Classic Editor - Custom statuses were not available if Classic mode is triggered in a non-standard way
+* Feature : Classic Editor - When defaulting to next status, checkbox under publish button allows bypassing sequence; default-select after future date selection
+* Feature : Classic Editor - Implement capability pp_bypass_status_sequence to regulate availability of sequence bypass checkbox
+* Fixed : Classic Editor - For currently published posts, publish button was captioned as "Publish" instead of "Update"
+* Fixed : Classic Editor - After selecting a future date, publish button was captioned as "Publish" instead of "Schedule"
+* Fixed : Classic Editor - Redundant Save As Scheduled button was displayed for currently scheduled posts
+* Fixed : Classic Editor - Publish button had a needlessly wide left margin
+* Fixed : Classic Editor - Hide obsolete Pro upgrade prompt displayed by PublishPress Permissions 3.x inside post publish metabox
+* Fixed : Posts / Pages screen - Post Status dropdown in Quick Edit displayed blank for Published posts
+* Change : Posts / Pages screen - If Private checkbox in Quick Edit is clicked, set Status dropdown to Published
+* Change : Posts / Pages screen - If Status dropdown in Quick Edit is set to something other than Published, uncheck Private checkbox
+* Compat : PublishPress Permissions Pro - Status Edit screen did not update Set Status capability assignment correctly under some conditions
+* Lang : A few string had wrong text domain
+
+= [1.0.2.4] - 4 Jan 2024 =
 * Change : Don't allow pre-publish checks to be disabled (unless forced by constant)
 
 = [1.0.2.2] - 20 Dec 2023 =
