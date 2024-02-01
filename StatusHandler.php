@@ -173,7 +173,7 @@ class StatusHandler {
         check_admin_referer('edit-status');
 
         if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-            wp_die(esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+            wp_die(esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
         }
 
         $name = !empty($_REQUEST['name']) ? trim(sanitize_text_field($_REQUEST['name'])) : '';
@@ -467,8 +467,34 @@ class StatusHandler {
             }
         }
 
+        if (!empty($status_obj)) {
+            $label_storage = \PublishPress_Statuses::instance()->options->label_storage;
+
+            switch ($label_storage) {
+                case 'user':
+                    if (!empty($status_obj->pp_builtin) || !empty($status_obj->_builtin)
+                    || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+
+                    break;
+
+                default:
+                    if ((!empty($status_obj->_builtin) && ('pending' != $status_name))
+                    || in_array($status_name, ['draft', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+            }
+        }
+
         if ($term) {
             $term_meta_fields = apply_filters('publishpress_statuses_meta_fields', ['labels', 'post_type', 'roles', 'status_parent', 'color', 'icon']);
+
+            if (!empty($label_locked)) {
+                $term_meta_fields = array_diff($term_meta_fields, ['labels']);
+            }
 
             foreach ($args as $field => $set_value) {
                 if (in_array($field, $term_meta_fields)) {
@@ -500,7 +526,7 @@ class StatusHandler {
 
             $args = array_intersect_key(
                 $args, 
-                array_fill_keys(['term_id', 'name', 'slug', 'label', 'term_group', 'term_taxonomy_id', 'taxonomy', 'description', 'parent', 'count'], true)
+                array_fill_keys(['term_id', 'name', 'slug', 'label', 'term_group', 'term_taxonomy_id', 'taxonomy', 'description', 'parent'], true)
             );
 
             $args['description'] = (isset($args['description'])) ? $args['description'] : $term->description;
@@ -518,6 +544,10 @@ class StatusHandler {
 
             if (!empty($status_obj->_builtin)) {
                 $args['name'] = $status_obj->label;
+            }
+
+            if (!empty($label_locked)) {
+                $args = array_diff_key($args, array_fill_keys(['label', 'labels', 'name'], true));
             }
 
             $updated_status_array = wp_update_term($term->term_id, $taxonomy, $args);
@@ -608,12 +638,12 @@ class StatusHandler {
 
         if ($status_name = \PublishPress_Functions::REQUEST_key('delete_status')) {
             if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-                self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+                self::printAjaxResponse('error', esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
             }
 
             if ($status = \PublishPress_Statuses::getStatusBy('slug', $status_name)) {
                 if (!empty($status->_builtin) || !empty($status->pp_builtin)) {
-                    self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+                    self::printAjaxResponse('error', esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
                     return;
                 }
                 
@@ -640,7 +670,7 @@ class StatusHandler {
         check_ajax_referer('custom-status-sortable');
 
         if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-            self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+            self::printAjaxResponse('error', esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
         }
 
         if (!isset($_POST['status_positions']) || !is_array($_POST['status_positions'])) {
@@ -703,7 +733,7 @@ class StatusHandler {
             }
         }
         
-        self::printAjaxResponse('success', esc_html__('Status order updated', 'publishpress-statuses'));
+        self::printAjaxResponse('success', esc_html__('Status order updated.', 'publishpress-statuses'));
     }
 
     /**
@@ -789,6 +819,7 @@ class StatusHandler {
                         break;
 
                     case 'force_editor_detection':
+                    case 'label_storage':
                         $new_options[$option_name] = sanitize_key($_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name]);
 
                         break;

@@ -31,6 +31,34 @@ class PostEdit
                 });
             }
         }
+
+        add_action('admin_head', [$this, 'act_status_labels_structural_check_and_supplement'], 5);
+    }
+
+    function act_status_labels_structural_check_and_supplement() {
+        global $wp_post_statuses;
+
+        foreach ($wp_post_statuses as $status_name => $post_status_obj) {
+            // work around issues with visibility status storage / retrieval; precaution for other statuses
+            if (isset($post_status_obj->labels) && is_array($post_status_obj->labels) && is_numeric(key($post_status_obj->labels))) {
+                $post_status_obj->labels = reset($post_status_obj->labels);
+                $wp_post_statuses[$status_name]->labels = $post_status_obj;
+            }
+            
+            if (!empty($post_status_obj->labels) && is_serialized($post_status_obj->labels)) {
+                $post_status_obj->labels = maybe_unserialize($post_status_obj->labels);
+                $wp_post_statuses[$status_name]->labels = $post_status_obj;
+            }
+
+            if (!empty($post_status_obj->private) && ('private' != $post_status)) {
+                // visibility property may be used by Permissions Pro
+                if (!empty($post_status_obj->labels) && is_object($post_status_obj->labels)) {
+                    if (empty($wp_post_statuses[$status_name]->labels->visibility)) {
+                        $wp_post_statuses[$status_name]->labels->visibility = $post_status_obj->label;
+                    }
+                }
+            }
+        }
     }
 
     public function post_submit_meta_box($post, $args = [])
@@ -256,7 +284,7 @@ class PostEdit
                 if (!empty($status_term->slug) && ($status_term->slug == $status)) {
                     if (('pending' == $status) && \PublishPress_Functions::isBlockEditorActive()) {
                         $status_obj = get_post_status_object('pending');
-                        $status_label = (empty($status_obj)) ? $status_obj->label : esc_html__('Pending Review', 'publishpress-statuses');
+                        $status_label = (empty($status_obj)) ? $status_obj->label : esc_html(\PublishPress_Statuses::__wp('Pending Review'));
 
                         // Alternate item to allow use of "Save as Pending" button
                         //

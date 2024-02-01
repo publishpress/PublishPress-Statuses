@@ -181,7 +181,7 @@ class StatusesUI {
             'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
             'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
             // translators: %1$s is the status name, %2$s is the edit link
-            'term-updated' => sprintf(__('Post status%1$s updated. %2$s', 'publishpress-statuses'), $status_name, $edit_again),
+            'term-updated' => sprintf(__('Post status %1$s updated. %2$s', 'publishpress-statuses'), $status_name, $edit_again),
             'status-deleted' => __('Post status deleted.', 'publishpress-statuses'),
             'status-position-updated' => __("Status order updated.", 'publishpress-statuses'),
         ];
@@ -245,6 +245,14 @@ class StatusesUI {
                 $group_name,
                 $group_name . '_general'
             );
+
+            add_settings_field(
+                'label_storage',
+                __('Status Label Customization:', 'publishpress-statuses'),
+                [$this, 'settings_label_storage_option'],
+                $group_name,
+                $group_name . '_general'
+            );
         }
     }
 
@@ -261,12 +269,14 @@ class StatusesUI {
         $checked = $module->options->supplemental_cap_moderate_any ? 'checked' : '';
 
         echo sprintf(
-            '<input type="checkbox" name="%s" value="1" autocomplete="off" %s>',
+            '<input type="checkbox" name="%s" id="supplemental_cap_moderate_any" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[supplemental_cap_moderate_any]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="supplemental_cap_moderate_any">';
         esc_html_e('Supplemental Role of Editor for "standard statuses" also covers Custom Statuses', 'publishpress-statuses');
+        echo '</label>';
 
         echo '</div>';
     }
@@ -286,24 +296,28 @@ class StatusesUI {
         $checked = !$module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
 
         echo sprintf(
-            '<input type="radio" name="%s" value="0" autocomplete="off" %s>',
+            '<input type="radio" name="%s" id="moderation_statuses_default_to_highest" value="0" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="moderation_statuses_default_to_highest">';
         esc_html_e('Publish button defaults to highest status available to user', 'publishpress-statuses');
+        echo '</label>';
 
-        echo '</div><div style="margin-top: 10px;">';
+        echo '</div><div style="margin-top: 12px;">';
 
         $checked = $module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
 
         echo sprintf(
-            '<input type="radio" name="%s" value="1" autocomplete="off" %s>',
+            '<input type="radio" name="%s" id="moderation_statuses_default_to_next" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="moderation_statuses_default_to_next">';
         esc_html_e('Publish button defaults to next status in publication workflow', 'publishpress-statuses');
+        echo '</label>';
 
         echo '</div></div>';
     }
@@ -321,12 +335,14 @@ class StatusesUI {
         $checked = $module->options->status_dropdown_show_current_branch_only ? 'checked' : '';
 
         echo sprintf(
-            '<input type="checkbox" name="%s" value="1" autocomplete="off" %s>',
+            '<input type="checkbox" name="%s" id="status_dropdown_show_current_branch_only" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[status_dropdown_show_current_branch_only]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="status_dropdown_show_current_branch_only">';
         esc_html_e('De-clutter the dropdown by hiding statuses outside current branch (if defaulting by sequence and some statuses are nested)', 'publishpress-statuses');
+        echo '</label>';
 
         echo '</div>';
     }
@@ -349,9 +365,36 @@ class StatusesUI {
         <option value='gutenberg' <?php if ('gutenberg' === $option_val) echo "selected";?>><?php esc_html_e('Using Gutenberg Editor', 'publishpress-statuses');?></option>
         </select> 
 
-        <p>
+        <p class="pp-option-footnote">
         <?php
         esc_html_e('If custom statuses in the post editor are not loaded correctly, prevent incorrect detection of editor by specifying it here.', 'publishpress-statuses');
+        ?>
+        </p>
+
+        <?php
+        echo '</div>';
+    }
+
+    public function settings_label_storage_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        echo '<div class="c-input-group">';
+
+        $option_val = !empty($module->options->label_storage) ? $module->options->label_storage : '';
+
+        echo sprintf(
+            '<select name="%s" autocomplete="off">',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[label_storage]'
+        );
+
+        ?>
+        <option value='' <?php if (empty($option_val)) echo "selected";?>><?php esc_html_e('For all plugin statuses', 'publishpress-statuses');?></option>
+        <option value='user' <?php if ('user' === $option_val) echo "selected";?>><?php esc_html_e('For user-created plugin statuses only', 'publishpress-statuses');?></option>
+        </select> 
+
+        <p class="pp-option-footnote">
+        <?php
+        esc_html_e('This controls which statuses can have their labels customized by editing Status properties. If a non-default entry is stored, it will override any language file strings.', 'publishpress-statuses');
         ?>
         </p>
 
@@ -369,8 +412,8 @@ class StatusesUI {
 
         if (empty($post_types)) {
             $post_types = [
-                'post' => __('Posts'),
-                'page' => __('Pages'),
+                'post' => \PublishPress_Statuses::__wp('Posts'),
+                'page' => \PublishPress_Statuses::__wp('Pages'),
             ];
 
             $custom_post_types = $pp->get_supported_post_types();
@@ -457,7 +500,7 @@ class StatusesUI {
                 if (('visibility' != $status_type) || (defined('PRESSPERMIT_STATUSES_VERSION') && get_option('presspermit_privacy_statuses_enabled') )) {
                     echo '<a class="button primary add-new" title="' 
                         . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
-                        . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+                        . '" href="' . esc_url($url) . '">' . esc_html__('Add New', 'publishpress-statuses') . '</a>';
                 }
             });
 
@@ -531,7 +574,7 @@ class StatusesUI {
                     if ('visibility' == $status_type) {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    _e('Visibility', 'publishpress-statuses'); ?></a>
+                    \PublishPress_Statuses::_e_wp('Visibility', 'publishpress-statuses'); ?></a>
                 
                 <!--
                 <a href="<?php
@@ -540,7 +583,7 @@ class StatusesUI {
                     if ('revision' == $status_type) {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    _e('Revision', 'publishpress-statuses'); ?></a>
+                    \PublishPress_Statuses::_e_wp('Revision', 'publishpress-statuses'); ?></a>
                 -->
             </div>
             <?php
