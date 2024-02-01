@@ -2624,10 +2624,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     {
         global $wp_post_statuses, $current_user;
 
-        if (class_exists('PublishPress\Permissions\Statuses')) {
-            return \PublishPress\Permissions\Statuses::getUserStatusPermissions($perm_name, $post_type, $check_statuses, $args);
-
-        } elseif ('set_status' != $perm_name) {
+        if ('set_status' != $perm_name) {
             return [];
         }
 
@@ -2652,25 +2649,31 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $return = [];
 
-        if (!isset($type_obj->cap->set_posts_status)) {
-            $type_obj->cap->set_posts_status = $type_obj->cap->publish_posts;
-        }
-
         $moderate_any = !empty($current_user->allcaps['pp_moderate_any']);
 
         foreach (array_keys($check_statuses) as $_status) {
             if ($moderate_any && !empty($wp_post_statuses[$_status]) 
             && !empty($wp_post_statuses[$_status]->moderation)
+            && empty($wp_post_statuses[$_status]->public)
+            && empty($wp_post_statuses[$_status]->private)
             ) {
                 // The pp_moderate_any capability allows a non-Administrator to set any moderation status
                 $return[$_status] = true;
                 continue;
             }
             
-            $status_change_cap = str_replace('-', '_', "status_change_{$_status}");
-            $check_caps = (in_array($_status, ['publish', 'future'])) ? [$type_obj->cap->publish_posts] : [$status_change_cap];
+            if ('draft' == $_status) {
+                $return['draft'] = true;
+                continue;
+            }
 
-            $check_caps = apply_filters('publishpress_statuses_required_caps', $check_caps, 'set_status', $_status, $post_type);
+            if (in_array($_status, ['publish', 'private', 'future'])) {
+                $check_caps = [$type_obj->cap->publish_posts];
+            } else {
+            	$status_change_cap = str_replace('-', '_', "status_change_{$_status}");
+                $check_caps = [$status_change_cap];
+            	$check_caps = apply_filters('publishpress_statuses_required_caps', $check_caps, 'set_status', $_status, $post_type);
+            }
 
             $return[$_status] = !array_diff($check_caps, array_keys($current_user->allcaps));
         }
