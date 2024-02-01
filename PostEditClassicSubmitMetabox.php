@@ -411,7 +411,8 @@ class PostEditClassicSubmitMetabox
                 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 printf(\PublishPress_Statuses::__wp('Publish on: %s'), '<b>' . esc_html($date) . '</b>');
             } else {
-                printf(esc_html__('Publish %son approval%s', 'publishpress-statuses'), '<b>', '</b>');
+                // translators: %s is html markup
+                printf(esc_html__('Publish %1$s on approval %2$s', 'publishpress-statuses'), '<b>', '</b>');
             }
         } else { // draft (no saves, and thus no date specified)
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

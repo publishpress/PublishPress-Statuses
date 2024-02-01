@@ -278,7 +278,7 @@ class PostEditClassic
             ) {
                 if ( !in_array($_status, ['auto-draft', 'publish']) ) :
                 ?>
-                postL10n['<?php echo esc_attr($_status); ?>'] = '<?php echo esc_html($_status_obj->labels->visibility); ?>';
+                postL10n['<?php echo esc_attr($_status); ?>'] = '<?php echo esc_html($_status_obj->labels->visibility); // translators: %s is the name of a custom visibility status ?>';
                 postL10n['<?php echo esc_attr($_status);?>Sticky'] = '<?php printf(esc_html__('%s, Sticky', 'publishpress-statuses'), esc_html($_status_obj->label)); ?>';
                 <?php endif;?>
                 <?php
