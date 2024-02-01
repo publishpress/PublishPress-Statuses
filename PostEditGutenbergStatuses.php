@@ -34,12 +34,13 @@ class PostEditGutenbergStatuses
         if ($current_status_obj && (!empty($current_status_obj->public) || !empty($current_status_obj->private))) {
             $next_status_obj = $current_status_obj;
         } else {
-            $next_status_obj = \PublishPress_Statuses::defaultStatusProgression();
+            $next_status_obj = \PublishPress_Statuses::defaultStatusProgression($post_id);
         }
 
         if ($args['workflowSequence'] = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence) {
             $default_by_sequence = true;
-            $max_status_obj = \PublishPress_Statuses::defaultStatusProgression(0, ['default_by_sequence' => false, 'skip_current_status_check' => true]);
+            $max_status_obj = \PublishPress_Statuses::defaultStatusProgression($post_id, ['default_by_sequence' => false, 'skip_current_status_check' => true]);
+
             $args['advanceStatus'] = esc_html__('Advance Status', 'publishpress-statuses');
         } else {
             $max_status_obj = $next_status_obj;
