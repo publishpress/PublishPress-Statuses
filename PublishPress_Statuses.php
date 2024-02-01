@@ -1249,8 +1249,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
 
             // Under PublishPress / PublishPress Planner, post_status properties were encoded in the description column of the term_taxonomy table
-            if (empty($args['skip_archive'])) {
-                $_terms = $this->import_status_properties($_terms, $taxonomy);
+            if (is_admin() && empty($args['skip_archive']) && (self::TAXONOMY_PRE_PUBLISH == $taxonomy) && did_action('pp_statuses_init')) {
+                require_once(__DIR__ . '/Admin.php');
+                $_terms = \PublishPress_Statuses\Admin::apply_status_maintenance($_terms, $taxonomy);
             }
 
             foreach ($_terms as $term) {
@@ -1869,71 +1870,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         return add_query_arg($args, get_admin_url(null, 'admin.php'));
     }
 
-    // Archive the wp_terms description field as stored by PublishPress Planner, then import encoded properties from it
-    private function import_status_properties($terms, $taxonomy) {
-        static $busy;
-        
-        if (!empty($busy)) {
-        	return $terms;
-    	}
-    
-    	$busy = true;
-        
-        $new_archived_descriptions = false;
-
-        if (!$archived_term_descriptions = maybe_unserialize(get_option('pp_statuses_archived_term_properties'))) {
-            $archived_term_descriptions = [];
-        } else {
-            if (!get_option('pp_statuses_original_archived_term_properties')) {
-                update_option('pp_statuses_original_archived_term_properties', maybe_serialize($archived_term_descriptions));
-            }
-        }
-
-        foreach ($terms as $k => $term) {
-            // Archive and clear the description field only if it's encoded
-            if (!empty($term->description) && preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description) 
-            && (strlen($term->description) > 80) && (false === strpos($term->description, ' '))
-            ) {
-                // Don't bother archiving Post Visibility or Core Status description fields, which only existed in Statuses beta
-                if ('post_status' == $taxonomy) {
-                    $archived_term_descriptions[$term->term_id] = $term->description;
-
-                    wp_update_term($term->term_id, $taxonomy, ['description' => '']);
-                    $terms[$k]->description = '';
-
-                    $new_archived_descriptions = true;
-                }
-            }
-        }
-
-        $import_run_version = get_option('publishpress_statuses_planner_import');
-
-        // Statuses < 1.0.3.2 updated archive array without performing import
-        if ($new_archived_descriptions || !$import_run_version || version_compare($import_run_version, '1.0.3.2', '<')
-        ) {
-            update_option('pp_statuses_archived_term_properties', maybe_serialize($archived_term_descriptions));
-
-            if (('post_status' == $taxonomy)) {
-                if (!defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT')) {
-                    require_once(__DIR__ . '/PlannerImport.php');
-                    $import = new \PP_Statuses_PlannerImport();
-                    if ($planner_import_done = $import->importEncodedProperties($terms)) {
-                        wp_cache_delete('publishpress_status_positions', 'options');
-                    }
-                }
-
-                if (!defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
-                    if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
-                        require_once(__DIR__ . '/PermissionsImport.php');
-                        \PublishPress_Statuses\PermissionsImport::import($terms);
-                    }
-                }
-            }
-        }
-    
-    	$busy = false;
-
-        return $terms;
+    public static function import_status_properties($terms, $taxonomy) {
+        require_once(__DIR__ . '/Admin.php');
+        return \PublishPress_Statuses\Admin::apply_status_maintenance($terms, $taxonomy);
     }
 
     /**
