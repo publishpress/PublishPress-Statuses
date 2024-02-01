@@ -557,6 +557,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'draft' =>  (object) [
                         'default_label' => 'Draft',
                         'label' => !empty($wp_post_statuses['draft']) && !empty($wp_post_statuses['draft']->label) ? $wp_post_statuses['draft']->label : \PublishPress_Statuses::__wp('Draft'),
+                        'default_labels' => (object) [
+                            'save_as' => 'Save Draft'
+                        ],
                         'labels' => (object) [
                             'save_as' => \PublishPress_Statuses::__wp('Save Draft')
                         ],
@@ -572,6 +575,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'default_label' => 'Pending Review',
                         'label' => !empty($wp_post_statuses['pending']) && !empty($wp_post_statuses['pending']->label) ? $wp_post_statuses['pending']->label : \PublishPress_Statuses::__wp('Pending Review'),
                         'label_friendly' => !empty($wp_post_statuses['pending']) && !empty($wp_post_statuses['pending']->label) ? $wp_post_statuses['pending']->label : \PublishPress_Statuses::__wp('Pending Review'),
+                        'default_labels' => (object) [
+                            'save_as' => 'Save as Pending',
+                            'publish' => 'Submit for Review'
+                        ],
                         'labels' => (object) [
                             'save_as' => \PublishPress_Statuses::__wp('Save as Pending'),
                             'publish' => \PublishPress_Statuses::__wp('Submit for Review')
@@ -588,6 +595,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'future' => (object) [
                         'default_label' => 'Scheduled',
                         'label' => !empty($wp_post_statuses['future']) && !empty($wp_post_statuses['future']->label) ? $wp_post_statuses['future']->label : \PublishPress_Statuses::__wp('Scheduled'),
+                        'default_labels' => (object) [
+                            'publish' => 'Schedule'
+                        ],
+                        'labels' => (object) [
+                            'publish' => \PublishPress_Statuses::__wp('Schedule')
+                        ],
                         'description' => __('Post is scheduled for publication.', 'publishpress-statuses'),
                         'color' => '#8440f0',
                         'icon' => 'dashicons-calendar-alt',
@@ -599,6 +612,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'publish' => (object) [
                         'default_label' => 'Published',
                         'label' => !empty($wp_post_statuses['publish']) && !empty($wp_post_statuses['publish']->label) ? $wp_post_statuses['publish']->label : \PublishPress_Statuses::__wp('Published'),
+                        'default_labels' => (object) [
+                            'publish' => 'Publish'
+                        ],
                         'labels' => (object) [
                             'publish' => \PublishPress_Statuses::__wp('Publish')
                         ],
@@ -614,6 +630,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'private' => (object) [
                         'default_label' => 'Private',
                         'label' => !empty($wp_post_statuses['private']) && !empty($wp_post_statuses['private']->label) ? $wp_post_statuses['private']->label : \PublishPress_Statuses::__wp('Private'),
+                        'default_labels' => (object) [
+                            'publish' => 'Update'
+                        ],
                         'labels' => (object) [
                             'publish' => \PublishPress_Statuses::__wp('Update')
                         ],
@@ -634,6 +653,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'pitch' => (object) [
                         'default_label' => 'Pitch',
                         'label' => __('Pitch', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Pitch'],
                         'labels' => (object) ['publish' => _x('Pitch', 'post action/button label', 'publishpress-statuses')],
                         'description' => __('Idea proposed; waiting for acceptance.', 'publishpress-statuses'),
                         'color' => '#887618',
@@ -647,6 +667,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'assigned' => (object) [
                         'default_label' => 'Assigned',
                         'label' => __('Assigned', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Assign'],
                         'labels' => (object) ['publish' => __('Assign', 'publishpress-statuses')],
                         'description' => __('Post idea assigned to writer.', 'publishpress-statuses'),
                         'color' => '#009ba0',
@@ -660,6 +681,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'in-progress' => (object) [
                         'default_label' => 'In Progress',
                         'label' => __('In Progress', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Mark In Progress'],
                         'labels' => (object) ['publish' => __('Mark In Progress', 'publishpress-statuses')],
                         'description' => __('Writer is working on the post.', 'publishpress-statuses'),
                         'color' => '#8c5400',
@@ -673,6 +695,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'approved' => (object) [
                         'default_label' => 'Approved',
                         'label' => __('Approved', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Approve'],
                         'labels' => (object) ['publish' => __('Approve', 'publishpress-statuses')],
                         'description' => __('Post has been approved for publication.', 'publishpress-statuses'),
                         'color' => '#304baa',
@@ -686,6 +709,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'deferred' => (object) [
                         'default_label' => 'Deferred',
                         'label' => __('Deferred', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Defer'],
                         'labels' => (object) ['publish' => __('Defer', 'publishpress-statuses')],
                         'description' => __('Post has been deferred for future consideration.', 'publishpress-statuses'),
                         'color' => '#9b9b9b',
@@ -699,6 +723,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'needs-work' => (object) [
                         'default_label' => 'Needs Work',
                         'label' => __('Needs Work', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Set to Needs Work'],
                         'labels' => (object) ['publish' => __('Set to Needs Work', 'publishpress-statuses')],
                         'description' => __('Post needs work before further review.', 'publishpress-statuses'),
                         'color' => '#A88F8D',
@@ -712,6 +737,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'rejected' => (object) [
                         'default_label' => 'Rejected',
                         'label' => __('Rejected', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Reject'],
                         'labels' => (object) ['publish' => __('Reject', 'publishpress-statuses')],
                         'description' => __('Post has been rejected.', 'publishpress-statuses'),
                         'color' => '#6b0000',
@@ -725,6 +751,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'committee' => (object) [
                         'default_label' => 'Committee',
                         'label' => __('Committee', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Refer to Committee'],
                         'labels' => (object) ['publish' => __('Refer to Committee', 'publishpress-statuses')],
                         'description' => __('Post has been referred to committee.', 'publishpress-statuses'),
                         'color' => '#791bb7',
@@ -739,6 +766,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'committee-review' => (object) [
                         'default_label' => 'Committee Review',
                         'label' => __('Committee Review', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Set to Committee Review'],
                         'labels' => (object) ['publish' => __('Set to Committee Review', 'publishpress-statuses')],
                         'description' => __('Committee is reviewing the post.', 'publishpress-statuses'),
                         'color' => '#ba7925',
@@ -753,6 +781,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'committee-progress' => (object) [
                         'default_label' => 'Committee Progress',
                         'label' => __('Committee Progress', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Set to Committee Progress'],
                         'labels' => (object) ['publish' => __('Set to Committee Progress', 'publishpress-statuses')],
                         'description' => __('Committee is editing the post.', 'publishpress-statuses'),
                         'color' => '#A8902B',
@@ -767,6 +796,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     'committee-approved' => (object) [
                         'default_label' => 'Committee Approved',
                         'label' => __('Committee Approved', 'publishpress-statuses'),
+                        'default_labels' => (object) ['publish' => 'Set Committee Approval'],
                         'labels' => (object) ['publish' => __('Set Committee Approval', 'publishpress-statuses')],
                         'description' => __('Committee has approved the post.', 'publishpress-statuses'),
                         'color' => '#22a522',
@@ -903,7 +933,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $wp_post_statuses['draft']->labels->publish = esc_attr(self::__wp('Save Draft'));
     
             if (empty($wp_post_statuses['pending']->labels->caption)) {
-                $wp_post_statuses['pending']->labels->caption = $wp_post_statuses['pending']->label; //self::__wp('Pending Review');
+                $wp_post_statuses['pending']->labels->caption = $wp_post_statuses['pending']->label;
             }
 
             $wp_post_statuses['private']->labels->caption = self::__wp('Privately Published');
@@ -1148,6 +1178,40 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         return ($return_args['output'] == 'object') ? $statuses : array_keys($statuses);
     }
 
+    public static function isDefaultLabel($status, $caption, $property = 'label') {
+        if (!is_object($status)) {
+            if (!$status_obj = get_post_status_object($status)) {
+                return false;
+            }
+        } else {
+            $status_obj = $status;
+        }
+        
+        switch ($property) {
+            case 'label':
+                return (!empty($status_obj->default_label) && ($caption == $status_obj->default_label));
+                break;
+
+            case 'save_as':
+                $default = (!empty($status_obj->default_labels) && !empty($status_obj->default_labels->$property)) 
+                ? $status_obj->default_labels->$property
+                : sprintf('Save as %s', $status_obj->label);
+
+                return ($caption == $default);
+                break;
+
+            case 'publish':
+                $default = (!empty($status_obj->default_labels) && !empty($status_obj->default_labels->$property)) 
+                ? $status_obj->default_labels->$property
+                : sprintf('Set to %s', $status_obj->label);
+
+                return ($caption == $default);
+                break;
+        }
+
+        return false;
+    }
+
     /**
      * Alias for getPostStatuses()
      * 
@@ -1316,44 +1380,73 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     )
                 );
 
-                $stored_status_terms[$taxonomy][$term->slug] = $term;
-
                 $label_storage = \PublishPress_Statuses::instance()->options->label_storage;
 
-                foreach($stored_status_terms[$taxonomy] as $status_name => $stored_status) {
-                    if (!isset($all_statuses[$status_name])) {
-                        $all_statuses[$status_name] = $stored_status_terms[$taxonomy][$status_name];
-                    } else {
-                        foreach (get_object_vars($stored_status_terms[$taxonomy][$status_name]) as $prop => $value) {
-                            if (in_array($prop, ['label', 'labels'])) {
-                                // Disregard the stored value if it is the same as hardcoded defaults. This allows for translation.
-                                if (!$value || (!empty($all_statuses[$status_name]->default_label) && ($value == $all_statuses[$status_name]->default_label))) {
+                $stored_status_terms[$taxonomy][$term->slug] = $term;
+                $status_name = $term->slug;
+
+                if (!isset($all_statuses[$status_name])) {
+                    $all_statuses[$status_name] = $stored_status_terms[$taxonomy][$status_name];
+                } else {
+                    foreach (get_object_vars($stored_status_terms[$taxonomy][$status_name]) as $prop => $value) {
+                        if (in_array($prop, ['label', 'labels'])) {
+                            // Disregard the stored value if it is the same as hardcoded defaults. This allows for translation.
+                            if ('label' == $prop) {
+                                if (!$value || self::isDefaultLabel($all_statuses[$status_name], $value)) {
                                     continue;
                                 }
 
-                                // Disregard the stored value if plugin is not configured to use stored labels with this status
-                                switch ($label_storage) {
-                                    case 'user':
-                                        if (!empty($all_statuses[$status_name]->pp_builtin) || !empty($all_statuses[$status_name]->_builtin)
-                                        || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
-                                        ) {
-                                            continue 2;
+                            }
+
+                            // Disregard the stored value if plugin is not configured to use stored labels with this status
+                            switch ($label_storage) {
+                                case 'user':
+                                    if (!empty($all_statuses[$status_name]->pp_builtin) || !empty($all_statuses[$status_name]->_builtin)
+                                    || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
+                                    ) {
+                                        continue 2;
+                                    }
+
+                                    break;
+
+                                default:
+                                    if ((!empty($all_statuses[$status_name]->_builtin) && ('pending' != $status_name))
+                                    || in_array($status_name, ['draft', 'publish', 'private', 'future'])
+                                    ) {
+                                        continue 2;
+                                    }
+                            }
+
+                            if ('labels' == $prop) {
+                                if (is_object($value)) {
+                                    if (isset($value->save_as) && self::isDefaultLabel($all_statuses[$status_name], $value->save_as, 'save_as')) {
+                                        unset($value->save_as);
+                                    }
+
+                                    if (isset($value->publish) && self::isDefaultLabel($all_statuses[$status_name], $value->publish, 'publish')) {
+                                        unset($value->publish);
+                                    }
+
+                                    if (empty($value)) {
+                                        continue;
+                                    }
+
+                                    // Set only the label properties that are saved to a non-default value, allowing others to be translated from default
+                                    foreach($value as $label_prop => $caption) {
+                                        if (empty($all_statuses[$status_name]->labels)) {
+                                            $all_statuses[$status_name]->labels = (object) [];
                                         }
 
-                                        break;
+                                        $all_statuses[$status_name]->labels->$label_prop = $caption;
+                                    }
 
-                                    default:
-                                        if ((!empty($all_statuses[$status_name]->_builtin) && ('pending' != $status_name))
-                                        || in_array($status_name, ['draft', 'publish', 'private', 'future'])
-                                        ) {
-                                            continue 2;
-                                        }
+                                    continue;
                                 }
                             }
-                            
-                            if (('description' != $prop) || !in_array($value, ['', '-'])) {
-                                $all_statuses[$status_name]->$prop = $value;
-                            }
+                        }
+                        
+                        if (('description' != $prop) || !in_array($value, ['', '-'])) {
+                            $all_statuses[$status_name]->$prop = $value;
                         }
                     }
                 }
@@ -1578,7 +1671,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     continue;
                 }
             }
-
             $status_by_position[$key] = $this->apply_default_status_properties($status_by_position[$key]);
 
             $status_name = $status_by_position[$key]->name;
@@ -1617,12 +1709,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                                     }
                             }
 
-                            $wp_post_statuses[$status_name]->$prop = $val;
-
                             if (is_object($val) && !empty($val->name)) {
                                 $wp_post_statuses[$status_name]->label = $val->name;
                             }
                         }
+
+                        $wp_post_statuses[$status_name]->$prop = $val;
                     }
                 }
             }
@@ -2656,6 +2748,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             [
                 'label'                     => esc_html(\PublishPress_Statuses::__wp('Pending')),
                 'label_count'               => false,
+                'labels' => (object) [
+                    'save_as' => \PublishPress_Statuses::__wp('Save as Pending'),
+                    'publish' => \PublishPress_Statuses::__wp('Submit for Review')
+                ],
                 'exclude_from_search'       => true,
                 'public'                    => false,
                 'internal'                  => false,
