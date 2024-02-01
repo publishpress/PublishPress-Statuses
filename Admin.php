@@ -15,6 +15,18 @@ class Admin
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
 
         add_filter('display_post_states', [$this, 'fltDisplayPostStates'], 10, 2);
+        if (!get_option('publishpress_statuses_version')) {
+            if (!defined('PP_STATUSES_DISABLE_PENDING_STATUS_FIX')) {
+                global $wpdb;
+
+                // Clean up after Gutenberg integration bug in plugin version < 1.0.4.1
+                $wpdb->query("UPDATE $wpdb->posts SET post_status = 'pending' WHERE post_status = '_pending'");
+            }
+        }
+
+        if (get_option('publishpress_statuses_version') != PUBLISHPRESS_STATUSES_VERSION) {
+            update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
+        }
     }
 
     // status display in Edit Posts table rows
