@@ -70,8 +70,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     private static $instance = null;
 
-    public static function instance() {
-        if ( is_null(self::$instance) ) {
+    public static function instance($reload = false) {
+        if ( is_null(self::$instance) || $reload) {
             self::$instance = new \PublishPress_Statuses(false);
             self::$instance->load();
         }
@@ -141,6 +141,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             'supplemental_cap_moderate_any' => 0,
             'moderation_statuses_default_by_sequence' => 0,
             'status_dropdown_show_current_branch_only' => 0,
+            'force_editor_detection' => '',
         ];
 
         $this->post_type_support_slug = 'pp_custom_statuses'; // This has been plural in all of our docs
@@ -210,7 +211,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public function fltRegisterCapabilities($cme_caps) {
-        $cme_caps[__('PublishPress Statuses', 'publishpress-statuses')] = ['pp_manage_statuses'];
+        $cme_caps[__('PublishPress Statuses', 'publishpress-statuses')] = ['pp_manage_statuses', 'pp_bypass_status_sequence'];
 
         return $cme_caps;
     }
@@ -335,15 +336,35 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        /* This can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. */
-        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-        /*
-        if (is_admin() && isset($_REQUEST['pp_statuses_import_terms'])) {
-            $this->import_encoded_properties();
-        }
-        */
+        $planner_import_done = false;
 
-        do_action('pp_statuses_init');
+        // Import and merge Planner statuses if not already done
+        if (is_admin()
+        && !empty($pagenow) && !in_array($pagenow, ['plugins.php', 'plugin-install.php'])
+        && get_option('pp_statuses_archived_term_properties') && !get_option('publishpress_statuses_planner_import_done')) {
+            require_once(__DIR__ . '/PlannerImport.php');
+            $import = new \PP_Statuses_PlannerImport();
+            if ($planner_import_done = $import->importEncodedProperties()) {
+                wp_cache_delete('publishpress_status_positions', 'options');
+            }
+        }
+
+        // Make sure the Statuses page is refreshed correctly on first access
+
+        if (is_admin() && !empty($_REQUEST['page'] && ('publishpress-statuses' == $_REQUEST['page']))  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+        && get_option('publishpress_statuses_planner_import_done') && !get_option('publishpress_statuses_planner_import_refresh')
+        && !defined('PUBLISHPRESS_STATUSES_NO_IMPORT_REFRESH')
+        ) {
+            update_option('publishpress_statuses_planner_import_refresh', true);
+            wp_redirect(admin_url('admin.php?page=publishpress-statuses'));
+            exit;
+        }
+            
+        if (!$planner_import_done) {
+            do_action('pp_statuses_init');
+        } else {
+            \PublishPress_Statuses::instance(true);
+        }
     }
 
     // Capability filter applied by WP_User->has_cap (usually via WP current_user_can function)
@@ -1624,12 +1645,19 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     
     	$busy = true;
         
-        $archived_term_descriptions = [];
+        if (!$archived_term_descriptions = maybe_unserialize(get_option('pp_statuses_archived_term_properties'))) {
+            $archived_term_descriptions = [];
+        } else {
+            if (!get_option('pp_statuses_original_archived_term_properties')) {
+                update_option('pp_statuses_original_archived_term_properties', maybe_serialize($archived_term_descriptions));
+            }
+        }
 
         foreach ($terms as $k => $term) {
             // Archive and clear the description field only if it's encoded
-            if (!empty($term->description) && preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) {
-                
+            if (!empty($term->description) && preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description) 
+            && (strlen($term->description) > 80) && (false === strpos($term->description, ' '))
+            ) {
                 // Don't bother archiving Post Visibility or Core Status description fields, which only existed in Statuses beta
                 if ('post_status' == $taxonomy) {
                     $archived_term_descriptions[$term->term_id] = $term->description;
@@ -1655,18 +1683,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         return $terms;
     }
-
-    /*  
-     *  Function import_encoded_properties() is disabled to avoid raising concerns about base64 encoding.
-     *  It can be reinstated in a user-specific build to import existing post_status term descriptions as neeed. 
-     **/
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /*
-    private function import_encoded_properties() {
-        // code provided in custom build as needed
-    }
-    */
-    
 
     /**
      * Adds a new custom status as a term in the wp_terms table.
@@ -2341,8 +2357,23 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         && ($doing_rest && ($selected_status != $stored_status || (('pending' == $selected_status) && !$can_publish))) 
                         || !\PublishPress_Functions::empty_POST('publish')
                         ) {
+                            $args = ['return' => 'name', 'post_type' => $post_type];
+
+                            // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                            if (!empty($_REQUEST['pp_statuses_bypass_sequence'])) {
+                                $type_obj = get_post_type_object($_post->post_type);
+
+                                if ((current_user_can('administrator') 
+                                || ($type_obj && !empty($type_obj->cap->publish_posts) && current_user_can($type_obj->cap->publish_posts)) 
+                                || current_user_can('pp_bypass_status_sequence'))
+                                && (!isset($current_user->allcaps['pp_bypass_status_sequence']) || !empty($current_user->allcaps['pp_bypass_status_sequence'])) // allow explicit blockage
+                                ) {
+                                    $args['default_by_sequence'] = false;
+                                }
+                            } 
+
                             // Submission status inferred using same logic as UI generation (including permission check)
-                            $post_status = \PublishPress_Statuses::defaultStatusProgression($post_id, ['return' => 'name', 'post_type' => $post_type]);
+                            $post_status = \PublishPress_Statuses::defaultStatusProgression($post_id, $args);
                         }
                 }
 

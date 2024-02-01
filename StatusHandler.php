@@ -395,6 +395,15 @@ class StatusHandler {
             $redirect_url = \PublishPress_Statuses::getLink($arr);
         }
 
+        // work around bug in status capabilities library (displaying Set capability checkbox for disabled post types)
+        if (isset($_REQUEST['status_caps'])) {                                                          // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+            foreach (array_keys($_REQUEST['status_caps']) as $role_name) {                              // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                if (isset($_REQUEST['status_caps'][$role_name]["status_change_{$status_obj->name}"])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                    unset($_REQUEST['status_caps'][$role_name]["status_change_{$status_obj->name}"]);   // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                }
+            }
+        }
+
         do_action('publishpress_statuses_edit_status', $existing_status->name, $args);
 
         $return = self::updateCustomStatus($existing_status->name, $args);
@@ -764,7 +773,7 @@ class StatusHandler {
 
         $new_options = [];
 
-        foreach ($module->options as $option_name => $current_val) {
+        foreach ($module->default_options as $option_name => $current_val) {
             if ('loaded_once' == $option_name) {
                 continue;
             }
@@ -776,6 +785,11 @@ class StatusHandler {
                             array_map('intval', (array) $_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name]), 
                             \PublishPress_Statuses::instance()->get_supported_post_types()
                         );
+
+                        break;
+
+                    case 'force_editor_detection':
+                        $new_options[$option_name] = sanitize_key($_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name]);
 
                         break;
 
