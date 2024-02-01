@@ -301,8 +301,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         do_action('publishpress_statuses_register_taxonomies');
+        do_action('publishpress_statuses_pre_init');
 
         $statuses = $this->getPostStatuses([], 'object', ['load' => true]);
+
+        add_action('admin_init', function() {
+            $this->getPostStatuses();
+        });
 
         // Register custom statuses, which are stored as taxonomy terms
         $this->register_moderation_statuses($statuses);
@@ -336,35 +341,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        $planner_import_done = false;
-
-        // Import and merge Planner statuses if not already done
-        if (is_admin()
-        && !empty($pagenow) && !in_array($pagenow, ['plugins.php', 'plugin-install.php'])
-        && get_option('pp_statuses_archived_term_properties') && !get_option('publishpress_statuses_planner_import_done')) {
-            require_once(__DIR__ . '/PlannerImport.php');
-            $import = new \PP_Statuses_PlannerImport();
-            if ($planner_import_done = $import->importEncodedProperties()) {
-                wp_cache_delete('publishpress_status_positions', 'options');
-            }
-        }
-
-        // Make sure the Statuses page is refreshed correctly on first access
-
-        if (is_admin() && !empty($_REQUEST['page'] && ('publishpress-statuses' == $_REQUEST['page']))  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
-        && get_option('publishpress_statuses_planner_import_done') && !get_option('publishpress_statuses_planner_import_refresh')
-        && !defined('PUBLISHPRESS_STATUSES_NO_IMPORT_REFRESH')
-        ) {
-            update_option('publishpress_statuses_planner_import_refresh', true);
-            wp_redirect(admin_url('admin.php?page=publishpress-statuses'));
-            exit;
-        }
-            
-        if (!$planner_import_done) {
-            do_action('pp_statuses_init');
-        } else {
-            \PublishPress_Statuses::instance(true);
-        }
+        do_action('pp_statuses_init');
     }
 
     // Capability filter applied by WP_User->has_cap (usually via WP current_user_can function)
@@ -990,7 +967,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public function getPostStatuses($status_args = [], $return_args = [], $function_args = [])
     {
         $plugin_page = \PublishPress_Functions::getPluginPage();
-        
+
         if (!is_array($function_args)) {
             $function_args = [$function_args => $function_args];
         }
@@ -1056,7 +1033,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        if (!did_action('pp_statuses_init')) {
+        if (!did_action('publishpress_statuses_pre_init')) {
             $args['skip_archive'] = true;
         }
 
@@ -1076,7 +1053,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             // Under PublishPress / PublishPress Planner, post_status properties were encoded in the description column of the term_taxonomy table
             if (empty($args['skip_archive'])) {
-                $_terms = $this->archive_encoded_properties($_terms, $taxonomy);
+                $_terms = $this->import_status_properties($_terms, $taxonomy);
             }
 
             foreach ($_terms as $term) {
@@ -1364,8 +1341,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     if (!isset($wp_post_statuses[$status_name]->$prop)) {
                         $wp_post_statuses[$status_name]->$prop = $val;
                     } else {
-                        if ('labels' == $prop) {
+                        if (in_array($prop, ['labels', 'post_type'])) {
                             $wp_post_statuses[$status_name]->$prop = $val;
+                        }
+
+                        if (('labels' == $prop) && is_object($val) && !empty($val->name)) {
+                            $wp_post_statuses[$status_name]->label = $val->name;
                         }
                     }
                 }
@@ -1635,8 +1616,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         return add_query_arg($args, get_admin_url(null, 'admin.php'));
     }
 
-    // Archive the wp_terms description field as stored by PublishPress, in case we need to unencode it later
-    private function archive_encoded_properties($terms, $taxonomy) {
+    // Archive the wp_terms description field as stored by PublishPress Planner, then import encoded properties from it
+    private function import_status_properties($terms, $taxonomy) {
         static $busy;
         
         if (!empty($busy)) {
@@ -1645,6 +1626,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     
     	$busy = true;
         
+        $new_archived_descriptions = false;
+
         if (!$archived_term_descriptions = maybe_unserialize(get_option('pp_statuses_archived_term_properties'))) {
             $archived_term_descriptions = [];
         } else {
@@ -1661,20 +1644,36 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 // Don't bother archiving Post Visibility or Core Status description fields, which only existed in Statuses beta
                 if ('post_status' == $taxonomy) {
                     $archived_term_descriptions[$term->term_id] = $term->description;
-                }
 
-                wp_update_term($term->term_id, $taxonomy, ['description' => '']);
-                $terms[$k]->description = '';
+                    wp_update_term($term->term_id, $taxonomy, ['description' => '']);
+                    $terms[$k]->description = '';
+
+                    $new_archived_descriptions = true;
+                }
             }
         }
 
-        if ($archived_term_descriptions) {
+        $import_done_version = get_option('pp_statuses_planner_import_done');
+
+        // Statuses < 1.0.3.1 updated archive array without performing import
+        if ($new_archived_descriptions || !$import_done_version || version_compare($import_done_version, '1.0.3', '<')
+        ) {
             update_option('pp_statuses_archived_term_properties', maybe_serialize($archived_term_descriptions));
 
-            if (('post_status' == $taxonomy) && !defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
-                if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
-                    require_once(__DIR__ . '/PermissionsImport.php');
-                    \PublishPress_Statuses\PermissionsImport::import($terms);
+            if (('post_status' == $taxonomy)) {
+                if (!defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
+                    if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
+                        require_once(__DIR__ . '/PermissionsImport.php');
+                        \PublishPress_Statuses\PermissionsImport::import($terms);
+                    }
+                }
+
+                if (!defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT')) {
+                    require_once(__DIR__ . '/PlannerImport.php');
+                    $import = new \PP_Statuses_PlannerImport();
+                    if ($planner_import_done = $import->importEncodedProperties($terms)) {
+                        wp_cache_delete('publishpress_status_positions', 'options');
+                    }
                 }
             }
         }

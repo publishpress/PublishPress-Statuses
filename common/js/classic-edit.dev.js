@@ -25,6 +25,15 @@ jQuery(document).ready(function ($) {
         });
     }
 
+
+    $('a.save-post-visibility').click(function () {
+        if ( $('#pp_statuses_bypass_sequence:visible').length) {
+            if ($('visibility-radio-private:checked').length || $('input.pvt-custom:checked').length) {
+                $('#pp_statuses_bypass_sequence').prop('checked', true);
+            }
+        }
+    });
+
     $('a.save-timestamp').click(function () {
         if ( $('#pp_statuses_bypass_sequence:visible').length) {
             var aa = $('#aa').val(), mm = $('#mm').val(), jj = $('#jj').val(), hh = $('#hh').val(), mn = $('#mn').val();
@@ -210,59 +219,6 @@ jQuery(document).ready(function ($) {
 
         return true;
     }
-
-    // set "Status:" caption; show/hide Save As button and set caption
-    function updateStatusCaptions() {
-        postStatus = $('#post_status');
-        var status_val = $('option:selected', postStatus).val();
-
-        var status_caption = $('option:selected', postStatus).text();
-        status_caption = status_caption.replace('—', '');
-
-        if (status_caption) {
-            $('#post-status-display').html(status_caption);
-        }
-
-        var status_type = '';
-        var save_as = '';
-        var pub_stati = jQuery.parseJSON(ppObjEdit.pubStati.replace(/&quot;/g, '"'));
-        var pvt_stati = jQuery.parseJSON(ppObjEdit.pvtStati.replace(/&quot;/g, '"'));
-        var mod_stati = jQuery.parseJSON(ppObjEdit.modStati.replace(/&quot;/g, '"'));
-
-        $(mod_stati).each(function (i) {
-            if (mod_stati[i].name == status_val) {
-                status_type = 'moderation';
-                save_as = mod_stati[i].save_as;
-            }
-        });
-
-        $(pub_stati).each(function (i) {
-            if (pub_stati[i].name == status_val) {
-                status_type = 'public';
-            }
-        });
-
-        $(pvt_stati).each(function (i) {
-            if (pvt_stati[i].name == status_val) {
-                status_type = 'private';
-            }
-        });
-
-        switch (status_type) {
-            case 'public':
-            case 'private':
-                $('#save-post').hide();
-                break;
-
-            case 'moderation':
-                $('#save-post').show().val(save_as);
-                break;
-
-            default :
-                $('#save-post').show().val(ppObjEdit.draftSaveAs);
-        }
-    }
-
 
     var stamp = $('#timestamp').html();
 
@@ -465,3 +421,120 @@ jQuery(document).ready(function ($) {
 
     } // Classic Editor elements are rendered
 });
+
+// Support Permissions Pro's Custom Privacy Statuses
+function updateStatusDropdownElements() {
+jQuery(document).ready(function ($) {
+    var postStatus = $('#post_status'), optPublish = $('option[value=publish]', postStatus);
+    var status_val = $('input:radio:checked', '#post-visibility-select').val();
+
+    var is_private = false;
+    var pvt_stati = jQuery.parseJSON(ppObjEdit.pvtStati.replace(/&quot;/g, '"'));
+
+    $(pvt_stati).each(function (i) {
+        if (pvt_stati[i].name == status_val) {
+            is_private = true;
+        }
+    });
+
+    if (is_private) {
+        $('#publish').val(ppObjEdit.update);
+
+        if (optPublish.length == 0) {
+            postStatus.append('<option value="publish">' + ppObjEdit.privatelyPublished + '</option>');
+        } else {
+            optPublish.html(ppObjEdit.privatelyPublished);
+        }
+
+        $('option[value="publish"]', postStatus).prop('selected', true);
+        $('.edit-post-status', '#misc-publishing-actions').hide();
+    }
+
+    return true;
+});
+}
+
+// Support Permissions Pro's Custom Privacy Statuses
+function updateStatusCaptions() {
+jQuery(document).ready(function ($) {
+    postStatus = $('#post_status');
+    var status_val = $('option:selected', postStatus).val();
+
+    var status_caption = $('option:selected', postStatus).text();
+    status_caption = status_caption.replace('—', '');
+
+    if (status_caption) {
+        $('#post-status-display').html(status_caption);
+    }
+
+    var status_type = '';
+    var save_as = '';
+    var pub_stati = jQuery.parseJSON(ppObjEdit.pubStati.replace(/&quot;/g, '"'));
+    var pvt_stati = jQuery.parseJSON(ppObjEdit.pvtStati.replace(/&quot;/g, '"'));
+    var mod_stati = jQuery.parseJSON(ppObjEdit.modStati.replace(/&quot;/g, '"'));
+
+    $(mod_stati).each(function (i) {
+        if (mod_stati[i].name == status_val) {
+            status_type = 'moderation';
+            save_as = mod_stati[i].save_as;
+        }
+    });
+
+    $(pub_stati).each(function (i) {
+        if (pub_stati[i].name == status_val) {
+            status_type = 'public';
+        }
+    });
+
+    $(pvt_stati).each(function (i) {
+        if (pvt_stati[i].name == status_val) {
+            status_type = 'private';
+        }
+    });
+
+    switch (status_type) {
+        case 'public':
+        case 'private':
+            $('#save-post').hide();
+            break;
+
+        case 'moderation':
+            $('#save-post').show().val(save_as);
+            break;
+
+        default :
+            $('#save-post').show().val(ppObjEdit.draftSaveAs);
+    }
+});
+}
+
+function updateStatusDropdownElements() {
+jQuery(document).ready(function ($) {
+    var postStatus = $('#post_status'), optPublish = $('option[value=publish]', postStatus);
+    var status_val = $('input:radio:checked', '#post-visibility-select').val();
+
+    var is_private = false;
+    var pvt_stati = jQuery.parseJSON(ppObjEdit.pvtStati.replace(/&quot;/g, '"'));
+
+    $(pvt_stati).each(function (i) {
+        if (pvt_stati[i].name == status_val) {
+            is_private = true;
+        }
+    });
+
+    if (is_private) {
+        $('#publish').val(ppObjEdit.update);
+
+        if (optPublish.length == 0) {
+            postStatus.append('<option value="publish">' + ppObjEdit.privatelyPublished + '</option>');
+        } else {
+            optPublish.html(ppObjEdit.privatelyPublished);
+        }
+
+        $('option[value="publish"]', postStatus).prop('selected', true);
+        $('.edit-post-status', '#misc-publishing-actions').hide();
+    }
+
+    return true;
+});
+}
