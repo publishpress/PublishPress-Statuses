@@ -184,8 +184,6 @@ function PPCS_RecaptionButton(btnSelector, btnCaption) {
   if ($(btnSelector).length && btnCaption 
   && (btnCaption != $('span.presspermit-save-button button').html() || !$('span.presspermit-save-button button:visible').length || $('button.editor-post-save-draft:visible').length)
   ) {
-    //console.log('PPCS_RecaptionButton: ' + status + ' : ' + btnCaption);
-    
     $('span.presspermit-save-button').remove();
 
     var hideClass = 'presspermit-save-hidden';

@@ -473,7 +473,7 @@ class StatusHandler {
             switch ($label_storage) {
                 case 'user':
                     if (!empty($status_obj->pp_builtin) || !empty($status_obj->_builtin)
-                    || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
+                    || in_array($name, ['draft', 'pending', 'publish', 'private', 'future'])
                     ) {
                         $label_locked = true;
                     }
@@ -481,8 +481,8 @@ class StatusHandler {
                     break;
 
                 default:
-                    if ((!empty($status_obj->_builtin) && ('pending' != $status_name))
-                    || in_array($status_name, ['draft', 'publish', 'private', 'future'])
+                    if ((!empty($status_obj->_builtin) && ('pending' != $name))
+                    || in_array($name, ['draft', 'publish', 'private', 'future'])
                     ) {
                         $label_locked = true;
                     }

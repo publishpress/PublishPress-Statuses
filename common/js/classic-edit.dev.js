@@ -132,6 +132,7 @@ jQuery(document).ready(function ($) {
                 }
 
                 updateStatusCaptions();
+                ppUpdateText();
             }, 200);
         });
 

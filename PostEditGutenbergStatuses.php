@@ -120,6 +120,8 @@ class PostEditGutenbergStatuses
 
         $args['disableRecaption'] = defined('PRESSPERMIT_EDITOR_NO_RECAPTION');
 
+        $args['hidePending'] = \PublishPress_Statuses::instance()->options->pending_status_regulation && !current_user_can('status_change_pending');
+
         wp_localize_script('publishpress-statuses-post-block-edit', 'ppObjEdit', $args);
     }
 }
