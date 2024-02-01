@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review, extended post 
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.6.5
+Stable tag: 1.0.6.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -166,6 +166,12 @@ A post in the Future status is not published yet, but is scheduled to be publish
 Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced featuers such as custom capabilities, workflow branching, icons, colors, and much more.
 
 == Changelog ==
+
+= [1.0.6.6] - 31 Jan 2024 =
+* Compat : Advanced Custom Fields - Selected / Current / Next Workflow selection was not applied if a required ACF field is in the editor
+* Compat : The Events Calendar, other plugins - Avoid js errors due to scripts being loaded before jQuery
+* Compat : ShortPixel Critical CSS - Conflict with post_status taxonomy causes status value to be cleared in post editor
+* Compat : Custom Fields plugins - Stop disabling Publish button on click, in case custom field plugin doesn't re-enable it after required entries
 
 = [1.0.6.5] - 30 Jan 2024 =
 * Fixed : Gutenberg publish button and workflow status captions were not changed from "Publish" to "Schedule" if a future date is selected
