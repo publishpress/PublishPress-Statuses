@@ -15,8 +15,6 @@
  * ------------------------------------------------------------------------------
  */
 
-//var ppcs__ = wp.i18n.__;
-
 var PluginPostStatusInfo = wp.editPost.PluginPostStatusInfo;
 var PluginPrePublishPanel = wp.editPost.PluginPrePublishPanel;
 
@@ -168,12 +166,6 @@ var refreshSelectableStatuses = function (status) {
 * The goal is to allow recaptioning "Save draft" to "Save as Pitch" etc.
 */
 function PPCS_RecaptionButton(btnSelector, btnCaption) {
-  /*
-  if (wp.data.select('core/editor').isSavingPost()) {
-      return;
-  }
-  */
-
   var node = $(btnSelector);
 
   if (!btnCaption) {
@@ -569,7 +561,7 @@ var plugin = compose(withSelect(function (select) {
       dispatch('core/editor').editPost({
         status: status
       });
-
+      
       refreshSelectableStatuses(status);
       sideEffectL10nManipulation(status);
     }
