@@ -24,7 +24,7 @@ class Admin
             add_action('pp_statuses_init', [$this, 'assignDefaultRoleCapabilities']);
         }
         
-        if (!get_option('publishpress_statuses_version')) {
+        if (!$last_statuses_version || version_compare($last_statuses_version, '1.0.4.2', '<')) {
             if (!defined('PP_STATUSES_DISABLE_PENDING_STATUS_FIX')) {
                 global $wpdb;
 

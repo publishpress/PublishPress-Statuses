@@ -125,6 +125,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         add_action('rest_api_init', [$this, 'actRestInit'], 1);
         add_filter('pre_post_status', [$this, 'fltPostStatus'], 20);
 
+        add_filter('wp_insert_post_data', [$this, 'fltEnsureValidStatus'], 1000, 2);
+
         add_filter('cme_plugin_capabilities', [$this, 'fltRegisterCapabilities']);
 
         // Register the module with PublishPress
@@ -181,6 +183,25 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $init_priority = (defined('PUBLISHPRESS_ACTION_PRIORITY_INIT')) ? PUBLISHPRESS_ACTION_PRIORITY_INIT : 10;
             add_action('init', [$this, 'init'], $init_priority);
         }
+    }
+
+    public function fltEnsureValidStatus($data, $postarr) {
+        if (is_array($data) && !empty($data['post_status'])) {
+            // These are used internally to work around WordPress UI integration limitations. Ensure they are never stored to posts table.
+            if ('_pending' == $data['post_status']) {
+                $data['post_status'] = 'pending';
+            }
+
+            if ('_public' == $data['post_status']) {
+                $data['post_status'] = 'publish';
+            }
+
+            if (('public' == $data['post_status']) && !defined('PP_STATUSES_ALLOW_PUBLIC_STATUS')) {
+                $data['post_status'] = 'publish';
+            }
+        }
+
+        return $data;
     }
 
     public function fltForcePrepublishPanel($meta_value, $object_id, $meta_key, $single, $meta_type) {
