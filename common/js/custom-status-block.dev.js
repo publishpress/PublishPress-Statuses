@@ -403,7 +403,7 @@ setInterval(function () {
     }
 
     $('input[name="pp_statuses_workflow_selection"][value="current"]').closest('div.components-radio-control__option').toggle(-1 == PPCustomStatuses.publishedStatuses.indexOf(selectedStatus));
-    $('input[name="pp_statuses_workflow_selection"][value="specified"]').closest('div.components-radio-control__option').toggle(currentStatus != selectedStatus);
+    $('input[name="pp_statuses_workflow_selection"][value="specified"]').closest('div.components-radio-control__option').toggle((currentStatus != selectedStatus) && (-1 == ['publish', 'future'].indexOf(selectedStatus)));
     $('input[name="pp_statuses_workflow_selection"][value="next"]').closest('div.components-radio-control__option').toggle(!currentStatusPublished && (ppObjEdit.nextStatus != currentStatus) && (ppObjEdit.nextStatus != ppObjEdit.maxStatus));
     $('input[name="pp_statuses_workflow_selection"][value="max"]').closest('div.components-radio-control__option').toggle(!currentStatusPublished && (ppObjEdit.maxStatus != currentStatus));
 
@@ -428,7 +428,7 @@ setInterval(function () {
           pp_workflow_action: 'max'
         });
       } else {
-        if ((currentStatus != selectedStatus) && (selectedStatus != lastSelectedStatus)) {
+          if ((currentStatus != selectedStatus) && (selectedStatus != lastSelectedStatus) && (-1 == ['publish', 'future'].indexOf(selectedStatus))) {
           $('input[name="pp_statuses_workflow_selection"][value="specified"]').trigger('click');
     
           wp.data.dispatch('core/editor').editPost({
@@ -452,7 +452,7 @@ setInterval(function () {
     lastWorkflowStatusNext = ppObjEdit.nextStatus;
     lastWorkflowStatusMax = ppObjEdit.maxStatus;
 
-    if ((currentStatus != selectedStatus) && !$('div.pp-statuses-workflow div.pp-editor-prepublish-specified-status').length) {
+    if ((currentStatus != selectedStatus) && (-1 == ['publish', 'future'].indexOf(selectedStatus)) && !$('div.pp-statuses-workflow div.pp-editor-prepublish-specified-status').length) {
       appendWorkflowCaption('specified', selectedStatus);
     }
 
