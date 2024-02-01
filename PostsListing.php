@@ -47,7 +47,7 @@ class PostsListing
         }
 
         // Only do it for the post types this module is activated for
-        if (! in_array(\PublishPress_Statuses::getCurrentPostType(), \PublishPress_Statuses::getEnabledPostTypes())) {
+        if (\PublishPress_Statuses::DisabledForPostType()) {
             return $posts_columns;
         }
 
@@ -87,6 +87,10 @@ class PostsListing
 
         $screen = get_current_screen();
         $post_type_object = get_post_type_object($screen->post_type);
+            
+        if (empty($post_type_object) || \PublishPress_Statuses::DisabledForPostType($screen->post_type)) {
+            return;
+        }
         ?>
         <script type="text/javascript">
             /* <![CDATA[ */
@@ -153,6 +157,10 @@ class PostsListing
     {
         $post_type = \PublishPress_Functions::findPostType();
         $type_stati = \PublishPress_Statuses::getPostStati(['show_in_admin_all_list' => true, 'post_type' => $post_type]);
+
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
+            return;
+        }
 
         $views = array_intersect_key($views, array_flip($type_stati));
 

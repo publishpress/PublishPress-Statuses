@@ -24,11 +24,13 @@ class PostEditGutenberg
             }
         }
 
-        if (!$statuses = $this->getStatuses()) {
+        $post_type = (!empty($post)) ? $post->post_type : \PublishPress_Statuses::getCurrentPostType();
+
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
             return;
         }
 
-        if (\PublishPress_Statuses::DisabledForPostType()) {
+        if (!$statuses = $this->getStatuses()) {
             return;
         }
 

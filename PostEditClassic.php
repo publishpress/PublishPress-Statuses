@@ -24,7 +24,9 @@ class PostEditClassic
     {
         global $post, $pagenow, $current_user;
 
-        if (\PublishPress_Statuses::DisabledForPostType()) {
+		$post_type = (!empty($post)) ? $post->post_type : \PublishPress_Statuses::getCurrentPostType();
+
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
             return;
         }
 
@@ -123,6 +125,12 @@ class PostEditClassic
             ) {
                 return;
             }
+        }
+
+        $post_type = (!empty($post)) ? $post->post_type : \PublishPress_Statuses::getCurrentPostType();
+
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
+            return;
         }
 
         $stati = [];
