@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.4
+Stable tag: 1.0.4.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -71,7 +71,17 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
-= [1.0.4] - 9 Jan 2024 =
+= [1.0.4.1] - 11 Jan 2024 =
+* Fixed : Status assignment capabilities were not granted to Editor, Author, Contributor by default
+* Change : Don't enforce capability requirements for Pending Review status assignment by default, but introduce a plugin setting to do so
+* Fixed : Using Post Status dropdown in Gutenberg editor to select the Pending status caused post to be saved with an invalid status value, making it inaccessible
+* Fixed : Pending Review checkbox was still active in Gutenberg editor even if access has been removed from role
+* Fixed : Classic Editor - Status of newly updated post was forced to Published (or highest status allowed) if Visibility Statuses are enabled by Permissions Pro
+* Fixed : Classic Editor - Some button captions were not updated correctly after visibility / date selection
+* Fixed : Labels tab not displayed on Edit Status screen for plugin-defined statuses if Label Storage mode set to "All plugin statuses"
+* Fixed : PHP warnings on plugin install, status update
+
+= [1.0.4] - 10 Jan 2024 =
 * Fixed : Lang - Native WordPress status captions and editor button captions were not translated correctly
 * Fixed : Lang - Statuses imported from Planner did not have translations applied
 * Feature : Lang - Option to apply stored labels for user-defined statuses only
