@@ -419,8 +419,8 @@ class Admin
                 $status->labels->visibility = esc_html(\PublishPress_Statuses::__wp('Public'));
 
             } elseif (!empty($status->public)) {
-                $status->labels->visibility = (!defined('WPLANG') || ('en_EN' == WPLANG)) 
-                ? esc_attr(sprintf(__('Public (%s)', 'publishpress-statuses'), $status->label)) 
+                $status->labels->visibility = (!defined('WPLANG') || ('en_EN' == WPLANG))  // translators: %s is the name of a custom public status
+                ? esc_attr(sprintf(__('Public (%s)', 'publishpress-statuses'), $status->label))
                 : $status->label;  // not currently customizable by Edit Status UI
             
             } elseif (!empty($status->private)) {
