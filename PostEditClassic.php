@@ -41,11 +41,13 @@ class PostEditClassic
 
         if (\PublishPress_Statuses\Admin::is_post_management_page()) {
             $post_type_obj = get_post_type_object(\PublishPress_Statuses::getCurrentPostType());
-            $custom_statuses = \PublishPress_Statuses::getPostStati([], 'object');  // @todo: confirm inclusion of core statuses here
             $selected = null;
             $selected_name = \PublishPress_Statuses::__wp('Draft');
 
-            $custom_statuses = apply_filters('pp_custom_status_list', $custom_statuses, $post);
+            $post_id = (!empty($post)) ? $post->ID : 0;
+            $args = (empty($post) && !empty($post_type_obj)) ? ['post_type' => $post_type_obj->name] : [];
+
+            $custom_statuses = \PublishPress_Statuses\Admin::get_selectable_statuses($post_id, $args);
 
             // Only add the script to Edit Post and Edit Page pages -- don't want to bog down the rest of the admin with unnecessary javascript
             if (! empty($post)) {

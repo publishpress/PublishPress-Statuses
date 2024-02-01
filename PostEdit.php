@@ -7,9 +7,6 @@ namespace PublishPress_Statuses;
 class PostEdit
 {
     function __construct() {
-        // NOTE: 'pp_custom_status_list' filter is applied by class PostEditStatus
-        add_filter('pp_custom_status_list', [$this, 'flt_publishpress_status_list'], 50, 2);
-
         if (!in_array(\PublishPress_Functions::findPostType(), ['forum', 'topic', 'reply'])) {
             // Gutenberg scripts are only loaded if Gutenberg-specific actions fire.
             add_action('enqueue_block_editor_assets', [$this, 'actLoadGutenbergScripts']);
