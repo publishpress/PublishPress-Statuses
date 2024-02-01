@@ -487,6 +487,24 @@ padding-top: 30px;
 /* =========================================== */
 
 
+/* Setting */
+.form-table .pp-settings-separation td, .form-table .pp-settings-separation th {
+padding-top: 50px !important;
+}
+
+.pp-option-footnote {
+font-style: italic;
+}
+
+.form-wrap .c-input-group label {
+display: inline !important;
+-webkit-user-select: none;  
+-moz-user-select: none;    
+-ms-user-select: none;      
+user-select: none;
+}
+
+
 @media (max-width: 768px) {
     table.status-row div.row-actions {
     padding-top: 20px;

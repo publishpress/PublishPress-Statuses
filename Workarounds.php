@@ -273,7 +273,7 @@ class Workarounds {
 
         // Permalinks without a post/page name placeholder don't have anything to edit
         if (false === strpos($permalink, '%postname%') && false === strpos($permalink, '%pagename%')) {
-            $return = '<strong>' . __('Permalink:') . "</strong>\n";
+            $return = '<strong>' . \PublishPress_Statuses::__wp('Permalink:') . "</strong>\n";
 
             if (false !== $view_link) {
                 $display_link = urldecode($view_link);
@@ -310,14 +310,14 @@ class Workarounds {
             $post_name_html = '<span id="editable-post-name">' . $post_name_abridged . '</span>';
             $display_link = str_replace(['%pagename%', '%postname%'], $post_name_html, urldecode($permalink));
 
-            $return = '<strong>' . __('Permalink:') . "</strong>\n";
+            $return = '<strong>' . \PublishPress_Statuses::__wp('Permalink:') . "</strong>\n";
             $return .= '<span id="sample-permalink"><a href="' . esc_url(
                     $view_link
                 ) . '"' . $preview_target . '>' . $display_link . "</a></span>\n";
             $return .= '&lrm;'; // Fix bi-directional text display defect in RTL languages.
             $return .= '<span id="edit-slug-buttons"><button type="button" class="edit-slug button button-small hide-if-no-js" aria-label="' . __(
                     'Edit permalink'
-                ) . '">' . __('Edit') . "</button></span>\n";
+                ) . '">' . \PublishPress_Statuses::__wp('Edit') . "</button></span>\n";
             $return .= '<span id="editable-post-name-full">' . $post_name . "</span>\n";
         }
 
@@ -369,10 +369,10 @@ class Workarounds {
 
         $actions['view'] = '<a href="' . esc_url($preview_link) . '" title="' . esc_attr(
                 sprintf(
-                    __('Preview &#8220;%s&#8221;'),
+                    \PublishPress_Statuses::__wp('Preview &#8220;%s&#8221;'),
                     $post->post_title
                 )
-            ) . '" rel="permalink">' . __('Preview') . '</a>';
+            ) . '" rel="permalink">' . \PublishPress_Statuses::__wp('Preview') . '</a>';
 
         return $actions;
     }

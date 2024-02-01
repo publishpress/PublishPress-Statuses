@@ -121,6 +121,18 @@ jQuery(document).ready(function ($) {
     
     // Initialization operations to perform once React loads the relevant elements
     var PP_InitializeBlockEditorModifications = function (forceRefresh) {
+        if (ppObjEdit.hidePending) {
+            var wp_i8n_helper = window["wp"]["i18n"];
+
+            if (typeof wp_i8n_helper != 'undefined') {
+                var pendingCaption = (0,wp_i8n_helper.__)('Pending review');
+                
+                if (pendingCaption) {
+                    $('input.components-checkbox-control__input').closest('div.components-base-control__field').find('label:contains("")').closest('div.components-panel__row').hide();
+                }
+            }
+        }
+        
         if ((typeof forceRefresh != "undefined" && forceRefresh) || (($('button.editor-post-publish-button').length || $('button.editor-post-publish-panel__toggle').length) 
         && ($('button.editor-post-save-draft').length || ($('div.publishpress-extended-post-status select option[value="_pending"]').length && ('pending' == $('div.publishpress-extended-post-status select').val() || '_pending' == $('div.publishpress-extended-post-status select').val())))
         )) {
@@ -166,7 +178,7 @@ jQuery(document).ready(function ($) {
 
                 if (ppObjEdit.publish != ppLastPublishCaption) {
                     if (-1 !== PPCustomStatuses.publishedStatuses.indexOf(status)) {
-                        ppObjEdit.publish = 'Update';
+                        ppObjEdit.publish = ppObjEdit.update;
                         ppObjEdit.saveAs = '';
                     } else {
                         if (status == ppObjEdit.maxStatus) {

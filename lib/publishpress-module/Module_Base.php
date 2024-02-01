@@ -71,5 +71,15 @@ if (!class_exists('PublishPress\PPP_Module_Base')) {
         {
             return __($string);
         }
+
+        // Wrapper to prevent poEdit from adding core WordPress strings to the plugin .po
+        public static function _e_wp($string, $unused = '')
+        {
+            return _e($string);
+        }
+
+        public static function _x_wp($string, $context) {
+            return _x($string, $context);
+        }
     }
 }

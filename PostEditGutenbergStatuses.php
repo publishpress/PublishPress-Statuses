@@ -48,7 +48,7 @@ class PostEditGutenbergStatuses
 
         if (($current_status == $next_status_obj->name) || ( (!empty($current_status_obj->public) || !empty($current_status_obj->private)) && (!empty($next_status_obj->public) || !empty($next_status_obj->private)))) {
             if (!empty($next_status_obj->public) || !empty($next_status_obj->private)) {
-                $publish_label = esc_html__('Update');
+                $publish_label = esc_html(\PublishPress_Statuses::__wp('Update'));
                 $save_as_label = $publish_label;
             } else {
                 $publish_label = $next_status_obj->labels->save_as;
@@ -64,7 +64,7 @@ class PostEditGutenbergStatuses
             }
         }
 
-        $args['update'] = esc_html__('Update');
+        $args['update'] = esc_html(\PublishPress_Statuses::__wp('Update'));
 
         if (!isset($save_as_label)) {
             if ((!empty($next_status_obj->labels->publish))) {
@@ -115,10 +115,12 @@ class PostEditGutenbergStatuses
             $args['prePublish'] = apply_filters('presspermit_workflow_button_label', __('Workflow', 'publishpress-statuses'), $post_id);
         }
 
-        $args['saveDraftCaption'] = esc_html__('Save Draft'); // this is used for reference in js
+        $args['saveDraftCaption'] = esc_html(\PublishPress_Statuses::__wp('Save Draft')); // this is used for reference in js
         $args['submitRevisionCaption'] = esc_html__('Submit Revision', 'publishpress-statuses'); // identify Revisions caption, to avoid overriding it
 
         $args['disableRecaption'] = defined('PRESSPERMIT_EDITOR_NO_RECAPTION');
+
+        $args['hidePending'] = \PublishPress_Statuses::instance()->options->pending_status_regulation && !current_user_can('status_change_pending');
 
         wp_localize_script('publishpress-statuses-post-block-edit', 'ppObjEdit', $args);
     }

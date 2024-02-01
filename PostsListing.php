@@ -55,7 +55,7 @@ class PostsListing
         foreach ($posts_columns as $key => $value) {
             if ($key == 'title') {
                 $result[$key] = $value;
-                $result['status'] = __('Status', 'publishpress-statuses');
+                $result['status'] = \PublishPress_Statuses::__wp('Status');
             } else {
                 $result[$key] = $value;
             }

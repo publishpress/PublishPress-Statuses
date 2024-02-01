@@ -3,6 +3,7 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
     /*
     * Import status positions, color, icon and description encoded by Planner and merge into existing Planner statuses
     */
+
     public function importEncodedProperties($terms, $args = []) {
         update_option('publishpress_statuses_planner_import', PUBLISHPRESS_STATUSES_VERSION);
         
@@ -164,6 +165,7 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
 
                     $statuses_before_pending[$child_status] = $child_status;
                 }
+
             } elseif ($position < $planner_status_positions['publish']
             && (!isset($stored_status_positions['_pre-publish-alternate']) || !isset($stored_status_positions[$post_status])
             || $stored_status_positions[$post_status] < $stored_status_positions['_pre-publish-alternate'])
@@ -349,6 +351,7 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
         } 
 
         update_option('publishpress_statuses_planner_import_completed', PUBLISHPRESS_STATUSES_VERSION);
+
 
         return true;
     }
