@@ -7,21 +7,18 @@ class PostsListing
     var $post_ids = [];
 
     function __construct() {
-        // Hook to add the status column to Manage Posts
-        add_filter('manage_posts_columns', [$this, '_filter_manage_posts_columns']);
 
-        // We need these for pages (http://core.trac.wordpress.org/browser/tags/3.3.1/wp-admin/includes/class-wp-posts-list-table.php#L283)
-        add_filter('manage_pages_columns', [$this, '_filter_manage_posts_columns']);
+        if (defined('PP_STATUSES_POSTS_STATUS_COLUMN')) {
+            // Hook to add the status column to Manage Posts
+            add_filter('manage_posts_columns', [$this, '_filter_manage_posts_columns']);
+            add_filter('manage_pages_columns', [$this, '_filter_manage_posts_columns']);
 
-        add_action('admin_head', [$this, 'actApplyPendingCaptionJS']);
+            add_action('manage_posts_custom_column', [$this, 'flt_manage_posts_custom_column']);
+            add_action('manage_pages_custom_column', [$this, 'flt_manage_posts_custom_column']);
+        }
 
         add_action('admin_print_footer_scripts', [$this, 'act_modify_inline_edit_ui']);
 
-        add_filter('display_post_states', [$this, 'fltDisplayPostStates']);
-
-        add_action('manage_posts_custom_column', [$this, 'flt_manage_posts_custom_column']);
-        add_action('manage_pages_custom_column', [$this, 'flt_manage_posts_custom_column']);
-        
         add_action('plugins_loaded', function() {
             add_filter('views_' . \PublishPress_Functions::findPostType(), [$this, 'flt_views_stati']);
         });
@@ -80,44 +77,6 @@ class PostsListing
         }
     }
 
-    // If Pending status label is customized, apply it to Posts listing
-    // @todo: js file with localize_script()
-    function actApplyPendingCaptionJS() {
-        $label_changes = [];
-
-        foreach(['pending' => esc_html__('Pending')] as $status => $default_label) { // support label changes to multiple statuses
-            $status_obj = get_post_status_object($status);
-
-            if ($status_obj && ($status_obj->label != $default_label)) {
-                $label_changes[$status]= (object)['old_label' => $default_label, 'new_label' => $status_obj->label];
-            }
-        }
-
-        if (!$label_changes) {
-            return;
-        }
-        ?>
-        <style type="text/css">
-            span.post-state{display:none;}
-        </style>
-
-        <script type="text/javascript">
-            /* <![CDATA[ */
-            jQuery(document).ready(function ($) {
-                <?php foreach($label_changes as $status => $obj):?>
-                $("span.post-state:contains('<?php echo esc_attr($obj->old_label); ?>')").html('<?php echo esc_attr($obj->new_label); ?>');
-                $("select[name='_status'] option[value='<?php echo esc_attr($status); ?>']").html('<?php echo esc_attr($obj->new_label); ?>');
-                $("td.column-status:contains('<?php echo esc_attr($obj->old_label); ?>')").html('<?php echo esc_attr($obj->new_label); ?>'); // PublishPress status column
-                <?php endforeach;?>
-
-                $("span.post-state").show();
-            });
-            /* ]]> */
-        </script>
-
-        <?php
-    }
-
     // @todo: move to .js
     // add "keep" checkboxes for custom private stati; set checked based on current or scheduled post status
     // add conditions UI to inline edit
@@ -166,53 +125,29 @@ class PostsListing
         
                             echo esc_html($caption) . '</option>';
                         ?>');
-
-                        $('select[name="_status"]').on('click', function() {
-                            if ('publish' != $('select[name="_status"]').val()) {
-                                $('div.inline-edit-wrapper input[name="keep_private"]').prop('checked', false);
-                            }
-                        });
-
-                        $('div.inline-edit-wrapper input[name="keep_private"]').on('click', function() {
-                            if ($('div.inline-edit-wrapper input[name="keep_private"]').prop('checked')) {
-                                $('select[name="_status"]').val('publish');
-                            }
-                        });
                     }
                 <?php endforeach;?> 
+
+                $('select[name="_status"]').on('click', function() {
+                    if ('publish' != $('select[name="_status"]').val()) {
+                        $('div.inline-edit-wrapper input[name="keep_private"]').prop('checked', false);
+                    }
+                });
+
+                $('div.inline-edit-wrapper input[name="keep_private"]').on('click', function() {
+                    if ($(this).prop('checked')) {
+                        if ($(this).closest('div.inline-edit-wrapper').find('select[name="_status"] option[value="future"]').length) {
+                            $('select[name="_status"]').val('future');
+                        } else {
+                            $('select[name="_status"]').val('publish');
+                        }
+                    }
+                });
             });
             //]]>
         </script>
         <?php
     } // end function modify_inline_edit_ui
-
-    // status display in Edit Posts table rows
-    public static function fltDisplayPostStates($post_states)
-    {
-        global $post, $wp_post_statuses;
-
-        if (empty($post) || in_array($post->post_status, ['publish', 'private', 'pending', 'draft']))
-            return $post_states;
-
-        if ('future' == $post->post_status) {  // also display eventual visibility of scheduled post (if non-public)
-            if ($scheduled_status = get_post_meta($post->ID, '_scheduled_status', true)) {
-                if ('publish' != $scheduled_status) {
-                    if ($_scheduled_status_obj = get_post_status_object($scheduled_status))
-                        $post_states[] = $_scheduled_status_obj->label;
-                }
-            }
-        } elseif (\PublishPress_Functions::empty_REQUEST('post_status') 
-        || (\PublishPress_Functions::REQUEST_key('post_status') != $post->post_status)
-        ) {  // if filtering for this status, don't display caption in result rows
-            $status_obj = (!empty($wp_post_statuses[$post->post_status])) ? $wp_post_statuses[$post->post_status] : false;
-            if ($status_obj) {
-                if ($status_obj->private || (!empty($status_obj->moderation)))
-                    $post_states[] = $status_obj->label;
-            }
-        }
-
-        return $post_states;
-    }
 
     function flt_views_stati($views)
     {

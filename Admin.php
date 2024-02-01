@@ -13,6 +13,40 @@ class Admin
         // Load CSS and JS resources that we probably need
         add_action('admin_print_styles', [$this, 'add_admin_styles']);
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
+
+        add_filter('display_post_states', [$this, 'fltDisplayPostStates'], 10, 2);
+    }
+
+    // status display in Edit Posts table rows
+    public static function fltDisplayPostStates($post_states, $post)
+    {
+        global $wp_post_statuses;
+
+        if (empty($post) || in_array($post->post_status, ['publish', 'private', 'pending', 'draft'])) {
+            return $post_states;
+        }
+
+        if ('future' == $post->post_status) {  // also display eventual visibility of scheduled post (if non-public)
+            if ($scheduled_status = get_post_meta($post->ID, '_scheduled_status', true)) {
+                if ('publish' != $scheduled_status) {
+                    if ($_scheduled_status_obj = get_post_status_object($scheduled_status)) {
+                        $post_states['future'] = $_scheduled_status_obj->label;
+                    }
+                }
+            }
+        } elseif (\PublishPress_Functions::empty_REQUEST('post_status') 
+        || (\PublishPress_Functions::REQUEST_key('post_status') != $post->post_status)
+        ) {  // if filtering for this status, don't display caption in result rows
+            $status_obj = (!empty($wp_post_statuses[$post->post_status])) ? $wp_post_statuses[$post->post_status] : false;
+
+            if ($status_obj) {
+                if (!empty($status_obj->private) || (!empty($status_obj->moderation))) {
+                    $post_states[$post->post_status] = $status_obj->label;
+                }
+            }
+        }
+
+        return $post_states;
     }
 
     function add_admin_styles() {
