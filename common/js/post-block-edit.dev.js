@@ -178,7 +178,7 @@ jQuery(document).ready(function ($) {
 
                 if (ppObjEdit.publish != ppLastPublishCaption) {
                     if (-1 !== PPCustomStatuses.publishedStatuses.indexOf(status)) {
-                        ppObjEdit.publish = 'Update';
+                        ppObjEdit.publish = ppObjEdit.update;
                         ppObjEdit.saveAs = '';
                     } else {
                         if (status == ppObjEdit.maxStatus) {
