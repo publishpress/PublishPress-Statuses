@@ -2370,6 +2370,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         return ('name' == $return) ? $status_obj->name : $status_obj;
     }
 
+    public static function getStatusChildNames($status, $statuses = false)
+    {
+        return array_keys(
+            self::getStatusChildren($status, $statuses)
+        );
+    }
+
     public static function getStatusChildren($status, $statuses = false)
     {
         if (!get_post_status_object($status)) {
