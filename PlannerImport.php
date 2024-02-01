@@ -3,7 +3,6 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
     /*
     * Import status positions, color, icon and description encoded by Planner and merge into existing Planner statuses
     */
-
     public function importEncodedProperties($terms, $args = []) {
         update_option('publishpress_statuses_planner_import', PUBLISHPRESS_STATUSES_VERSION);
         
@@ -351,7 +350,6 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
         } 
 
         update_option('publishpress_statuses_planner_import_completed', PUBLISHPRESS_STATUSES_VERSION);
-
 
         return true;
     }
