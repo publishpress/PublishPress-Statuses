@@ -15,6 +15,8 @@ class PostEditClassic
 
     /**
      * Adds all necessary javascripts to make custom statuses work
+     * 
+     * Currently designed to execute on admin_print_scripts action
      *
      * @todo Support private and future posts on edit.php view
      */
@@ -39,11 +41,13 @@ class PostEditClassic
 
         if (\PublishPress_Statuses\Admin::is_post_management_page()) {
             $post_type_obj = get_post_type_object(\PublishPress_Statuses::getCurrentPostType());
-            $custom_statuses = \PublishPress_Statuses::getPostStati([], 'object');  // @todo: confirm inclusion of core statuses here
             $selected = null;
             $selected_name = \PublishPress_Statuses::__wp('Draft');
 
-            $custom_statuses = apply_filters('pp_custom_status_list', $custom_statuses, $post);
+            $post_id = (!empty($post)) ? $post->ID : 0;
+            $args = (empty($post) && !empty($post_type_obj)) ? ['post_type' => $post_type_obj->name] : [];
+
+            $custom_statuses = \PublishPress_Statuses\Admin::get_selectable_statuses($post_id, $args);
 
             // Only add the script to Edit Post and Edit Page pages -- don't want to bog down the rest of the admin with unnecessary javascript
             if (! empty($post)) {
@@ -130,29 +134,6 @@ class PostEditClassic
 	                $status_obj = get_post_status_object($status);
                 }
 
-                //$save_as = isset($status_obj->labels->save_as) ? $status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save');
-
-                /*
-                if ('moderation' == $prop) {
-                    if (!empty($post)) {
-                        // If post is not already at this status, use Submit caption on Save button
-                        if (($post->post_status != $status) && isset($status_obj->labels->publish)) {
-                            $save_as = $status_obj->labels->publish;
-                        }
-
-                        // For legacy behavior, also use Submit caption if status is Pending and user cannot publish
-                        if (('pending' == $status) && ($post->post_status == 'pending') && !defined('PP_STATUSES_PENDING_STATUS_CONSISTENT_SAVE_LABEL')) {
-                            if ($type_obj = get_post_type_object($typenow)) {
-                                if (!empty($type_obj->cap) && !empty($type_obj->cap->publish_posts) && !current_user_can($type_obj->cap->publish_posts)
-                                ) {
-                                    $save_as = $status_obj->labels->publish;
-                                }
-                            }
-                        }
-                    }
-                }
-                */
-
                 $stati[$prop][] = [
                     'name' => $status, 
                     'label' => $status_obj->labels->name, 
@@ -229,6 +210,7 @@ class PostEditClassic
                 } elseif (!empty($next_status_obj->labels->save_as)) {
                     $args['publish'] = $next_status_obj->labels->save_as;
                 } else {
+                    // translators: %s is a status name
                     $args['publish'] = sprintf(__('Submit as %s', 'publishpress-statuses'), $next_status_obj->label);
                 }
 
@@ -298,7 +280,7 @@ class PostEditClassic
             ) {
                 if ( !in_array($_status, ['auto-draft', 'publish']) ) :
                 ?>
-                postL10n['<?php echo esc_attr($_status); ?>'] = '<?php echo esc_html($_status_obj->labels->visibility); ?>';
+                postL10n['<?php echo esc_attr($_status); ?>'] = '<?php echo esc_html($_status_obj->labels->visibility); // translators: %s is the name of a custom visibility status ?>';
                 postL10n['<?php echo esc_attr($_status);?>Sticky'] = '<?php printf(esc_html__('%s, Sticky', 'publishpress-statuses'), esc_html($_status_obj->label)); ?>';
                 <?php endif;?>
                 <?php

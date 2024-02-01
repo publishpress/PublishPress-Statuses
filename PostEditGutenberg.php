@@ -3,11 +3,6 @@ namespace PublishPress_Statuses;
 
 class PostEditGutenberg
 {
-    function __construct() 
-    {
-        add_action('enqueue_block_editor_assets', [$this, 'actEnqueueBlockEditorAssets']);
-    }
-
     /**
      * Enqueue Gutenberg assets.
      */
@@ -143,13 +138,30 @@ class PostEditGutenberg
 
                 if ('pending' == $status_obj->name) {
                     $status_obj = get_post_status_object('pending');
-                    $status_label = (empty($status_obj)) ? $status_obj->label : esc_html(\PublishPress_Statuses::__wp('Pending Review'));
+                    $status_label = (!empty($status_obj)) ? $status_obj->label : esc_html(\PublishPress_Statuses::__wp('Pending Review'));
+
+                    $labels = (object) [
+                        'save_as' => (!empty($status_obj) && !empty($status_obj->labels) && !empty($status_obj->labels->save_as)) 
+                        ? $status_obj->labels->save_as 
+                        : \PublishPress_Statuses::__wp('Save as Pending'),
+                        
+                        'publish' => (!empty($status_obj) && !empty($status_obj->labels) && !empty($status_obj->labels->publish)) 
+                        ? $status_obj->labels->publish 
+                        : \PublishPress_Statuses::__wp('Submit for Review'),
+                    ];
 
                     // Alternate item to allow use of "Save as Pending" button
                     //
                     // This will allow different behavior from the Submit button, 
                     // which may default to next/highest available workflow status.
-                    $_ordered[]= (object)['name' => '_pending', 'label' => $status_label];
+
+                    $_ordered[]= (object)[
+                        'name' => '_pending',
+                        'label' => $status_label,
+                        'labels' => $labels,
+                        'icon' => $status_obj->icon,
+                        'color' => $status_obj->color
+                    ];
                 } 
             }
 
@@ -173,7 +185,7 @@ class PostEditGutenberg
                 $ordered_statuses[$key]->save_as = \PublishPress_Statuses::__wp('Save Draft', 'publishpress-statuses');
                 $ordered_statuses[$key]->submit = $ordered_statuses[$key]->save_as;
             } else {
-            	$ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save', 'publishpress-statuses');
+            	$ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save');
             	$ordered_statuses[$key]->submit = (!empty($status_obj->labels->publish)) ? $status_obj->labels->publish : __('Advance Status', 'publishpress-statuses');
             }
         }

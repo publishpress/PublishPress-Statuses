@@ -73,7 +73,7 @@ class StatusHandler {
         }
 
         // Check to make sure the status doesn't already exist as another term because otherwise we'd get a weird slug
-        if (get_term_by('slug', $status_name, 'post_status')) {
+        if (get_term_by('slug', $status_name, \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH)) {
             $form_errors['label'] = __(
                 'Name conflicts with existing status. Please choose another.',
                 'publishpress-statuses'
@@ -108,11 +108,19 @@ class StatusHandler {
             wp_die(esc_html__('Could not add status: ', 'publishpress-statuses') . esc_html($return->get_error_message()));
         }
 
-        $roles = ['administrator', 'editor', 'author', 'contributor'];
-        foreach ($roles as $roleSlug) {
-            $role = get_role($roleSlug);
-            if (! empty($role)) {
-                $role->add_cap('status_change_' . str_replace('-', '_', $status_name));
+        global $wp_roles;
+
+        if (!empty($wp_roles) && is_object($wp_roles) && !empty($wp_roles->roles)) {
+            foreach($wp_roles->role_objects as $role_name => $role) {
+
+                // Mirror Planner behavior of enabling standard WP roles to assign statuses, but also grant to other roles based on post / page capabilities
+                if (in_array($role_name, ['administrator', 'author', 'editor', 'contributor']) || $role->has_cap('edit_posts') || $role->has_cap('edit_pages')) {
+                    $cap_name = 'status_change_' . str_replace('-', '_', $status_name);
+
+                    if (empty($role->capabilties[$cap_name])) {
+                        $role->add_cap($cap_name);
+                    }
+                }
             }
         }
 
@@ -835,6 +843,64 @@ class StatusHandler {
         // Cast our object and save the data.
         update_option('publishpress_custom_status_options', (object) $new_options);
         
+        // Import / Backup Operations
+        if (\PublishPress_Functions::is_POST('publishpress_statuses_import_operation', 'do_status_control_import')) {
+            update_option('pp_statuses_force_status_control_import', true);
+            update_option('pp_statuses_force_planner_import', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_import_operation', 'do_planner_import')) {
+            update_option('pp_statuses_force_planner_import', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_import_operation', 'do_planner_import_only')) {
+            update_option('pp_statuses_skip_status_control_import', true);
+            update_option('pp_statuses_force_planner_import', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'backup_status_properties')) {
+            update_option('pp_statuses_set_backup_props', true);
+            
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_colors')) {
+            update_option('pp_statuses_restore_backup_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_icons')) {
+            update_option('pp_statuses_restore_backup_icons', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_labels')) {
+            update_option('pp_statuses_restore_backup_labels', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_post_types')) {
+            update_option('pp_statuses_restore_backup_post_types', true);
+        
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_colors_auto')) {
+            update_option('pp_statuses_restore_autobackup_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_icons_auto')) {
+            update_option('pp_statuses_restore_autobackup_icons', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_labels_auto')) {
+            update_option('pp_statuses_restore_autobackup_labels', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'restore_status_post_types_auto')) {
+            update_option('pp_statuses_restore_autobackup_post_types', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_colors')) {
+            update_option('pp_statuses_default_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_icons')) {
+            update_option('pp_statuses_default_icons', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_labels')) {
+            update_option('pp_statuses_default_labels', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_post_types')) {
+            update_option('pp_statuses_default_post_types', true);
+        
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_colors_planner')) {
+            update_option('pp_statuses_default_planner_colors', true);
+
+        } elseif (\PublishPress_Functions::is_POST('publishpress_statuses_backup_operation', 'default_status_icons_planner')) {
+            update_option('pp_statuses_default_planner_icons', true);
+        }
+
         // Redirect back to the settings page that was submitted without any previous messages
         $goback = add_query_arg('message', 'settings-updated', remove_query_arg(['message'], wp_get_referer()));
         wp_safe_redirect($goback);

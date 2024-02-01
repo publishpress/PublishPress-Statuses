@@ -66,6 +66,7 @@ class StatusesUI {
             if (!\PublishPress_Functions::empty_REQUEST('taxonomy')) {
                 if ($tx = get_taxonomy(\PublishPress_Functions::REQUEST_key('taxonomy'))) {
                     $title = sprintf(
+                        // translators: %s is status type: "Workflow", "Visibility", "Revision", etc.
                         __('Add %s Status', 'publishpress-statuses'),
                         $tx->label
                     );
@@ -206,35 +207,50 @@ class StatusesUI {
             );
             add_settings_field(
                 'moderation_statuses_default_by_sequence',
-                __('Workflow sequence:', 'publishpress-statuses'),
+                __('Workflow Guidance:', 'publishpress-statuses'),
                 [$this, 'settings_moderation_statuses_default_by_sequence_option'],
                 $group_name,
-                $group_name . '_general'
+                $group_name . '_general',
+                ['class' => 'pp-settings-space-bottom']
             );
 
             add_settings_field(
                 'status_dropdown_show_current_branch_only',
-                __('Status dropdown:', 'publishpress-statuses'),
+                __('Sub-Status Selection:', 'publishpress-statuses'),
                 [$this, 'settings_status_dropdown_show_current_branch_only_option'],
                 $group_name,
-                $group_name . '_general'
+                $group_name . '_general',
+                ['class' => 'pp-statuses-settings-status-declutter pp-settings-space-bottom']
             );
+
+            add_settings_field(
+                'post_types',
+                __('Use on these Post Types:', 'publishpress-statuses'),
+                [$this, 'settings_post_types_option'],
+                $group_name,
+                $group_name . '_general',
+                ['class' => 'pp-settings-space-top pp-settings-separation-bottom']
+            );
+
+            $show_edit_caps_setting = (function_exists('presspermit') && defined('PRESSPERMIT_COLLAB_VERSION') && defined('PRESSPERMIT_STATUSES_VERSION'));
 
             add_settings_field(
                 'status_dropdown_pending_status_regulation',
                 __('Pending Review Status:', 'publishpress-statuses'),
                 [$this, 'settings_pending_status_regulation_option'],
                 $group_name,
-                $group_name . '_general'
+                $group_name . '_general',
+                ($show_edit_caps_setting) ? ['class' => 'pp-settings-separation-top'] : ['class' => 'pp-settings-separation-top pp-settings-separation-bottom']
             );
 
-            if (function_exists('presspermit') && defined('PRESSPERMIT_COLLAB_VERSION') && defined('PRESSPERMIT_STATUSES_VERSION')) {
+            if ($show_edit_caps_setting) {
                 add_settings_field(
                     'supplemental_cap_moderate_any',
-                    __('Editor capabilities:', 'publishpress-statuses'),
+                    __('Permissions Integration:', 'publishpress-statuses'),
                     [$this, 'settings_supplemental_cap_moderate_any_option'],
                     $group_name,
-                    $group_name . '_general'
+                    $group_name . '_general',
+                    ['class' => 'pp-settings-separation-bottom']
                 );
             }
 
@@ -244,7 +260,7 @@ class StatusesUI {
                 [$this, 'settings_force_editor_detection_option'],
                 $group_name,
                 $group_name . '_general',
-                ['class' => 'pp-settings-separation']
+                ['class' => 'pp-settings-separation-top']
             );
 
             add_settings_field(
@@ -252,16 +268,34 @@ class StatusesUI {
                 __('Status Label Customization:', 'publishpress-statuses'),
                 [$this, 'settings_label_storage_option'],
                 $group_name,
-                $group_name . '_general'
+                $group_name . '_general',
+                ['class' => 'pp-settings-separation-bottom']
             );
 
+            if (!defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT')) {
+                $terms = get_terms('post_status', ['hide_empty' => false]);
+
+                if ($show_import_setting = !empty($terms) 
+                && (get_option('publishpress_version') || get_site_option('edit_flow_version', false) || get_option('pps_version') || defined('PP_STATUSES_ENABLE_PLANNER_IMPORT'))
+                ) {
+                    add_settings_field(
+                        'import_operation',
+                        __('Import Operation:', 'publishpress-statuses'),
+                        [$this, 'settings_import_operation_option'],
+                        $group_name,
+                        $group_name . '_general',
+                        ['class' => 'pp-settings-separation-top']
+                    );
+                }
+            }
+
             add_settings_field(
-                'post_types',
-                __('Use on these post types:', 'publishpress-statuses'),
-                [$this, 'settings_post_types_option'],
+                'backup_operation',
+                __('Backup / Restore:', 'publishpress-statuses'),
+                [$this, 'settings_backup_operation_option'],
                 $group_name,
                 $group_name . '_general',
-                ['class' => 'pp-settings-separation']
+                (!empty($show_import_setting)) ? [] : ['class' => 'pp-settings-separation-top']
             );
         }
     }
@@ -285,7 +319,7 @@ class StatusesUI {
         ) . ' ';
 
         echo '<label for="supplemental_cap_moderate_any">';
-        esc_html_e('Supplemental Role of Editor for "standard statuses" also covers Custom Statuses', 'publishpress-statuses');
+        esc_html_e('Supplemental Role of Editor covers custom statuses', 'publishpress-statuses');
         echo '</label>';
 
         echo '</div>';
@@ -303,20 +337,6 @@ class StatusesUI {
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]'
         ) . ' ';
 
-        $checked = !$module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
-
-        echo sprintf(
-            '<input type="radio" name="%s" id="moderation_statuses_default_to_highest" value="0" autocomplete="off" %s>',
-            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
-            esc_attr($checked)
-        ) . ' ';
-
-        echo '<label for="moderation_statuses_default_to_highest">';
-        esc_html_e('Publish button defaults to highest status available to user', 'publishpress-statuses');
-        echo '</label>';
-
-        echo '</div><div style="margin-top: 12px;">';
-
         $checked = $module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
 
         echo sprintf(
@@ -326,15 +346,49 @@ class StatusesUI {
         ) . ' ';
 
         echo '<label for="moderation_statuses_default_to_next">';
-        esc_html_e('Publish button defaults to next status in publication workflow', 'publishpress-statuses');
+        esc_html_e('Sequence by default: Publish button defaults to next status in workflow', 'publishpress-statuses');
+        echo '</label>';
+
+        echo '</div><div style="margin-top: 12px;">';
+
+        $checked = !$module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
+
+        echo sprintf(
+            '<input type="radio" name="%s" id="moderation_statuses_default_to_highest" value="0" autocomplete="off" %s>',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
+            esc_attr($checked)
+        ) . ' ';
+
+        echo '<label for="moderation_statuses_default_to_highest">';
+        esc_html_e('Bypass by default: Publish button defaults to maximum available status', 'publishpress-statuses');
         echo '</label>';
 
         echo '</div></div>';
+
+        ?>
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        jQuery(document).ready(function ($) {
+            <?php if ($module->options->moderation_statuses_default_by_sequence):?>
+            $('tr.pp-statuses-settings-status-declutter').show();
+            <?php endif;?>
+
+            $('#moderation_statuses_default_to_next').on('change', function() {
+                $('tr.pp-statuses-settings-status-declutter').toggle($(this).val());
+            });
+
+            $('#moderation_statuses_default_to_highest').on('change', function() {
+                $('tr.pp-statuses-settings-status-declutter').toggle($(this).val());
+            });
+        });
+        /* ]]> */
+        </script>
+        <?php
     }
 
     public function settings_status_dropdown_show_current_branch_only_option() {
         $module = \PublishPress_Statuses::instance();
-        
+
         echo '<div class="c-input-group">';
 
         echo sprintf(
@@ -351,7 +405,7 @@ class StatusesUI {
         ) . ' ';
 
         echo '<label for="status_dropdown_show_current_branch_only">';
-        esc_html_e('De-clutter the dropdown by hiding statuses outside current branch (if defaulting by sequence and some statuses are nested)', 'publishpress-statuses');
+        esc_html_e('Hide nested statuses (workflow branches) in the dropdown unless the post is set to the parent status or a sibling', 'publishpress-statuses');
         echo '</label>';
 
         echo '</div>';
@@ -377,9 +431,9 @@ class StatusesUI {
         <p class="pp-option-footnote">
         <?php
         if ($option_val) {
-            esc_html_e('Users can only assign a custom status to a post if their role allows it. With this setting, the same control is applied to the Pending Review status.', 'publishpress-statuses');
+            esc_html_e('Users can only assign a custom status to a post if their role allows it. With the current setting, the same control is applied to the Pending Review status.', 'publishpress-statuses');
         } else {
-            esc_html_e('Users can only assign a custom status to a post if their role allows it. Currently, those limitations will not be applied for the Pending Review status.', 'publishpress-statuses');
+            esc_html_e('Users can only assign a custom status to a post if their role allows it. With the current setting, those limitations will not be applied for the Pending Review status.', 'publishpress-statuses');
         }
         ?>
         </p>
@@ -387,6 +441,7 @@ class StatusesUI {
         <p class="pp-option-footnote pp-pending-specified" <?php if (!$option_val) echo 'style="display:none;"';?>>
         <?php
         printf(
+            // translators: %1$s and %2$s are link markup
             esc_html__('View or set roles at %1$s Statuses > Statuses > Pending Review > Roles %2$s', 'publishpress-statuses'),
             '<a href="' . esc_url(admin_url('admin.php?action=edit-status&name=pending&page=publishpress-statuses&pp_tab=roles')) . '">',
             '</a>'
@@ -452,7 +507,7 @@ class StatusesUI {
         <?php
         echo '</div>';
     }
-    
+
     public function settings_post_types_option($unused = [])
     {
         $pp = \PublishPress_Statuses::instance();
@@ -473,10 +528,17 @@ class StatusesUI {
                 $post_types[$custom_post_type] = $args->label;
             }
         }
+        ?>
 
-        echo '<div class="pp-statuses-post-types">';
+        <div class="pp-statuses-post-types">
 
+        <?php
         foreach ($post_types as $post_type => $title) {
+            echo sprintf(
+                '<input type="hidden" name="%s" value="0" />',
+                esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[post_types][' . esc_attr($post_type) . ']"'
+            ) . ' ';
+
             echo '<label for="' . esc_attr($post_type) . '-' . esc_attr($pp->module->slug) . '">';
             echo '<input id="' . esc_attr($post_type) . '-' . esc_attr($pp->module->slug) . '" name="'
                 . esc_attr($pp->options_group_name) . '[post_types][' . esc_attr($post_type) . ']"';
@@ -495,8 +557,155 @@ class StatusesUI {
                 echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(esc_html____('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), esc_html($post_type), 'pp_custom_statuses') . '</span>';
             }
         }
+        ?>
 
-        echo '</div>';
+        </div>
+
+        <p class="pp-option-footnote">
+        <?php
+        _e('Note: Post types can also be specified for each individual status.', 'publishpress-statuses');
+        ?>
+        </p>
+        <?php
+    }
+
+    public function settings_import_operation_option() {
+        $module = \PublishPress_Statuses::instance();
+        ?>
+
+        <div class="c-input-group">
+
+        <select name="publishpress_statuses_import_operation" autocomplete="off">
+
+        <option value=''><?php esc_html_e('Select...', 'publishpress-statuses');?></option>
+
+        <?php if (get_option('pps_version')):?>
+        <option value='do_status_control_import'><?php esc_html_e('Re-run Planner import (with Status Control properties, ordering)', 'publishpress-statuses');?></option>
+        <option value='do_planner_import_only'><?php esc_html_e('Re-run Planner import (ignoring Status Control configuration)', 'publishpress-statuses');?></option>
+        <?php else:?>
+        <option value='do_planner_import'><?php esc_html_e('Re-run Planner import', 'publishpress-statuses');?></option>
+        <?php endif;?>
+        </select> 
+
+        <p class="pp-option-footnote">
+        <?php
+        esc_html_e('Status color, icon and position is automatically imported from PublishPress Planner. Select an option above to re-run the import, giving priority to Planner-defined status position.', 'publishpress-statuses');
+        ?>
+        </p>
+
+        </div>
+
+        <?php
+    }
+
+    public function settings_backup_operation_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        $meta_missing = array_fill_keys(['color', 'icon', 'labels', 'post_type', 'backup_color', 'backup_icon', 'backup_labels', 'backup_post_type', 'backup_color_', 'backup_icon_', 'backup_labels_', 'backup_post_type_'], true);
+
+        $all_statuses = \PublishPress_Statuses::getPostStati(['internal' => false], 'object');
+
+        $_terms = get_terms(\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, ['hide_empty' => false]);
+
+        if ($_terms) {
+            foreach($_terms as $term) {
+                $term_meta = get_term_meta($term->term_id);
+
+                foreach (array_keys($meta_missing) as $prop) {
+                    if (!empty($term_meta[$prop])) {
+                        if (in_array($prop, ['color', 'icon', 'labels', 'post_types'])) {
+                            // "Use defaults" operation only applies to our built-in statuses
+                            if (empty($all_statuses[$term->slug]) || empty($all_statuses[$term->slug]->pp_builtin)) {
+                                continue;
+                            }
+                        }
+
+                        unset($meta_missing[$prop]);
+                    }
+                }
+
+                if (!$meta_missing) {
+                    break;
+                }
+            }
+        }
+        ?>
+
+        <div class="c-input-group">
+
+        <select name="publishpress_statuses_backup_operation" autocomplete="off">
+
+        <option value=''><?php esc_html_e('Select...', 'publishpress-statuses');?></option>
+
+        <option value='backup_status_properties'><?php esc_html_e('Back up current colors, icons, labels and post types', 'publishpress-statuses');?></option>
+
+        <option value=''></option>
+
+        <?php if (empty($backup_missing['backup_color'])):?>
+        <option value='restore_status_colors'><?php esc_html_e('Restore backup of status colors', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_icon'])):?>
+        <option value='restore_status_icons'><?php esc_html_e('Restore backup of status icons', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_labels'])):?>
+        <option value='restore_status_labels'><?php esc_html_e('Restore backup of status labels', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_post_type'])):?>
+        <option value='restore_status_post_types'><?php esc_html_e('Restore backup of status post types', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <option value=''></option>
+
+        <?php if (empty($backup_missing['backup_color_'])):?>
+        <option value='restore_status_colors_auto'><?php esc_html_e('Restore auto-backup of status colors', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_icon_'])):?>
+        <option value='restore_status_icons_auto'><?php esc_html_e('Restore auto-backup of status icons', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_labels_'])):?>
+        <option value='restore_status_labels_auto'><?php esc_html_e('Restore auto-backup of status labels', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['backup_post_type_'])):?>
+        <option value='restore_status_post_types_auto'><?php esc_html_e('Restore auto-backup of status post types', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+
+        <option value=''></option>
+
+        <?php if (empty($backup_missing['color'])):?>
+        <option value='default_status_colors'><?php esc_html_e('Use default status colors', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['icon'])):?>
+        <option value='default_status_icons'><?php esc_html_e('Use default status icons', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['labels'])):?>
+        <option value='default_status_labels'><?php esc_html_e('Use default status labels', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (empty($backup_missing['post_type'])):?>
+        <option value='default_status_post_types'><?php esc_html_e('Use default status post types', 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (get_option('publishpress_version') || defined('PP_STATUSES_OFFER_PLANNER_DEFAULTS')):?>
+        <option value='default_status_colors_planner'><?php esc_html_e("Use Planner plugin's default status colors", 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        <?php if (get_option('publishpress_version') || defined('PP_STATUSES_OFFER_PLANNER_DEFAULTS')):?>
+        <option value='default_status_icons_planner'><?php esc_html_e("Use Planner plugin's default status icons", 'publishpress-statuses');?></option>
+        <?php endif;?>
+
+        </select> 
+
+        </div>
+        <?php
     }
 
     public function fltEditStatusDefaultTab($default_tab) {
@@ -559,19 +768,14 @@ class StatusesUI {
 
             $status_type = \PublishPress_Functions::REQUEST_key('status_type');
 
-            if (('visibility' == $status_type) && (!defined('PRESSPERMIT_PRO_VERSION') || !defined('PRESSPERMIT_STATUSES_VERSION') || !get_option('presspermit_privacy_statuses_enabled'))) {
-                $headline = '';
-            } else {
-                $headline = esc_html__('Click any status property to edit. Drag to re-order, nest, or move to a different section.', 'publishpress-statuses');
-            }
-
-            \PublishPress\ModuleAdminUI_Base::instance()->default_header($headline);
+            \PublishPress\ModuleAdminUI_Base::instance()->default_header();
 
             if ('visibility' == $status_type) {
                 if (!defined('PRESSPERMIT_PRO_VERSION')) :?>
                     <div class="pp-statuses-config-notice">
                     <?php
                     printf(
+                        // translators: %1$s, %2$s, %3$s and %4$s are link markup
                         esc_html__('Note: The %1$sPublishPress Permissions Pro%2$s plugin is required for custom Visibility Statuses, but %3$sis not active%4$s.', 'publishpress-statuses'),
                         '<a href="https://publishpress.com/permissions/" target="_blank">',
                         '</a>',
@@ -585,6 +789,7 @@ class StatusesUI {
                     <div class="pp-statuses-config-notice">
                     <?php
                     printf(
+                        // translators: %1$s and %2$s is link markup
                         esc_html__('For custom Visibility Statuses, please %1$senable the Status Control module%2$s of Permissions Pro.', 'publishpress-statuses'),
                         '<a href="' . esc_url(admin_url('admin.php?page=presspermit-settings&pp_tab=modules')) . '">',
                         '</a>'
@@ -596,6 +801,7 @@ class StatusesUI {
                     <div class="pp-statuses-config-notice">
                     <?php
                     printf(
+                        // translators: %1$s and %2$s is link markup
                         esc_html__('Note: Custom Visibility Statuses are %1$sdisabled%2$s.', 'publishpress-permissions'),
                         '<a href="' . esc_url(admin_url('admin.php?page=presspermit-settings&pp_tab=statuses')) . '">',
                         '</a>'
@@ -677,7 +883,7 @@ class StatusesUI {
         /** Status Settings **/
         } elseif (isset($plugin_page) && ('publishpress-statuses-settings' === $plugin_page)) {
             \PublishPress\ModuleAdminUI_Base::instance()->module->title = __('PublishPress Statuses Settings', 'publishpress-statuses');
-            \PublishPress\ModuleAdminUI_Base::instance()->default_header(__('Note: Post types can also be specified for each individual status.', 'publishpress-statuses'));
+            \PublishPress\ModuleAdminUI_Base::instance()->default_header();
 
             $enable_left_col = true;
         }
