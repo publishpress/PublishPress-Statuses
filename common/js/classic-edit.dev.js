@@ -64,8 +64,13 @@ jQuery(document).ready(function ($) {
 
     $('#save-post, #publish').click(function () {
         setInterval(function() {
-            if ($('#publish').val() != ppObjEdit.publish) {
-                $('#publish').val(ppObjEdit.publish);
+            var postStatus = $('#post_status').val();
+            var publishedStatuses = ['public', '_public', 'publish', 'private', 'future'];
+
+            if (publishedStatuses.indexOf(postStatus) == -1) {
+                if ($('#publish').val() != ppObjEdit.publish) {
+                    $('#publish').val(ppObjEdit.publish);
+                }
             }
         }, 100);
     });
