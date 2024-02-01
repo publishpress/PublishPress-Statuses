@@ -3,8 +3,10 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
     /*
     * Import status positions, color, icon and description encoded by Planner and merge into existing Planner statuses
     */
-  
+
     public function importEncodedProperties($terms, $args = []) {
+        update_option('publishpress_statuses_planner_import', PUBLISHPRESS_STATUSES_VERSION);
+        
         if (!$terms) {
             if (!$terms = get_terms('post_status', ['hide_empty' => false])) {
                 return;
@@ -56,7 +58,9 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
                     }
 
                     if (!isset($meta[$key]) || !empty($args['pp_overwrite_status_meta'])) {
-                        update_term_meta($term->term_id, $key, $value);
+                        if ('position' != $key) {
+                            update_term_meta($term->term_id, $key, $value);
+                        }
                     }
 
                     $any_planner_archives = true;
@@ -131,6 +135,7 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
             
             } elseif (isset($stored_status_positions[$post_status]) && !empty($stored_status_positions['_disabled']) 
             && ($stored_status_positions[$post_status] > $stored_status_positions['_disabled']) 
+            && (!in_array($post_status, ['committee', 'committee-review', 'committee-progress', 'committee-approved']))  // If these are already defined by Planner, don't move to disabled
             ) {
                 $disabled_statuses[$post_status]= $post_status;
 
@@ -144,7 +149,10 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
                     $disabled_statuses[$child_status] = $child_status;
                 }
 
-            } elseif ($position <= $planner_status_positions['pending']) {
+            } elseif ($position <= $planner_status_positions['pending'] 
+            && (!isset($stored_status_positions['_pre-publish-alternate']) || !isset($stored_status_positions[$post_status])
+            || $stored_status_positions[$post_status] < $stored_status_positions['_pre-publish-alternate'])
+            ) {
                 $statuses_before_pending[$post_status]= $post_status;
 
                 // retain any nesting established since Statuses install
@@ -158,7 +166,10 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
                     $statuses_before_pending[$child_status] = $child_status;
                 }
 
-            } elseif ($position < $planner_status_positions['publish']) {
+            } elseif ($position < $planner_status_positions['publish']
+            && (!isset($stored_status_positions['_pre-publish-alternate']) || !isset($stored_status_positions[$post_status])
+            || $stored_status_positions[$post_status] < $stored_status_positions['_pre-publish-alternate'])
+            ) {
                 $statuses_after_pending[$post_status]= $post_status;
 
                 // retain any nesting established since Statuses install
@@ -190,6 +201,12 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
         // step through Statuses-stored statuses to include any created since install
         foreach ($stored_status_positions as $post_status => $position) {
             if (in_array($post_status, ['draft', 'pending', 'publish', 'private', 'future', '_pre-publish-alternate', '_disabled'])) {
+                continue;
+            }
+
+            if (!in_array($post_status, ['deferred', 'rejected', 'committee', 'committee-review', 'committee-progress', 'committee-approved']) // If these are already defined by Planner, don't move or disable
+            || !isset($planner_status_positions[$post_status])
+            ) {
                 continue;
             }
 
@@ -234,8 +251,8 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
                     $statuses_before_pending[$child_status] = $child_status;
                 }
 
-            } elseif (((isset($planner_status_positions['_pre-publish-alternate']) && $position < $planner_status_positions['_pre-publish-alternate']))
-            || (!isset($planner_status_positions['_pre-publish-alternate']) && $position <= $planner_status_positions['publish'])
+            } elseif (((isset($stored_status_positions['_pre-publish-alternate']) && $position < $stored_status_positions['_pre-publish-alternate']))
+            || (!isset($stored_status_positions['_pre-publish-alternate']) && $position <= $planner_status_positions['publish'])
             ) {
                 $statuses_after_pending[$post_status]= $post_status;
 
@@ -331,9 +348,10 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
 
         if (!get_option('publishpress_archived_status_positions')) {
             update_option('publishpress_archived_status_positions', $stored_status_positions);
-        }
+        } 
 
-        update_option('publishpress_statuses_planner_import_done', PUBLISHPRESS_STATUSES_VERSION);
+        update_option('publishpress_statuses_planner_import_completed', PUBLISHPRESS_STATUSES_VERSION);
+
 
         return true;
     }
