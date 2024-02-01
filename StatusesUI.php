@@ -263,6 +263,23 @@ class StatusesUI {
                 $group_name . '_general'
             );
 
+            if (!defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT')) {
+                $terms = get_terms('post_status', ['hide_empty' => false]);
+
+                if ($show_import_setting = !empty($terms) 
+                && (get_option('publishpress_version') || get_site_option('edit_flow_version', false) || get_option('pps_version') || defined('PP_STATUSES_ENABLE_PLANNER_IMPORT'))
+                ) {
+                    add_settings_field(
+                        'import_operation',
+                        __('Import Operation:', 'publishpress-statuses'),
+                        [$this, 'settings_import_operation_option'],
+                        $group_name,
+                        $group_name . '_general',
+                        ['class' => 'pp-settings-separation-top']
+                    );
+                }
+            }
+
             add_settings_field(
                 'backup_operation',
                 __('Backup / Restore:', 'publishpress-statuses'),
@@ -503,6 +520,34 @@ class StatusesUI {
                 echo '&nbsp&nbsp;&nbsp;<span class="description">' . sprintf(esc_html____('Disabled because add_post_type_support(\'%1$s\', \'%2$s\') is included in a loaded file.', 'publishpress-statuses'), esc_html($post_type), 'pp_custom_statuses') . '</span>';
             }
         }
+    public function settings_import_operation_option() {
+        $module = \PublishPress_Statuses::instance();
+        ?>
+
+        <div class="c-input-group">
+
+        <select name="publishpress_statuses_import_operation" autocomplete="off">
+
+        <option value=''><?php esc_html_e('Select...', 'publishpress-statuses');?></option>
+
+        <?php if (get_option('pps_version')):?>
+        <option value='do_status_control_import'><?php esc_html_e('Re-run Planner import (with Status Control properties, ordering)', 'publishpress-statuses');?></option>
+        <option value='do_planner_import_only'><?php esc_html_e('Re-run Planner import (ignoring Status Control configuration)', 'publishpress-statuses');?></option>
+        <?php else:?>
+        <option value='do_planner_import'><?php esc_html_e('Re-run Planner import', 'publishpress-statuses');?></option>
+        <?php endif;?>
+        </select> 
+
+        <p class="pp-option-footnote">
+        <?php
+        esc_html_e('Status color, icon and position is automatically imported from PublishPress Planner. Select an option above to re-run the import, giving priority to Planner-defined status position.', 'publishpress-statuses');
+        ?>
+        </p>
+
+        </div>
+
+        <?php
+    }
 
         echo '</div>';
     public function settings_backup_operation_option() {
