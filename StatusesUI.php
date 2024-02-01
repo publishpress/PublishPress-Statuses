@@ -58,6 +58,8 @@ class StatusesUI {
             if ($status_obj = get_post_status_object($status_name)) {
                 // translators: %s is the status label
                 $title = sprintf(__('Edit Post Status: %s', 'publishpress-statuses'), $status_obj->label);
+
+                // translators: %s is the status label
                 $custom_html_title = sprintf(__('%s Status - Edit', 'publishpress-statuses'), $status_obj->label);
             }
 
