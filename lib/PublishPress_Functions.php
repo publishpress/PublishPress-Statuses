@@ -12,14 +12,24 @@ class PublishPress_Functions
      *
      * @return bool
      */
-    public static function isBlockEditorActive()
+    public static function isBlockEditorActive($args = [])
     {
-        // Check if Revisionary lower than v1.3 is installed. It disables Gutenberg.
-        if (self::isPluginActive('revisionary/revisionary.php')
-            && defined('RVY_VERSION')
-            && version_compare(RVY_VERSION, '1.3', '<')) {
-            return false;
+        if (isset($args['force'])) {
+            if ('classic' === $args['force']) {
+                return false;
+            }
+
+            if ('gutenberg' === $args['force']) {
+                return true;
+            }
         }
+
+        // If the editor is being accessed in this request, we have an easy and reliable test
+        if ((did_action('load-post.php') || did_action('load-post-new.php')) && did_action('admin_enqueue_scripts')) {
+            return did_action('enqueue_block_editor_assets');
+        }
+
+        // For other requests (or if the decision needs to be made prior to admin_enqueue_scripts action), proceed with other logic...
 
         $pluginsState = [
             'classic-editor' => self::isPluginActive('classic-editor/classic-editor.php'),

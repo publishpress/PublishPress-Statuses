@@ -3,11 +3,6 @@ namespace PublishPress_Statuses;
 
 class PostEditGutenberg
 {
-    function __construct() 
-    {
-        add_action('enqueue_block_editor_assets', [$this, 'actEnqueueBlockEditorAssets']);
-    }
-
     /**
      * Enqueue Gutenberg assets.
      */

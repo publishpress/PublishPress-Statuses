@@ -243,25 +243,23 @@ class Admin
         }
 
         // Custom javascript to modify the post status dropdown where it shows up
-        if (self::is_post_management_page()) {
-            if (class_exists('PublishPress_Functions')) { // @todo: refine library dependency handling
-                if (\PublishPress_Functions::isBlockEditorActive()) {
-                    wp_enqueue_style(
-                        'publishpress-custom_status-block',
-                        PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-block-editor.css',
-                        false,
-                        PUBLISHPRESS_STATUSES_VERSION,
-                        'all'
-                    );
-                } else {
-                    wp_enqueue_style(
-                        'publishpress-custom_status-classic',
-                        PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-classic-editor.css',
-                        false,
-                        PUBLISHPRESS_STATUSES_VERSION,
-                        'all'
-                    );
-                }
+        if (self::is_post_management_page() && class_exists('PublishPress_Functions')) {
+            if (\PublishPress_Functions::isBlockEditorActive(['force' => \PublishPress_Statuses::instance()->options->force_editor_detection])) {
+                wp_enqueue_style(
+                    'publishpress-custom_status-block',
+                    PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-block-editor.css',
+                    false,
+                    PUBLISHPRESS_STATUSES_VERSION,
+                    'all'
+                );
+            } else {
+                wp_enqueue_style(
+                    'publishpress-custom_status-classic',
+                    PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-classic-editor.css',
+                    false,
+                    PUBLISHPRESS_STATUSES_VERSION,
+                    'all'
+                );
             }
         }
     }
@@ -462,7 +460,8 @@ class Admin
 
         if ($post && $is_administrator && $default_by_sequence 
         && empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status) 
-        && ! \PublishPress_Functions::isBlockEditorActive($post_type)) {
+        && (did_action('load-post.php') || did_action('load-post-new.php')) && !did_action('wp_ajax_pp_get_selectable_statuses')
+        ) { // Add this item only for Classic Editor
             $_publish_obj = get_post_status_object('publish');
             $_publish_obj->save_as = \PublishPress_Statuses::__wp('Publish');
             $_publish_obj->publish = __('Advance Status', 'publishpress-statuses');
