@@ -5,6 +5,8 @@
  * Description: Manage and create post statuses to customize your editorial workflow
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
+ * Text Domain: publishpress-statuses
+ * Domain Path: /languages/
  * Version: 1.0.2.4
  * Requires at least: 5.5
  * Requires PHP: 7.2.5
@@ -90,7 +92,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                 ?>
                 <div class="notice error">
                     <p><?php echo sprintf(
-                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Planner to version %s or higher.', 'publishpress_statuses'),
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Planner to version %s or higher.', 'publishpress-statuses'),
                         '4.0-beta4'
                     ); 
                     ?></p>
@@ -106,7 +108,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                 ?>
                 <div class="notice error">
                     <p><?php echo sprintf(
-                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Permissions Pro to version %s or higher.', 'publishpress_statuses'),
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Permissions Pro to version %s or higher.', 'publishpress-statuses'),
                         '4.0-beta8'
                     ); 
                     ?></p>
@@ -122,7 +124,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                 ?>
                 <div class="notice error">
                     <p><?php echo sprintf(
-                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Capabilities Pro to version %s or higher.', 'publishpress_statuses'),
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Capabilities Pro to version %s or higher.', 'publishpress-statuses'),
                         '2.11-beta2'
                     ); 
                     ?></p>
