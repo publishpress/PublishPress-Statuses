@@ -329,6 +329,17 @@ setInterval(function () {
   var selectedStatus = wp.data.select('core/editor').getEditedPostAttribute('status');
   var currentWorkflowSelection = wp.data.select('core/editor').getEditedPostAttribute('pp_workflow_action');
 
+  if ('publish' == ppObjEdit.maxStatus || 'future' == ppObjEdit.maxStatus) {
+    let postDate = new Date(wp.data.select('core/editor').getEditedPostAttribute('date'));
+    let currentDate = new Date();
+
+    if (postDate.getTime() > currentDate.getTime()) {
+      ppObjEdit.maxStatus = 'future';
+    } else {
+      ppObjEdit.maxStatus = 'publish';
+    }
+  }
+
   if (currentWorkflowSelection == 'specified') {
     ppObjEdit.publish = ppGetStatusSubmit(selectedStatus);
   }
