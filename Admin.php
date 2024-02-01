@@ -372,7 +372,7 @@ class Admin
             $status->labels->caption = $status->labels->name;
         }
 
-        if (empty($status->label_count)) {
+        if (empty($status->label_count) && empty($status->_builtin)) {
             // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingular,WordPress.WP.I18n.NonSingularStringLiteralPlural
             $status->label_count = _n_noop($status->label, $status->label);
         }
