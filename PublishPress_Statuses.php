@@ -2926,7 +2926,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
             }
 
-            // Final permission check to cover all other custom statuses (draft, publish and private status capabilities are already checked by WP)
+        // Final permission check to cover all other custom statuses (draft, publish and private status capabilities are already checked by WP)
         } elseif (!empty($_post) && !$is_administrator && ($post_status != $stored_status) 
         && !in_array($post_status, ['draft', 'publish', 'private']) 
         && !\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $post_status)
