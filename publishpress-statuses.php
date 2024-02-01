@@ -200,6 +200,13 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
     }
 }, -5);
 
+register_activation_hook(
+    __FILE__, 
+    function() {
+        update_option('publishpress_statuses_activate', true);
+    }
+);
+
 register_deactivation_hook(
     __FILE__,
     function()
