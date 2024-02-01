@@ -121,20 +121,22 @@ var querySelectableStatuses = function(status) {
   jQuery.post(PPCustomStatuses.ajaxurl, params, function (retval) {
       var selectable_statuses = retval['data'];
 
-      $('div.publishpress-extended-post-status select option').hide();
+      jQuery(document).ready(function ($) {
+        $('div.publishpress-extended-post-status select option').hide();
 
-      $('div.publishpress-extended-post-status select option').each(function() {
-        if (selectable_statuses.indexOf($(this).val()) != -1) {
-          $(this).show();
-        } 
-      });
+        $('div.publishpress-extended-post-status select option').each(function() {
+          if (selectable_statuses.indexOf($(this).val()) != -1) {
+            $(this).show();
+          } 
+        });
 
-      if ($('div.publishpress-extended-post-status select option[value="_pending"]').length) {
-        if (selectable_statuses.indexOf('pending') != -1) {
-          $('div.publishpress-extended-post-status select option[value="_pending"]').show();
-          $('div.publishpress-extended-post-status select option[value="pending"]').hide();
+        if ($('div.publishpress-extended-post-status select option[value="_pending"]').length) {
+          if (selectable_statuses.indexOf('pending') != -1) {
+            $('div.publishpress-extended-post-status select option[value="_pending"]').show();
+            $('div.publishpress-extended-post-status select option[value="pending"]').hide();
+          }
         }
-      }
+      });
 
       if (typeof (retval['params']) != 'undefined') {
         if (typeof (retval['params']['nextStatus']) != 'undefined') {
@@ -213,10 +215,12 @@ function PPCS_RecaptionOnDisplay(caption) {
   }
 }
 
-$(document).on('click', 'span.presspermit-save-button button', function() {
-  if (!wp.data.select('core/editor').isSavingPost() && !$('span.presspermit-save-button button').attr('aria-disabled')) {
-      $(this).parent().prev('button.editor-post-save-draft').trigger('click').css('z-index', 0).css('position', 'relative').show();
-  }
+jQuery(document).ready(function ($) {
+  $(document).on('click', 'span.presspermit-save-button button', function() {
+    if (!wp.data.select('core/editor').isSavingPost() && !$('span.presspermit-save-button button').attr('aria-disabled')) {
+        $(this).parent().prev('button.editor-post-save-draft').trigger('click').css('z-index', 0).css('position', 'relative').show();
+    }
+  });
 });
 /*****************************************************************************************************************/
 
@@ -229,46 +233,43 @@ $(document).on('click', 'span.presspermit-save-button button', function() {
  * @param status
  */
 var sideEffectL10nManipulation = function sideEffectL10nManipulation(status) {
-  if ('future' == status ) {
-    return;
-  }
-
-  if (wp.data.select('core/editor').isSavingPost() || $('span.editor-post-saved-state:visible').length) {
-    $('span.presspermit-save-button').css('z-index', -999).attr('aria-disabled', true).hide();
-    return;
-  } else {
-    $('span.presspermit-save-button').css('z-index', 0).attr('aria-disabled', false);
-  }
-
-  refreshSelectableStatuses(status);
-
-  var node = document.querySelector('.editor-post-save-draft');
-
-  if (node) {
-    var saveAsLabel = ppGetStatusSaveAs(status);
-
-    if (saveAsLabel && (-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
-      $('div.publishpress-extended-post-status div.components-base-control').show();
-      
-      //if ('draft' == status || 'pending' == status) {
-      //    $('div.publishpress-extended-post-status select option[value!="draft"]').removeAttr('disabled');
-      //} else {
-        if (-1 === PPCustomStatuses.publishedStatuses.indexOf(status)) {
-          PPCS_RecaptionOnDisplay(saveAsLabel);
-        }
-      //}
+  jQuery(document).ready(function ($) {
+    if ('future' == status ) {
+      return;
     }
-  }
 
-  if (('publish' != status) && (-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
-    $('div.publishpress-extended-post-status select').show();
-    $('div.publishpress-extended-post-status-published').hide();
-    $('div.publishpress-extended-post-status-scheduled').hide();
-    $('div.publishpress-extended-post-status select option[value="publish"]').hide();
+    if (wp.data.select('core/editor').isSavingPost() || $('span.editor-post-saved-state:visible').length) {
+      $('span.presspermit-save-button').css('z-index', -999).attr('aria-disabled', true).hide();
+      return;
+    } else {
+      $('span.presspermit-save-button').css('z-index', 0).attr('aria-disabled', false);
+    }
 
-  } else {
-    $('div.publishpress-extended-post-status select').hide();
-  }
+    refreshSelectableStatuses(status);
+
+    var node = document.querySelector('.editor-post-save-draft');
+
+    if (node) {
+      var saveAsLabel = ppGetStatusSaveAs(status);
+
+      if (saveAsLabel && (-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
+        $('div.publishpress-extended-post-status div.components-base-control').show();
+          if (-1 === PPCustomStatuses.publishedStatuses.indexOf(status)) {
+            PPCS_RecaptionOnDisplay(saveAsLabel);
+          }
+      }
+    }
+
+    if (('publish' != status) && (-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
+      $('div.publishpress-extended-post-status select').show();
+      $('div.publishpress-extended-post-status-published').hide();
+      $('div.publishpress-extended-post-status-scheduled').hide();
+      $('div.publishpress-extended-post-status select option[value="publish"]').hide();
+
+    } else {
+      $('div.publishpress-extended-post-status select').hide();
+    }
+  });
 };
 
 /**
