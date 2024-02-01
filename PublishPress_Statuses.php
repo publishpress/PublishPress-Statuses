@@ -145,7 +145,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             'status_dropdown_show_current_branch_only' => 0,
             'force_editor_detection' => '',
             'label_storage' => '',
-            'pending_status_regulation' => ''
+            'pending_status_regulation' => '',
+            'auto_import' => 1
         ];
 
         $this->post_type_support_slug = 'pp_custom_statuses'; // This has been plural in all of our docs
