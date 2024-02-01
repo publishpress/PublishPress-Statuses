@@ -164,6 +164,7 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
 
                     $statuses_before_pending[$child_status] = $child_status;
                 }
+
             } elseif ($position < $planner_status_positions['publish']
             && (!isset($stored_status_positions['_pre-publish-alternate']) || !isset($stored_status_positions[$post_status])
             || $stored_status_positions[$post_status] < $stored_status_positions['_pre-publish-alternate'])

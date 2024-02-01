@@ -11,6 +11,13 @@ jQuery(document).ready(function ($) {
     currentDate = new Date($('#cur_aa').val(), $('#cur_mm').val() - 1, $('#cur_jj').val(), $('#cur_hh').val(), $('#cur_mn').val());
     postDate = new Date($('#hidden_aa').val(), $('#hidden_mm').val() - 1, $('#hidden_jj').val(), $('#hidden_hh').val(), $('#hidden_mn').val());
 
+    setInterval(() => {
+        if ($('#post_status option[value="publish"]').length && !$('#visibility-radio-public option [value="public"]:checked').length) {
+            $('#post_status option[value="_public"]').html($('#post_status option[value="publish"]').html());
+            $('#post_status option[value="publish"]').remove();
+        }
+    }, 100);
+
     if ((postDate < currentDate) || ppObjEdit.defaultBySequence) {
         ppObjEdit.publishButtonCaption = $('#publish').val();
 
@@ -24,7 +31,6 @@ jQuery(document).ready(function ($) {
             }, 100);
         });
     }
-
 
     $('a.save-post-visibility').click(function () {
         if ( $('#pp_statuses_bypass_sequence:visible').length) {
@@ -118,6 +124,15 @@ jQuery(document).ready(function ($) {
                         $('#publish').val(ppObjEdit.publish);
                     }
                 }
+
+                if ($('#visibility-radio-private:checked').length || $('input.pvt-custom:checked').length) {
+                    $('#post_status option[value="_public"]').html(ppObjEdit.privatelyPublished);
+                } else {
+                    $('#post_status option[value="_public"]').html(ppObjEdit.published);
+                }
+
+                updateStatusCaptions();
+                ppUpdateText();
             }, 200);
         });
 
@@ -260,32 +275,45 @@ jQuery(document).ready(function ($) {
                 publishOn = postL10n.publishOnPast;
                 $('#publish').val(ppObjEdit.update);
             }
+
+            if (originalDate.toUTCString() == attemptedDate.toUTCString()) { //hack
+                $('#timestamp').html(stamp);
+            } else {
+                $('#timestamp').html(
+                    publishOn + ' <b>' +
+                    $('option[value=' + $('#mm').val() + ']', '#mm').text() + ' ' +
+                    jj + ', ' +
+                    aa + ' @ ' +
+                    hh + ':' +
+                    mn + '</b> '
+                );
+            }
         } else {
             var __ = wp.i18n.__;
 
             if (attemptedDate > currentDate && $('#original_post_status').val() != 'future') {
-                publishOn = __('Schedule for:');
+                publishOn = ppObjEdit.scheduleFor;
                 $('#publish').val(ppObjEdit.schedule);
             } else if (attemptedDate <= currentDate && $('#original_post_status').val() != 'publish') {
-                publishOn = __('Publish On:');
+                publishOn = ppObjEdit.publishOn
                 $('#publish').val(ppObjEdit.publish);
             } else {
-                publishOn = __('Published On:');
+                publishOn = ppObjEdit.publishedOn
                 $('#publish').val(ppObjEdit.update);
             }
-        }
 
-        if (originalDate.toUTCString() == attemptedDate.toUTCString()) { //hack
-            $('#timestamp').html(stamp);
-        } else {
-            $('#timestamp').html(
-                publishOn + ' <b>' +
-                $('option[value=' + $('#mm').val() + ']', '#mm').text() + ' ' +
-                jj + ', ' +
-                aa + ' @ ' +
-                hh + ':' +
-                mn + '</b> '
-            );
+            if (originalDate.toUTCString() == attemptedDate.toUTCString()) { //hack
+                $('#timestamp').html(stamp);
+            } else {
+                $('#timestamp').html(
+                    publishOn.replace('%s', ' <b>' +
+                    $('option[value=' + $('#mm').val() + ']', '#mm').text() + ' ' +
+                    jj + ', ' +
+                    aa + ' @ ' +
+                    hh + ':' +
+                    mn + '</b> '
+                ));
+            }
         }
 
         var val = $('input:radio:checked', '#post-visibility-select').val();
@@ -304,7 +332,11 @@ jQuery(document).ready(function ($) {
 
             $('#publish').val(ppObjEdit.update);
             if (optPublish.length == 0) {
-                postStatus.append('<option value="_public">' + ppObjEdit.privatelyPublished + '</option>');
+                if (!$('#post_status option[value="_public"]').length) {
+                    postStatus.append('<option value="_public">' + ppObjEdit.privatelyPublished + '</option>');
+                } else {
+                    $('#post_status option[value="_public"]').html(ppObjEdit.privatelyPublished);
+                }
             } else {
                 optPublish.html(ppObjEdit.privatelyPublished);
             }
@@ -320,7 +352,7 @@ jQuery(document).ready(function ($) {
                 if ((typeof postL10n != 'undefined') && (postL10n.published != '')) {
                     optPublish.html(postL10n.published);
                 } else {
-                    optPublish.html(__('Published'));
+                    optPublish.html(ppObjEdit.published);
                 }
             }
             if (postStatus.is(':hidden'))
