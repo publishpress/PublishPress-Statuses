@@ -211,7 +211,13 @@ class PostEditClassic
             'publishedOn' => esc_html(\PublishPress_Statuses::__wp('Published on: %s'))
         ];
 
-        if (!empty($post)) {
+        $post_status_obj = (!empty($post) && !empty($post->post_status)) ? get_post_status_object($post->post_status) : false;
+
+        if (!empty($post_status_obj) && !empty($post_status_obj->private)) {
+            $args['nextPublish'] = $args['update'];
+            $args['maxPublish'] = $args['update'];
+
+        } elseif (!empty($post)) {
             $next_status_obj = \PublishPress_Statuses::getNextStatusObject(
                 $post->ID, 
                 ['default_by_sequence' => $default_by_sequence, 'post_status' => $post->post_status]
