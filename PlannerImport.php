@@ -3,6 +3,7 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
     /*
     * Import status positions, color, icon and description encoded by Planner and merge into existing Planner statuses
     */
+  
     public function importEncodedProperties($terms, $args = []) {
         if (!$terms) {
             if (!$terms = get_terms('post_status', ['hide_empty' => false])) {
@@ -156,6 +157,7 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
 
                     $statuses_before_pending[$child_status] = $child_status;
                 }
+
             } elseif ($position < $planner_status_positions['publish']) {
                 $statuses_after_pending[$post_status]= $post_status;
 

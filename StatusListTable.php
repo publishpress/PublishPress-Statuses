@@ -121,11 +121,11 @@ class StatusListTable extends \WP_List_Table
         $columns = [
             'position' => __('Position', 'publishpress-statuses'),
             'status_name' => __('Status Name', 'publishpress-statuses'),
-            'name' => __('Name', 'publishpress-statuses'),
+            'name' => \PublishPress_Statuses::__wp('Name', 'publishpress-statuses'),
             'icon' => __('Icon', 'publishpress-statuses'),
             'roles' => esc_html__('Roles', 'publishpress-statuses'),
             'post_types' => esc_html__('Post Types', 'publishpress-statuses'),
-            'description' => __('Description', 'publishpress-statuses'),
+            'description' => \PublishPress_Statuses::__wp('Description', 'publishpress-statuses'),
         ];
 
         return apply_filters('publishpress_statuses_admin_columns', $columns);
@@ -214,7 +214,7 @@ class StatusListTable extends \WP_List_Table
 	public function display_rows() {
         $this->display_section_row('_pre-publish', 
             [
-                'label' => __('Pre-Publication Workflow Sequence:', 'publishpress-statuses'),
+                'label' => __('Main Workflow:', 'publishpress-statuses'),
                 'class' => 'moderation-status'
             ]);
 
@@ -282,7 +282,7 @@ do_action('publishpress_statuses_table_row', $key, []);
     
                     <div class="row-inner">
                         <table class="status-row" style="width:100%"><tbody><tr>
-                        <td colspan="7" style="text-align: center"><?php _e('Drop any status here for alternate workflows.', 'publishpress-statuses');?></td>
+                        <td colspan="7" style="text-align: center"><?php _e('Drop any status here to make it manually selectable outside the main workflow.', 'publishpress-statuses');?></td>
                         </tr></tbody></table>
                     </div>
                 </div>
@@ -355,7 +355,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         } elseif ('_pre-publish-alternate' == $item->name) {
             $this->display_section_row('_pre-publish-alternate', 
             [
-                'label' => __('Manually Selectable Pre-Publication Statuses:', 'publishpress-statuses'),
+                'label' => __('Alternate Workflows:', 'publishpress-statuses'),
                 'class' => 'alternate-moderation-status'
             ]);
 
@@ -528,14 +528,14 @@ do_action('publishpress_statuses_table_row', $key, []);
                             $types_caption = sprintf(__('%s, more...', 'publishpress-statuses'), $types_caption);
                         }
                     } else {
-                        $types_caption = __('All');
+                        $types_caption = \PublishPress_Statuses::__wp('All');
                     }
 
                     $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses&pp_tab=post_types");
 
                     echo '<a href="' . esc_url($url) . '">' . esc_html($types_caption) . '</a>';
                 } else {
-                    esc_html_e('All');
+                    esc_html(\PublishPress_Statuses::__wp('All'));
                 }
 
                 echo '</div>';
@@ -727,7 +727,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         $status_obj = $item;
 
         if (empty($status_obj) || (empty($status_obj->_builtin))) {
-            $actions['disable'] = ['url' => '#', 'label' => __('Disable', 'publishpress-statuses')];
+            $actions['disable'] = ['url' => '#', 'label' => \PublishPress_Statuses::__wp('Disable', 'publishpress-statuses')];
         }
 
         if (empty($status_obj) || (empty($status_obj->_builtin) && empty($status_obj->pp_builtin))) {
