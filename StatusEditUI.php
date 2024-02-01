@@ -40,7 +40,26 @@ class StatusEditUI
 
         if (empty($status->publish) && !in_array($name, ['draft', 'future', 'publish', 'private'])) {
             if (empty($status->private)) {
-                $tabs['labels'] = __('Labels', 'publishpress-statuses');
+                $label_storage = \PublishPress_Statuses::instance()->options->label_storage;
+
+                switch ($label_storage) {
+                    case 'user':
+                        if (empty($status->pp_builtin) && empty($status->_builtin) && !in_array($status->name, ['draft', 'pending', 'future', 'publish', 'private'])){
+                            $tabs['labels'] = __('Labels', 'publishpress-statuses');
+                        }
+
+                        break;
+
+                    default:
+                        if ((!empty($status->pp_builtin || ('pending' == $status->name)))
+                        && !in_array($status->name, ['draft', 'publish', 'private', 'future'])
+                        ) {
+                            $tabs['labels'] = __('Labels', 'publishpress-statuses');
+                        }
+                }
+            }
+
+            if (empty($status->private)) {
                 $tabs['roles'] = __('Roles', 'publishpress-statuses');
             }
 
@@ -159,7 +178,31 @@ class StatusEditUI
             $$field = (!empty($args[$field])) ? $args[$field] : '';
         }
 
+        $status_obj = get_post_status_object($name);
+
         $display = ($default_tab == 'name') ? '' : 'display:none';
+
+        if (!empty($status_obj)) {
+            $label_storage = \PublishPress_Statuses::instance()->options->label_storage;
+
+            switch ($label_storage) {
+                case 'user':
+                    if (!empty($status_obj->pp_builtin) || !empty($status_obj->_builtin)
+                    || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+
+                    break;
+
+                default:
+                    if ((!empty($status_obj->_builtin) && ('pending' != $status_name))
+                    || in_array($status_name, ['draft', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+            }
+        }
         ?>
         <table class="form-table" style="<?php echo esc_attr($display);?>">
             <tr class="form-field form-required">
@@ -171,8 +214,7 @@ class StatusEditUI
                 <td><input name="status_label" id="label"
                             type="text" <?php
 
-                    $status_obj = get_post_status_object($name);
-                    if (!empty($status_obj) && !empty($status_obj->_builtin)) : echo 'disabled="disabled"';
+                    if (!empty($status_obj) && !empty($label_locked)) : echo 'disabled="disabled"';
                     endif; ?> value="<?php
                     echo esc_attr($label); ?>" size="40" aria-required="true"/>
                     <?php

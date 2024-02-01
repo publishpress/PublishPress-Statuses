@@ -245,6 +245,14 @@ class StatusesUI {
                 $group_name,
                 $group_name . '_general'
             );
+
+            add_settings_field(
+                'label_storage',
+                __('Status Label Customization:', 'publishpress-statuses'),
+                [$this, 'settings_label_storage_option'],
+                $group_name,
+                $group_name . '_general'
+            );
         }
     }
 
@@ -352,6 +360,33 @@ class StatusesUI {
         <p>
         <?php
         esc_html_e('If custom statuses in the post editor are not loaded correctly, prevent incorrect detection of editor by specifying it here.', 'publishpress-statuses');
+        ?>
+        </p>
+
+        <?php
+        echo '</div>';
+    }
+
+    public function settings_label_storage_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        echo '<div class="c-input-group">';
+
+        $option_val = !empty($module->options->label_storage) ? $module->options->label_storage : '';
+
+        echo sprintf(
+            '<select name="%s" autocomplete="off">',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[label_storage]'
+        );
+
+        ?>
+        <option value='' <?php if (empty($option_val)) echo "selected";?>><?php esc_html_e('For all plugin statuses', 'publishpress-statuses');?></option>
+        <option value='user' <?php if ('user' === $option_val) echo "selected";?>><?php esc_html_e('For user-created plugin statuses only', 'publishpress-statuses');?></option>
+        </select> 
+
+        <p class="pp-option-footnote">
+        <?php
+        esc_html_e('This controls which statuses can have their labels customized by editing Status properties. If a non-default entry is stored, it will override any language file strings.', 'publishpress-statuses');
         ?>
         </p>
 

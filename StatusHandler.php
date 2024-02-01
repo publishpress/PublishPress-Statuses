@@ -467,8 +467,34 @@ class StatusHandler {
             }
         }
 
+        if (!empty($status_obj)) {
+            $label_storage = \PublishPress_Statuses::instance()->options->label_storage;
+
+            switch ($label_storage) {
+                case 'user':
+                    if (!empty($status_obj->pp_builtin) || !empty($status_obj->_builtin)
+                    || in_array($status_name, ['draft', 'pending', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+
+                    break;
+
+                default:
+                    if ((!empty($status_obj->_builtin) && ('pending' != $status_name))
+                    || in_array($status_name, ['draft', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+            }
+        }
+
         if ($term) {
             $term_meta_fields = apply_filters('publishpress_statuses_meta_fields', ['labels', 'post_type', 'roles', 'status_parent', 'color', 'icon']);
+
+            if (!empty($label_locked)) {
+                $term_meta_fields = array_diff($term_meta_fields, ['labels']);
+            }
 
             foreach ($args as $field => $set_value) {
                 if (in_array($field, $term_meta_fields)) {
@@ -518,6 +544,10 @@ class StatusHandler {
 
             if (!empty($status_obj->_builtin)) {
                 $args['name'] = $status_obj->label;
+            }
+
+            if (!empty($label_locked)) {
+                $args = array_diff_key($args, array_fill_keys(['label', 'labels', 'name'], true));
             }
 
             $updated_status_array = wp_update_term($term->term_id, $taxonomy, $args);
@@ -789,6 +819,7 @@ class StatusHandler {
                         break;
 
                     case 'force_editor_detection':
+                    case 'label_storage':
                         $new_options[$option_name] = sanitize_key($_POST[\PublishPress_Statuses::SETTINGS_SLUG][$option_name]);
 
                         break;
