@@ -122,7 +122,10 @@ class StatusEditUI
             // If the basic set status cap is changed on the Post Access tab, mirror on Roles tab and in type-specific Set caps
             $('#pp-post_access input.cme_status_set_basic').on('click', function() {
                 $('#pp-roles_table td.set-status-roles input[name="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked'));
-                $(this).next('table').find('tbody tr td.post-cap label input').prop('checked', $(this).prop('checked'));
+
+                if (!$(this).prop('checked')) {
+                    $(this).next('table').find('tbody tr td.post-cap label input').prop('checked', $(this).prop('checked'));
+                }
             });
 
             // Work around status capabilities library bug (displaying Set capability checkbox for disabled post types)
