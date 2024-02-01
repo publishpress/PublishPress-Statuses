@@ -55,7 +55,7 @@ class PostEdit
                 $wp_post_statuses[$status_name]->labels = $post_status_obj;
             }
 
-            if (!empty($post_status_obj->private) && ('private' != $post_status)) {
+            if (!empty($post_status_obj->private) && ('private' != $status_name)) {
                 // visibility property may be used by Permissions Pro
                 if (!empty($post_status_obj->labels) && is_object($post_status_obj->labels)) {
                     if (empty($wp_post_statuses[$status_name]->labels->visibility)) {
@@ -130,9 +130,9 @@ class PostEdit
             }
 
             <?php
-            foreach ($custom_statuses as $post_status => $status_obj)
-            :?> if (!$('#post-status-select option [value="<?php echo esc_attr($post_status);?>"]').length) {
-                    $('select#post_status').append('<option value="<?php echo esc_attr($post_status);?>"><?php echo esc_html($status_obj->label);?></option>');
+            foreach ($custom_statuses as $status_name => $status_obj)
+            :?> if (!$('#post-status-select option [value="<?php echo esc_attr($status_name);?>"]').length) {
+                    $('select#post_status').append('<option value="<?php echo esc_attr($status_name);?>"><?php echo esc_html($status_obj->label);?></option>');
                 }
             <?php endforeach;?>
 

@@ -2005,13 +2005,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
      *
      * @return array|WP_Error $response The Term ID and Term Taxonomy ID
      */
-    public function addStatus($taxonomy, $name, $args = [])
+    public function addStatus($taxonomy, $status_name, $args = [])
     {
-        $slug = (! empty($args['slug'])) ? $args['slug'] : sanitize_title($name);
+        $slug = (! empty($args['slug'])) ? $args['slug'] : sanitize_title($status_name);
         unset($args['slug']);
 
         $response = wp_insert_term(
-            $name,
+            $status_name,
             $taxonomy,
             ['slug' => $slug, 'description' => $args['description']]
         );
