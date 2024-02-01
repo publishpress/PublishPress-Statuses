@@ -3,11 +3,14 @@
  * Plugin Name: PublishPress Statuses
  * Plugin URI:  https://publishpress.com/statuses
  * Description: Manage and create post statuses to customize your editorial workflow
+ * Version: 1.0.6.6
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
- * Version: 1.0.2.4
+ * Text Domain: publishpress-statuses
+ * Domain Path: /languages/
  * Requires at least: 5.5
  * Requires PHP: 7.2.5
+ * License: GPLv3
  *
  * Copyright (c) 2024 PublishPress
  *
@@ -28,7 +31,9 @@
  *
  * @package     PublishPress Statuses
  * @author      PublishPress
- * @copyright   Copyright (c) 2024 PublishPress. All rights reserved.
+ * @copyright   Copyright (C) 2024 PublishPress. All rights reserved.
+ * @license		GNU General Public License version 3
+ * @link		https://publishpress.com/
  *
  **/
 
@@ -89,8 +94,9 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             add_action('admin_notices', function() {
                 ?>
                 <div class="notice error">
-                    <p><?php echo sprintf(
-                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Planner to version %s or higher.', 'publishpress_statuses'),
+                    <p><?php printf(
+                        // translators: %s is a version number
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Planner to version %s or higher.', 'publishpress-statuses'),
                         '4.0-beta4'
                     ); 
                     ?></p>
@@ -105,8 +111,9 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             add_action('admin_notices', function() {
                 ?>
                 <div class="notice error">
-                    <p><?php echo sprintf(
-                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Permissions Pro to version %s or higher.', 'publishpress_statuses'),
+                    <p><?php printf(
+                        // translators: %s is a version number
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Permissions Pro to version %s or higher.', 'publishpress-statuses'),
                         '4.0-beta8'
                     ); 
                     ?></p>
@@ -121,8 +128,9 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             add_action('admin_notices', function() {
                 ?>
                 <div class="notice error">
-                    <p><?php echo sprintf(
-                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Capabilities Pro to version %s or higher.', 'publishpress_statuses'),
+                    <p><?php printf(
+                        // translators: %s is a version number
+                        esc_html__('To use PublishPress Statuses, please upgrade PublishPress Capabilities Pro to version %s or higher.', 'publishpress-statuses'),
                         '2.11-beta2'
                     ); 
                     ?></p>
@@ -131,11 +139,16 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             });
 
             $interrupt_load = true;
-        } 
+        }
+
+        global $pagenow;
+
+        if (is_admin() && isset($pagenow) && ('customize.php' == $pagenow)) {
+            $interrupt_load = true;
+        }
         
         if (empty($interrupt_load)) {
-
-            define('PUBLISHPRESS_STATUSES_VERSION', '1.0.2.4');
+            define('PUBLISHPRESS_STATUSES_VERSION', '1.0.6.6');
 
             define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
             define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
@@ -189,3 +202,79 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         }
     }
 }, -5);
+
+register_activation_hook(
+    __FILE__, 
+    function() {
+        update_option('publishpress_statuses_activate', true);
+    }
+);
+
+register_deactivation_hook(
+    __FILE__,
+    function()
+    {
+        delete_transient('publishpress_statuses_maintenance');
+        delete_option('publishpress_statuses_planner_import_gmt');
+
+        if (!get_option('publishpress_version') || defined('PUBLISHPRESS_STATUSES_NO_PLANNER_BACK_COMPAT')) {
+            return;
+        }
+
+        // Restore archived PublishPress Planner 3.x term descriptions (with encoded status properties), in case it will be re-activated
+        if ($archived_term_descriptions = get_option('pp_statuses_archived_term_properties')) {
+
+            // Use hardcoded taxonomy string here because class PublishPress_Statuses is not loaded
+            $terms = get_terms('post_status', ['hide_empty' => false]);
+
+            if (is_array($terms)) {
+                foreach ($terms as $term) {
+                    if (!empty($archived_term_descriptions[$term->term_id])) {
+                        $description = $archived_term_descriptions[$term->term_id];
+
+                        if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $description) 
+                        && (strlen($description) > 80) && (false === strpos($description, ' '))
+                        ) {
+                            // Use hardcoded taxonomy string here because class PublishPress_Statuses is not loaded
+                            wp_update_term($term->term_id, 'post_status', ['description' => $description]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Set post_types option storage value back to "on" / "off"
+        $options = get_option('publishpress_custom_status_options');
+
+        if (is_object($options) && isset($options->enabled)) {
+            if ($options->enabled) {
+                $options->enabled = 'on';
+                $do_option_update = true;
+            } else {
+                $options->enabled = 'off';
+                $do_option_update = true;
+            }
+        }
+
+        if (is_object($options) && !empty($options->post_types)) {
+            foreach ($options->post_types as $post_type => $val) {
+                if ($val) {
+                    $options->post_types[$post_type] = 'on';
+                    $do_option_update = true;
+                } else {
+                    $options->post_types[$post_type] = 'off';
+                    $do_option_update = true;
+                }
+            }
+        }
+
+        if (!empty($options->loaded_once)) {
+            unset($options->loaded_once);
+            $do_option_update = true;
+        }
+
+        if (!empty($do_option_update)) {
+            update_option('publishpress_custom_status_options', $options);
+        }
+    }
+);

@@ -349,7 +349,16 @@ padding-left: 5px;
 font-weight: bold;
 }
 
-
+.pp-statuses-color {
+width: 10px;
+height: 10px;
+margin-right: 5px;
+display: inline-block;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+-o-border-radius: 3px;
+}
 
 
 /* Add Status Form */
@@ -406,7 +415,9 @@ padding-right: 50px;
 font-size: 14px;
 }
 
-td.set-status-roles div {
+td.set-status-roles div,
+#pp-post_types_table div.agp-vspaced_input
+{
 padding-top: 5px;
 padding-bottom: 5px;
 }
@@ -476,6 +487,42 @@ table.pp-statuses-options table.cme-typecaps td.status-caps-delete_others
 padding-top: 30px;
 }
 /* =========================================== */
+
+
+/* Setting */
+.form-table .pp-settings-separation-top td, .form-table .pp-settings-separation-top th {
+padding-top: 40px !important;
+border-top: 1px solid #ccc;
+}
+
+.form-table .pp-settings-separation-bottom td, .form-table .pp-settings-separation-bottom th {
+padding-bottom: 40px !important;
+border-bottom: 1px solid #ccc;
+}
+
+.form-table .pp-settings-space-top td, .form-table .pp-settings-space-top th {
+padding-top: 25px !important;
+}
+
+.form-table .pp-settings-space-bottom td, .form-table .pp-settings-space-bottom th {
+padding-bottom: 25px !important;
+}
+
+.form-table .pp-statuses-settings-status-declutter {
+display: none;
+}
+
+.pp-option-footnote {
+font-style: italic;
+}
+
+.form-wrap .c-input-group label {
+display: inline !important;
+-webkit-user-select: none;  
+-moz-user-select: none;    
+-ms-user-select: none;      
+user-select: none;
+}
 
 
 @media (max-width: 768px) {

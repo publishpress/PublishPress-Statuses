@@ -3,39 +3,40 @@ namespace PublishPress_Statuses;
 
 class PostEditGutenberg
 {
-    function __construct() 
-    {
-        if ($post_id = \PublishPress_Functions::getPostID()) {
-            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && rvy_in_revision_workflow($post_id)) {
-                return;
-            }
-        }
-        
-        add_action('enqueue_block_editor_assets', [$this, 'actEnqueueBlockEditorAssets']);
-
-        // Gutenberg Block Editor support for workflow status progression guidance / limitation
-        add_action('enqueue_block_editor_assets', [$this, 'act_status_guidance_scripts']);
-    }
-
-    // If PressPermit permissions filtering is enabled for this post type and the user may be limited, load scripts to support status progression guidance
-    public function act_status_guidance_scripts()
-    {
-        require_once(__DIR__ . '/PostEditGutenbergStatuses.php');
-        PostEditGutenbergStatuses::loadBlockEditorStatusGuidance();
-    }
-
     /**
      * Enqueue Gutenberg assets.
      */
     public function actEnqueueBlockEditorAssets()
     {
+        global $post;
+
+        if (!empty($post)) {
+            if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
+            || \PublishPress_Statuses::isPostBlacklisted($post->ID)
+            ) {
+                return;
+            }
+        }
+
+        if ($post_id = \PublishPress_Functions::getPostID()) {
+            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && rvy_in_revision_workflow($post_id)) {
+                return;
+            }
+        }
+
+        $post_type = (!empty($post)) ? $post->post_type : \PublishPress_Statuses::getCurrentPostType();
+
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
+            return;
+        }
+
         if (!$statuses = $this->getStatuses()) {
             return;
         }
 
-        if (\PublishPress_Statuses::DisabledForPostType()) {
-            return;
-        }
+        // Gutenberg Block Editor support for workflow status progression guidance / limitation
+        require_once(__DIR__ . '/PostEditGutenbergStatuses.php');
+        PostEditGutenbergStatuses::loadBlockEditorStatusGuidance();
 
         $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 
@@ -59,9 +60,10 @@ class PostEditGutenberg
 
         $captions = (object) [
             'publicationWorkflow' => __('Publication Workflow', 'publishpress-statuses'),
-            'publish' => __('Publish', 'publishpress-statuses'),
-            'schedule' => __('Schedule', 'publishpress-statuses'),
+            'publish' => \PublishPress_Statuses::__wp('Publish'),
+            'schedule' => \PublishPress_Statuses::_x_wp('Schedule', 'post action/button label'),
             'advance' => __('Advance Status', 'publishpress-statuses'),
+            'postStatus' => __('Post Status', 'publishpress-statuses'),
             // translators: %s is the status label
             'saveAs' => __('Save as %s', 'publishpress-statuses'),
             'setSelected' => __('Set Selected Status', 'publishpress-statuses'),
@@ -103,16 +105,24 @@ class PostEditGutenberg
         $draft_obj = get_post_status_object('draft');
 
         $ordered_statuses = array_merge(
-            ['draft' => (object)['name' => 'draft', 'label' => esc_html__('Draft'), 'icon' => $draft_obj->icon, 'color' => $draft_obj->color]],
+            ['draft' => (object)['name' => 'draft', 'label' => esc_html(\PublishPress_Statuses::__wp('Draft')), 'icon' => $draft_obj->icon, 'color' => $draft_obj->color]],
 
             array_diff_key(
                 \PublishPress_Statuses::getPostStati(['moderation' => true, 'post_type' => $post_type], 'object'),
                 ['future' => true]
             ),
 
-            ['publish' => (object)['name' => 'publish', 'label' => esc_html__('Published')]],
-            ['future' => (object)['name' => 'future', 'label' => esc_html__('Scheduled')]]
+            ['publish' => (object)['name' => 'publish', 'label' => esc_html(\PublishPress_Statuses::__wp('Published'))]],
+            ['future' => (object)['name' => 'future', 'label' => esc_html(\PublishPress_Statuses::__wp('Scheduled'))]]
         );
+
+        $can_set_status = \PublishPress_Statuses::getUserStatusPermissions('set_status', $post_type, $ordered_statuses);
+        
+        if (!empty($post)) {
+            $can_set_status[$post->post_status] = true;
+        }
+
+        $ordered_statuses = array_intersect_key($ordered_statuses, array_filter($can_set_status));
 
         // compat with js usage of term properties
         foreach($ordered_statuses as $key => $status_obj) {
@@ -138,13 +148,30 @@ class PostEditGutenberg
 
                 if ('pending' == $status_obj->name) {
                     $status_obj = get_post_status_object('pending');
-                    $status_label = (empty($status_obj)) ? $status_obj->label : esc_html__('Pending Review', 'publishpress-statuses');
+                    $status_label = (!empty($status_obj)) ? $status_obj->label : esc_html(\PublishPress_Statuses::__wp('Pending Review'));
+
+                    $labels = (object) [
+                        'save_as' => (!empty($status_obj) && !empty($status_obj->labels) && !empty($status_obj->labels->save_as)) 
+                        ? $status_obj->labels->save_as 
+                        : \PublishPress_Statuses::__wp('Save as Pending'),
+                        
+                        'publish' => (!empty($status_obj) && !empty($status_obj->labels) && !empty($status_obj->labels->publish)) 
+                        ? $status_obj->labels->publish 
+                        : \PublishPress_Statuses::__wp('Submit for Review'),
+                    ];
 
                     // Alternate item to allow use of "Save as Pending" button
                     //
                     // This will allow different behavior from the Submit button, 
                     // which may default to next/highest available workflow status.
-                    $_ordered[]= (object)['name' => '_pending', 'label' => $status_label];
+
+                    $_ordered[]= (object)[
+                        'name' => '_pending',
+                        'label' => $status_label,
+                        'labels' => $labels,
+                        'icon' => $status_obj->icon,
+                        'color' => $status_obj->color
+                    ];
                 } 
             }
 
@@ -165,10 +192,10 @@ class PostEditGutenberg
             }
 
             if ('draft' == $status_obj->name) {
-                $ordered_statuses[$key]->save_as = __('Save Draft', 'publishpress-statuses');
+                $ordered_statuses[$key]->save_as = \PublishPress_Statuses::__wp('Save Draft', 'publishpress-statuses');
                 $ordered_statuses[$key]->submit = $ordered_statuses[$key]->save_as;
             } else {
-            	$ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : __('Save', 'publishpress-statuses');
+            	$ordered_statuses[$key]->save_as = (!empty($status_obj->labels->save_as)) ? $status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save');
             	$ordered_statuses[$key]->submit = (!empty($status_obj->labels->publish)) ? $status_obj->labels->publish : __('Advance Status', 'publishpress-statuses');
             }
         }

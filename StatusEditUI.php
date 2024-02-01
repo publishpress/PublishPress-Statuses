@@ -10,7 +10,7 @@ class StatusEditUI
         $name = \PublishPress_Functions::REQUEST_key('name');
 
         if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
-            echo '<div class="error"><p>' . esc_html($module->messages['status-missing']) . '</p></div>';
+            echo '<div class="error"><p>' . esc_html(\PublishPress_Statuses::instance()->messages['status-missing']) . '</p></div>';
             return;
         }
 
@@ -36,16 +36,38 @@ class StatusEditUI
         $class_selected = "nav-tab nav-tab-active";
         $class_unselected = "nav-tab";
 
-        $tabs = ['name' => __('Name', 'publishpress-statuses')];
+        $tabs = ['name' => \PublishPress_Statuses::__wp('Name')];
 
         if (empty($status->publish) && !in_array($name, ['draft', 'future', 'publish', 'private'])) {
             if (empty($status->private)) {
-                $tabs['labels'] = __('Labels', 'publishpress-statuses');
-                $tabs['roles'] = __('Roles', 'publishpress-statuses');
+                $label_storage = \PublishPress_Statuses::instance()->options->label_storage;
+
+                switch ($label_storage) {
+                    case 'user':
+                        if (empty($status->pp_builtin) && empty($status->_builtin) && !in_array($status->name, ['draft', 'pending', 'future', 'publish', 'private'])){
+                            $tabs['labels'] = __('Labels', 'publishpress-statuses');
+                        }
+
+                        break;
+
+                    default:
+                        if ((empty($status->_builtin) || ('pending' == $status->name))
+                        && !in_array($status->name, ['draft', 'publish', 'private', 'future'])
+                        ) {
+                            $tabs['labels'] = __('Labels', 'publishpress-statuses');
+                        }
+                }
             }
 
             if ('pending' != $name) {
                 $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
+            }
+                                          // Custom Visibility statuses do not currently support type-agnostic "status_change_" capabilities
+                                          // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+            if ((empty($status->private) /*|| (class_exists('\PublishPress\StatusCapabilities') && \PublishPress\StatusCapabilities::postStatusHasCustomCaps($status->name))*/)
+            && (('pending' != $name) || \PublishPress_Statuses::instance()->options->pending_status_regulation)
+            ) {
+                $tabs['roles'] = __('Roles', 'publishpress-statuses');
             }
         }
 
@@ -91,6 +113,26 @@ class StatusEditUI
                     $(panel).find('table').show();
                 }
             });
+
+            // If the basic set status cap is changed on the Roles tab, mirror on Post Access tab and in type-specific Set caps
+            $('#pp-roles_table td.set-status-roles input').on('click', function() {
+                $('#pp-post_access input[name="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked')).next('table').find('td.post-cap input').prop('disabled', !$(this).prop('checked')).prop('checked', $(this).prop('checked'));
+            });
+
+            // If the basic set status cap is changed on the Post Access tab, mirror on Roles tab and in type-specific Set caps
+            $('#pp-post_access input.cme_status_set_basic').on('click', function() {
+                $('#pp-roles_table td.set-status-roles input[name="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked'));
+
+                if (!$(this).prop('checked')) {
+                    $(this).next('table').find('tbody tr td.post-cap label input').prop('checked', $(this).prop('checked'));
+                }
+            });
+
+            // Work around status capabilities library bug (displaying Set capability checkbox for disabled post types)
+            var basic_status_set_cap = $('#pp-post_access input.cme_status_set_basic').attr('title');
+            $('#pp-post_access td.post-cap input[title="' + basic_status_set_cap + '"]').parent().remove();
+
+            $('div.pp-subtext').html('<?php esc_html_e('Enforce type-specific post capabilitities for this status, or share capabilities with another status.', 'publishpress-statuses');?>');
         });
         /* ]]> */
         </script>
@@ -142,7 +184,31 @@ class StatusEditUI
             $$field = (!empty($args[$field])) ? $args[$field] : '';
         }
 
+        $status_obj = get_post_status_object($name);
+
         $display = ($default_tab == 'name') ? '' : 'display:none';
+
+        if (!empty($status_obj)) {
+            $label_storage = \PublishPress_Statuses::instance()->options->label_storage;
+
+            switch ($label_storage) {
+                case 'user':
+                    if (!empty($status_obj->pp_builtin) || !empty($status_obj->_builtin)
+                    || in_array($name, ['draft', 'pending', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+
+                    break;
+
+                default:
+                    if ((!empty($status_obj->_builtin) && ('pending' != $name))
+                    || in_array($name, ['draft', 'publish', 'private', 'future'])
+                    ) {
+                        $label_locked = true;
+                    }
+            }
+        }
         ?>
         <table class="form-table" style="<?php echo esc_attr($display);?>">
             <tr class="form-field form-required">
@@ -154,8 +220,7 @@ class StatusEditUI
                 <td><input name="status_label" id="label"
                             type="text" <?php
 
-                    $status_obj = get_post_status_object($name);
-                    if (!empty($status_obj) && !empty($status_obj->_builtin)) : echo 'disabled="disabled"';
+                    if (!empty($status_obj) && !empty($label_locked)) : echo 'disabled="disabled"';
                     endif; ?> value="<?php
                     echo esc_attr($label); ?>" size="40" aria-required="true"/>
                     <?php
@@ -172,7 +237,7 @@ class StatusEditUI
             <?php if (!empty($name)):?>
             <tr class="form-field">
                 <th scope="row" valign="top"><?php
-                    _e('Slug', 'publishpress-statuses'); ?></th>
+                    \PublishPress_Statuses::_e_wp('Slug', 'publishpress-statuses'); ?></th>
                 <td>
                     <input type="text" name="slug" id="slug" disabled
                             value="<?php
@@ -284,7 +349,7 @@ class StatusEditUI
                 $roles = \PublishPress_Functions::getRoles(true);
                 ?>
                 <tr class="form-field">
-                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'publishpress-statuses') ?></label>
+                    <th><label for="status_assign"><?php esc_html_e('Status Availability', 'publishpress-statuses') ?></label>
                     <br /><br />
                     <span class="pp-statuses-field-descript" style="font-weight: normal">
                     <?php esc_html_e('Choose which user roles can assign this status to a post.', 'publishpress-statuses');?>
@@ -320,7 +385,12 @@ class StatusEditUI
             case 'post_types' :
                 ?>
                 <tr class="form-field">
-                <th><label for="status_label"><?php esc_html_e('Post Types', 'publishpress-statuses') ?></label></th>
+                <th><label for="status_label"><?php esc_html_e('Post Types', 'publishpress-statuses') ?></label>
+                <br /><br />
+                <span class="pp-statuses-field-descript" style="font-weight: normal">
+                <?php esc_html_e('Choose which post types can be set to this status.', 'publishpress-statuses');?>
+                </span>
+                </th>
                 <td>
 
                 <?php

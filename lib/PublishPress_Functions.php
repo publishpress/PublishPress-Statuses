@@ -12,14 +12,24 @@ class PublishPress_Functions
      *
      * @return bool
      */
-    public static function isBlockEditorActive()
+    public static function isBlockEditorActive($args = [])
     {
-        // Check if Revisionary lower than v1.3 is installed. It disables Gutenberg.
-        if (self::isPluginActive('revisionary/revisionary.php')
-            && defined('RVY_VERSION')
-            && version_compare(RVY_VERSION, '1.3', '<')) {
-            return false;
+        if (isset($args['force'])) {
+            if ('classic' === $args['force']) {
+                return false;
+            }
+
+            if ('gutenberg' === $args['force']) {
+                return true;
+            }
         }
+
+        // If the editor is being accessed in this request, we have an easy and reliable test
+        if ((did_action('load-post.php') || did_action('load-post-new.php')) && did_action('admin_enqueue_scripts')) {
+            return did_action('enqueue_block_editor_assets');
+        }
+
+        // For other requests (or if the decision needs to be made prior to admin_enqueue_scripts action), proceed with other logic...
 
         $pluginsState = [
             'classic-editor' => self::isPluginActive('classic-editor/classic-editor.php'),
@@ -59,10 +69,10 @@ class PublishPress_Functions
             && ! $pluginsState['gutenberg-ramp']
             && apply_filters('use_block_editor_for_post_type', true, $postType, PHP_INT_MAX);
 
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         $conditions[] = self::isWp5() && $pluginsState['classic-editor'] && (get_option('classic-editor-replace') === 'block' && ! isset($_GET['classic-editor__forget']));
 
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         $conditions[] = self::isWp5() && $pluginsState['classic-editor'] && (get_option('classic-editor-replace') === 'classic' && isset($_GET['classic-editor__forget']));
 
         /**
@@ -425,93 +435,93 @@ class PublishPress_Functions
      */
     public static function empty_REQUEST($var = false) {
         if (false === $var) {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return empty($_REQUEST);
         } else {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return empty($_REQUEST[$var]);
         }
     }
     
     public static function is_REQUEST($var, $match = false) {
         if (false === $match) {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return isset($_REQUEST[$var]);
             
         } elseif (is_array($match)) {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return isset($_REQUEST[$var]) && in_array($_REQUEST[$var], $match);
         } else {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return isset($_REQUEST[$var]) && ($_REQUEST[$var] == $match);
         }
     }
     
     public static function REQUEST_key($var) {
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         if (empty($_REQUEST[$var])) {
             return '';
         }
     
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         return (is_array($_REQUEST[$var])) ? array_map('sanitize_key', $_REQUEST[$var]) : sanitize_key($_REQUEST[$var]);
     }
     
     public static function REQUEST_int($var) {
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         return (!empty($_REQUEST[$var])) ? intval($_REQUEST[$var]) : 0;
     }
 
     public static function GET_key($var) {
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         if (empty($_GET[$var])) {
             return '';
         }
     
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         return (is_array($_GET[$var])) ? array_map('sanitize_key', $_GET[$var]) : sanitize_key($_GET[$var]);
     }
     
     public static function GET_int($var) {
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         return (!empty($_GET[$var])) ? intval($_GET[$var]) : 0;
     }
     
     public static function empty_POST($var = false) {
         if (false === $var) {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return empty($_POST);
         } else {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return empty($_POST[$var]);
         }
     }
 
     public static function POST_key($var) {
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         if (empty($_POST) || empty($_POST[$var])) {
             return '';
         }
     
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         return (is_array($_POST[$var])) ? array_map('sanitize_key', $_POST[$var]) : sanitize_key($_POST[$var]);
     }
 
     public static function is_POST($var, $match = false) {
-        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+        // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
         if (empty($_POST)) {
             return false;
         }
         
         if (false == $match) {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return (isset($_POST[$var]));
         
         } elseif (is_array($match)) {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return (isset($_POST[$var]) && in_array($_POST[$var], $match));
         } else {
-            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Missing
+            // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             return (isset($_POST[$var]) && ($_POST[$var] == $match));
         }
     }
