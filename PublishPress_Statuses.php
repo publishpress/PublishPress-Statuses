@@ -1903,10 +1903,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         
         $context = (!empty($function_args['context'])) ? $function_args['context'] : '';
 
-		$pp_status_capablities_active = class_exists('\PublishPress\StatusCapabilities');
+		$pp_status_capabilities_active = class_exists('\PublishPress\StatusCapabilities');
 
         if (('load' == $context) || !did_action('pp_statuses_init') 
-        || ($pp_status_capablities_active && !did_action('publishpress_status_capabilities_loaded'))
+        || ($pp_status_capabilities_active && !did_action('publishpress_status_capabilities_loaded'))
         || self::isContentAdministrator() 
         || self::disable_custom_statuses_for_post_type() 
         ) {
