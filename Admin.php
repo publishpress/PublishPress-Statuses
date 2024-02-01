@@ -28,7 +28,9 @@ class Admin
             if (!defined('PP_STATUSES_DISABLE_PENDING_STATUS_FIX')) {
                 global $wpdb;
 
-                // Clean up after Gutenberg integration bug in plugin version < 1.0.4.1
+                // Clean up after Gutenberg integration bug in plugin version < 1.0.4.2
+
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->query("UPDATE $wpdb->posts SET post_status = 'pending' WHERE post_status = '_pending'");
             }
         }

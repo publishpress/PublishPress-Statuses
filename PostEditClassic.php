@@ -15,6 +15,8 @@ class PostEditClassic
 
     /**
      * Adds all necessary javascripts to make custom statuses work
+     * 
+     * Currently designed to execute on admin_print_scripts action
      *
      * @todo Support private and future posts on edit.php view
      */
@@ -229,6 +231,7 @@ class PostEditClassic
                 } elseif (!empty($next_status_obj->labels->save_as)) {
                     $args['publish'] = $next_status_obj->labels->save_as;
                 } else {
+                    // translators: %s is a status name
                     $args['publish'] = sprintf(__('Submit as %s', 'publishpress-statuses'), $next_status_obj->label);
                 }
 
