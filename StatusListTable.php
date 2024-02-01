@@ -81,7 +81,8 @@ class StatusListTable extends \WP_List_Table
 
         $this->items = \PublishPress_Statuses::getPostStati(
             [], 
-            ['output' => 'object', 'context' => 'load']
+            ['output' => 'object'],
+            ['context' => 'load']
         );
 
         $total_items = count($this->items);

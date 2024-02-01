@@ -112,7 +112,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             add_action('wp_ajax_pp_update_status_positions', [$this, 'handle_ajax_update_status_positions']);
             add_action('wp_ajax_pp_delete_custom_status', [$this, 'handle_ajax_delete_custom_status']);
 
-            add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 4);
+            add_filter('presspermit_get_post_statuses', [$this, 'flt_get_post_statuses'], 99, 5);
             add_filter('_presspermit_get_post_statuses', [$this, '_flt_get_post_statuses'], 99, 4);
 
             add_filter('presspermit_order_statuses', [$this, 'orderStatuses'], 10, 2);
@@ -317,7 +317,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         do_action('publishpress_statuses_register_taxonomies');
         do_action('publishpress_statuses_pre_init');
 
-        $statuses = $this->getPostStatuses([], 'object', ['load' => true]);
+        $statuses = $this->getPostStatuses([], 'object', ['context' => 'load']);
 
         add_action('admin_init', function() {
             $this->getPostStatuses();
@@ -795,6 +795,22 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     ],
                 ];
 
+                $statuses = apply_filters('publishpress_statuses_default_prepub_statuses', $statuses);
+
+                // Basic validation of filtered entries. Default properties will be applied downstream.
+                foreach ($statuses as $status_name => $status_obj) {
+                    if (is_array($status_obj)) {
+                        $statuses[$status_name] = (object) $status_obj;
+                    }
+
+                    if ((sanitize_key($status_name) != $status_name)
+                    || !is_object($status_obj)
+                    ) {
+                        unset($statuses[$status_name]);
+                        continue;
+                    }
+                }
+
                 break;
 
             case self::TAXONOMY_PSEUDO_STATUS :
@@ -977,6 +993,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             if (!isset($status->$prop)) {
                 $status->$prop = $val;
             }
+
+			// Safeguard for plugin API
+            $status->moderation = true;
+            $status->protected = true;
         }
 
         return apply_filters('publishpress_status_properties', $status);
@@ -1016,6 +1036,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             if (!isset($status->$prop)) {
                 $status->$prop = $val;
             }
+
+			// Safeguard for plugin API
+            $status->private = true;
         }
 
         return $status;
@@ -1772,20 +1795,36 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        foreach (array_keys($status_args) as $prop) {
-            if ('post_type' == $prop) {
-                foreach ($status_by_position as $k => $status) {
-                    if (!empty($status->post_type) && !array_intersect((array)$status_args['post_type'], (array)$status->post_type))
-                        unset($status_by_position[$k]);
-                }
-            } else {
-                foreach (array_keys($status_by_position) as $k) {
-                    if ($status_args[$prop] && empty($status_by_position[$k]->$prop)) {
-                        unset($status_by_position[$k]);
+        $operator = (!empty($function_args['operator'])) ? $function_args['operator'] : 'AND';
+        $operator = strtoupper($operator);
 
-                    } elseif (!$status_args[$prop] && !empty($status_by_position[$k]->$prop)) {
-                        unset($status_by_position[$k]);
+        if (in_array($operator, ['AND', 'OR', 'NOT'])) {
+            $count    = count( $status_args );
+            $filtered = [];
+
+            foreach ($status_by_position as $key => $status) {
+                $matched = 0;
+
+                foreach ($status_args as $prop => $arg_val) {
+                    if ('post_type' == $prop) {  // special treatment: require queried post type to be in status definition, or for status to have post_type empty
+                        if (empty($status->{$prop}) || array_intersect((array)$arg_val, (array)$status->{$prop})) {
+                            ++$matched;
+                        }
+                    } else {
+                        if ($arg_val && !empty($status->{$prop}) && (is_bool($arg_val) || ($status->{$prop} == $arg_val))) {
+                            ++$matched;
+
+                        } elseif (!$arg_val && empty($status->{$prop})) {
+                            ++$matched;
+                        }
                     }
+                }
+
+                if ( ( 'AND' === $operator && $matched !== $count )
+                    || ( 'OR' === $operator && !$matched)
+                    || ( 'NOT' === $operator && $matched )
+                ) {
+                    unset($status_by_position[$key]);
                 }
             }
         }
@@ -1845,7 +1884,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     // filter PublishPress Permissions Pro results
-    function flt_get_post_statuses($statuses, $status_args, $return_args, $function_args) {
+    function flt_get_post_statuses($statuses, $status_args, $return_args, $operator, $function_args) {
+        $function_args['operator'] = $operator;
+
+        $context = (!empty($function_args['context'])) ? $function_args['context'] : '';
+
+        // Don't double-filter posts query
+        if (in_array($context, ['edit'])) {
+            return $statuses;
+        }
+
         return $this->getPostStatuses($status_args, $return_args, $function_args);
     }
 
@@ -1853,11 +1901,17 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     function _flt_get_post_statuses($statuses, $status_args, $return_args, $function_args) {
         global $current_user;
         
-        if (self::isContentAdministrator() || self::disable_custom_statuses_for_post_type()) {
+        $context = (!empty($function_args['context'])) ? $function_args['context'] : '';
+
+		$pp_status_capablities_active = class_exists('\PublishPress\StatusCapabilities');
+
+        if (('load' == $context) || !did_action('pp_statuses_init') 
+        || ($pp_status_capablities_active && !did_action('publishpress_status_capabilities_loaded'))
+        || self::isContentAdministrator() 
+        || self::disable_custom_statuses_for_post_type() 
+        ) {
             return $statuses;
         }
-
-        $context = (!empty($return_args['context'])) ? $return_args['context'] : '';
 
         // Maintain default PublishPress behavior (Permissions add-on / Capabilities Pro) for statuses that do not have custom capabilities enabled
         foreach ($statuses as $k => $obj) {
@@ -1865,9 +1919,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $_status = str_replace('-', '_', $status_name);
 
             if (!empty($obj->moderation) 
-            && (!in_array($context, ['load', 'edit']))
             && !in_array($status_name, ['draft', 'future']) 
-            && (!class_exists('PPS') || !PPS::postStatusHasCustomCaps($status_name))
+            && (!$pp_status_capabilities_active || !\PublishPress\StatusCapabilities::postStatusHasCustomCaps($status_name))
             && empty($current_user->allcaps["status_change_{$_status}"])) {
                 unset($statuses[$k]);
             }
