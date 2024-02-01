@@ -591,8 +591,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     ],
 
                     'private' => (object) [
-                        'default_label' => 'Privately Published',
-                        'label' => !empty($wp_post_statuses['private']) && !empty($wp_post_statuses['private']->label) ? $wp_post_statuses['private']->label : \PublishPress_Statuses::__wp('Privately Published'),
+                        'default_label' => 'Private',
+                        'label' => !empty($wp_post_statuses['private']) && !empty($wp_post_statuses['private']->label) ? $wp_post_statuses['private']->label : \PublishPress_Statuses::__wp('Private'),
                         'labels' => (object) [
                             'publish' => \PublishPress_Statuses::__wp('Update')
                         ],
