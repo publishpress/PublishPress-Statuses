@@ -205,14 +205,6 @@ class StatusesUI {
                 $group_name
             );
             add_settings_field(
-                'post_types',
-                __('Use on these post types:', 'publishpress-statuses'),
-                [$this, 'settings_post_types_option'],
-                $group_name,
-                $group_name . '_general'
-            );
-
-            add_settings_field(
                 'moderation_statuses_default_by_sequence',
                 __('Workflow sequence:', 'publishpress-statuses'),
                 [$this, 'settings_moderation_statuses_default_by_sequence_option'],
@@ -224,6 +216,14 @@ class StatusesUI {
                 'status_dropdown_show_current_branch_only',
                 __('Status dropdown:', 'publishpress-statuses'),
                 [$this, 'settings_status_dropdown_show_current_branch_only_option'],
+                $group_name,
+                $group_name . '_general'
+            );
+
+            add_settings_field(
+                'status_dropdown_pending_status_regulation',
+                __('Pending Review Status:', 'publishpress-statuses'),
+                [$this, 'settings_pending_status_regulation_option'],
                 $group_name,
                 $group_name . '_general'
             );
@@ -243,7 +243,8 @@ class StatusesUI {
                 __('Gutenberg / Classic Editor:', 'publishpress-statuses'),
                 [$this, 'settings_force_editor_detection_option'],
                 $group_name,
-                $group_name . '_general'
+                $group_name . '_general',
+                ['class' => 'pp-settings-separation']
             );
 
             add_settings_field(
@@ -252,6 +253,15 @@ class StatusesUI {
                 [$this, 'settings_label_storage_option'],
                 $group_name,
                 $group_name . '_general'
+            );
+
+            add_settings_field(
+                'post_types',
+                __('Use on these post types:', 'publishpress-statuses'),
+                [$this, 'settings_post_types_option'],
+                $group_name,
+                $group_name . '_general',
+                ['class' => 'pp-settings-separation']
             );
         }
     }
@@ -347,6 +357,47 @@ class StatusesUI {
         echo '</div>';
     }
 
+    public function settings_pending_status_regulation_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        echo '<div class="c-input-group">';
+
+        $option_val = !empty($module->options->pending_status_regulation) ? $module->options->pending_status_regulation : '';
+
+        echo sprintf(
+            '<select id="pending_status_regulation" name="%s" autocomplete="off">',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[pending_status_regulation]'
+        );
+
+        ?>
+        <option value='' <?php if (empty($option_val)) echo "selected";?>><?php esc_html_e('Available to all users', 'publishpress-statuses');?></option>
+        <option value='1' <?php if ($option_val) echo "selected";?>><?php esc_html_e('Available to specified roles only', 'publishpress-statuses');?></option>
+        </select> 
+
+        <p class="pp-option-footnote">
+        <?php
+        if ($option_val) {
+            esc_html_e('Users can only assign a custom status to a post if their role allows it. With this setting, the same control is applied to the Pending Review status.', 'publishpress-statuses');
+        } else {
+            esc_html_e('Users can only assign a custom status to a post if their role allows it. Currently, those limitations will not be applied for the Pending Review status.', 'publishpress-statuses');
+        }
+        ?>
+        </p>
+
+        <p class="pp-option-footnote pp-pending-specified" <?php if (!$option_val) echo 'style="display:none;"';?>>
+        <?php
+        printf(
+            esc_html__('View or set roles at %1$s Statuses > Statuses > Pending Review > Roles %2$s', 'publishpress-statuses'),
+            '<a href="' . esc_url(admin_url('admin.php?action=edit-status&name=pending&page=publishpress-statuses&pp_tab=roles')) . '">',
+            '</a>'
+        );
+        ?>
+        </p>
+
+        <?php
+        echo '</div>';
+    }
+
     public function settings_force_editor_detection_option() {
         $module = \PublishPress_Statuses::instance();
         
@@ -402,7 +453,7 @@ class StatusesUI {
         echo '</div>';
     }
     
-    public function settings_post_types_option($post_types = [])
+    public function settings_post_types_option($unused = [])
     {
         $pp = \PublishPress_Statuses::instance();
 
@@ -469,7 +520,9 @@ class StatusesUI {
         /** Edit Status screen **/
         if (('publishpress-statuses' === $plugin_page) && ('edit-status' == $action) && !\PublishPress_Functions::empty_REQUEST('name')) {
             $status_name = \PublishPress_Functions::REQUEST_key('name');
-            $status_obj = get_post_status_object($status_name);
+            
+            $status_obj = \PublishPress_Statuses::getStatusBy('id', $status_name);
+
             $status_label = ($status_obj && !empty($status_obj->label)) ? $status_obj->label : $status_name;
 
             // translators: %s is the status name
