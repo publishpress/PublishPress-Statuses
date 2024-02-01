@@ -51,7 +51,7 @@ class StatusEditUI
                         break;
 
                     default:
-                        if ((!empty($status->pp_builtin || ('pending' == $status->name)))
+                        if ((empty($status->_builtin) || ('pending' == $status->name))
                         && !in_array($status->name, ['draft', 'publish', 'private', 'future'])
                         ) {
                             $tabs['labels'] = __('Labels', 'publishpress-statuses');
