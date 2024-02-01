@@ -9,31 +9,8 @@ class PostEditClassic
         // This script executes on the 'init' action if is_admin() and $pagenow is 'post-new.php' or 'post.php' and the block editor is not active.
         //
 
-        add_action('add_meta_boxes', [$this, 'act_comments_metabox'], 10, 2);
-        add_action('add_meta_boxes', [$this, 'act_replace_publish_metabox'], 10, 2);
-
         add_action('admin_print_scripts', [$this, 'post_admin_header']);
         add_action('admin_head', [$this, 'act_object_edit_scripts'], 99);  // needs to load after post.js to unbind handlers
-    }
-
-    public function post_submit_meta_box($post, $args = [])
-    {
-        require_once(__DIR__ . '/PostEditClassicSubmitMetabox.php');
-        PostEditClassicSubmitMetabox::post_submit_meta_box($post, $args);
-    }
-
-    public function act_replace_publish_metabox($post_type, $post)
-    {
-        global $wp_meta_boxes;
-
-        if ('attachment' != $post_type) {
-            if (!empty($wp_meta_boxes[$post_type]['side']['core']['submitdiv'])) {
-                // Classic Editor: override WP submit metabox with a compatible equivalent (applying the same hooks as core post_submit_meta_box()
-
-                // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-                $wp_meta_boxes[$post_type]['side']['core']['submitdiv']['callback'] = [$this, 'post_submit_meta_box'];
-            }
-        }
     }
 
     /**
@@ -116,6 +93,10 @@ class PostEditClassic
                 var current_user_can_publish_posts = <?php if (current_user_can($post_type_obj->cap->publish_posts)) echo '1'; else echo '0'; ?>;
                 var current_user_can_edit_published_posts = <?php if (current_user_can($post_type_obj->cap->edit_published_posts)) echo '1'; else echo '0'; ?>;
             </script>
+
+            <style type="text/css">
+            a.pp-custom-moderation-promo {display: none;}
+            </style>
             <?php
         }
     }
@@ -151,8 +132,7 @@ class PostEditClassic
                 $post_status_obj = get_post_status_object('draft');
             }
 
-            if ($is_administrator && $default_by_sequence && empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status) 
-            && ! \PublishPress_Functions::isBlockEditorActive($typenow)) {
+            if ($is_administrator && $default_by_sequence && empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status)) {
                 $stati['moderation'][] = [
                     'name' => '_public',
                     'label' => __('Published', 'publishpress-statuses'),
@@ -206,28 +186,38 @@ class PostEditClassic
 
                 $args['schedule'] = $args['publish'];
             }
+
+            // support "bypass sequence" toggle in classic editor UI
+            if ($default_by_sequence) {
+                $args['nextPublish'] = $args['publish'];
+                $args['nextSchedule'] = $args['schedule'];
+
+                $max_status_obj = \PublishPress_Statuses::getNextStatusObject(
+                    $post->ID,
+                    ['default_by_sequence' => false, 'post_status' => $post->post_status]
+                );
+
+                if (in_array($max_status_obj->name, ['publish', 'future'])) {
+                    $args['maxPublish'] = esc_html__('Publish');
+                    $args['maxSchedule'] = esc_html__('Schedule');
+                } else {
+                    if (!empty($max_status_obj->labels->publish)) {
+                        $args['maxPublish'] = $max_status_obj->labels->publish;
+                    } elseif (!empty($max_status_obj->labels->save_as)) {
+                        $args['maxPublish'] = $max_status_obj->labels->save_as;
+                    } else {
+                        $args['maxPublish'] = sprintf(__('Submit as %s', 'publishpress-statuses'), $max_status_obj->label);
+                    }
+
+                    $args['maxSchedule'] = $args['maxPublish'];
+                }
+            }
         }
 
         wp_localize_script('publishpress-statuses-classic-edit', 'ppObjEdit', $args);
 
         global $wp_scripts;
         $wp_scripts->in_footer [] = 'publishpress-statuses-classic-edit';  // otherwise it will not be printed in footer (@todo review)
-    }
-
-    // ensure Comments metabox for custom published / private stati
-    public function act_comments_metabox($post_type, $post)
-    {
-        global $wp_meta_boxes;
-        if (isset($wp_meta_boxes[$post_type]['normal']['core']['commentsdiv']))
-            return;
-
-        if ($post_status_obj = get_post_status_object($post->post_status)) {
-            if (('publish' == $post->post_status || 'private' == $post->post_status) 
-            && post_type_supports($post_type, 'comments')
-            ) {
-                add_meta_box('commentsdiv', \PublishPress_Statuses::__wp('Comments'), 'post_comment_meta_box', $post_type, 'normal', 'core');
-            }
-        }
     }
 
     // @todo: confirm this is obsolete

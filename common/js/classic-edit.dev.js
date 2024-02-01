@@ -1,5 +1,10 @@
 jQuery(document).ready(function ($) {
+    // Confirm that Classic Editor elements are rendered
+    if ($('#misc-publishing-actions').length && $('select#post_status').length) {    
+    
     $('#submitdiv').addClass("submitdiv-pps");
+
+    setPublishString();
 
     updateStatusDropdownElements();
 
@@ -11,8 +16,8 @@ jQuery(document).ready(function ($) {
 
         $('a.save-post-status, a.save-post-visibility, a.save-timestamp').click(function () {
             setTimeout(() => {
-                if ('_public' != $('#post_status').val() || ppObjEdit.defaultBySequence) {
-                    if ($('#visibility-radio-public:checked').length) {
+                if ('_public' != $('#post_status').val() || (ppObjEdit.defaultBySequence && !($('pp_statuses_bypass_sequence:checked').length))) {
+                    if ($('#visibility-radio-public:checked').length && (ppObjEdit.schedule != $('#publish').val())) {
                         $('#publish').val(ppObjEdit.publishButtonCaption);
                     }
                 }
@@ -21,8 +26,20 @@ jQuery(document).ready(function ($) {
     }
 
     $('a.save-timestamp').click(function () {
+        if ( $('#pp_statuses_bypass_sequence:visible').length) {
+            var aa = $('#aa').val(), mm = $('#mm').val(), jj = $('#jj').val(), hh = $('#hh').val(), mn = $('#mn').val();
+            var attemptedDate = new Date(aa, mm - 1, jj, hh, mn);
+            var currentDate = new Date($('#cur_aa').val(), $('#cur_mm').val() - 1, $('#cur_jj').val(), $('#cur_hh').val(), $('#cur_mn').val());
+
+            if (attemptedDate > currentDate) {
+                $('#pp_statuses_bypass_sequence').prop('checked', true);
+                setPublishString();
+            }
+        }
+
         setTimeout(() => {
             updateStatusCaptions();
+            ppUpdateText();
         }, 100);
     });
 
@@ -86,9 +103,9 @@ jQuery(document).ready(function ($) {
                 }
 
                 if ($('#visibility-radio-public:checked').length) {
-                    $('#save-post').toggle($('#post_status').val() != '_public');
+                    $('#save-post').toggle(['_public', 'publish', 'future'].indexOf($('#post_status').val()) == -1);
     
-                    if ($('#post_status').val() != '_public') {
+                    if (['_public', 'publish', 'future'].indexOf($('#post_status').val()) == -1) {
                         $('#publish').val(ppObjEdit.publish);
                     }
                 }
@@ -98,16 +115,10 @@ jQuery(document).ready(function ($) {
         $('a.save-timestamp').click(function () {
             setTimeout(() => {
                 if ($('#visibility-radio-public:checked').length) {
-                    $('#save-post').toggle($('#post_status').val() != '_public');
+                    $('#save-post').toggle(['_public', 'publish', 'future'].indexOf($('#post_status').val()) == -1);
                 }
             }, 200);
         });
-
-        if ('future' == postStatus) {
-            setTimeout(() => {
-                $('#publish').val(ppObjEdit.update);
-            }, 100);
-        }
     }
 
     // Advanced Custom Fields compat
@@ -140,10 +151,23 @@ jQuery(document).ready(function ($) {
             });
         }
     }
-});
 
-function updateStatusDropdownElements() {
-    jQuery(document).ready(function ($) {
+    function setPublishString() {
+        if (ppObjEdit.defaultBySequence && !$('#pp_statuses_bypass_sequence:checked').length) {
+            ppObjEdit.publish = ppObjEdit.nextPublish;
+            ppObjEdit.schedule = ppObjEdit.nextSchedule;
+        } else {
+            ppObjEdit.publish = ppObjEdit.maxPublish;
+            ppObjEdit.schedule = ppObjEdit.maxSchedule;
+        }
+    }
+
+    $('#pp_statuses_bypass_sequence').on('click', function() {
+        setPublishString();
+        ppUpdateText();
+    });
+
+    function updateStatusDropdownElements() {
         var postStatus = $('#post_status'), optPublish = $('option[value=publish]', postStatus);
         var status_val = $('input:radio:checked', '#post-visibility-select').val();
 
@@ -168,15 +192,7 @@ function updateStatusDropdownElements() {
             $('option[value="publish"]', postStatus).prop('selected', true);
             $('.edit-post-status', '#misc-publishing-actions').hide();
         } else {
-			if (postL10n.publish) {
-                if ($('#publish').val() != postL10n.schedule) {
-				    $('#publish').val(postL10n.publish);
-                }
-			} else {
-                if ($('#publish').val() != ppObjEdit.schedule) {
-            	    $('#publish').val(ppObjEdit.publish);
-                }
-			}
+			ppUpdateText();
 
             if ($('#original_post_status').val() == 'future') {
                 if (optPublish.length) {
@@ -193,12 +209,10 @@ function updateStatusDropdownElements() {
         }
 
         return true;
-    });
-}
+    }
 
-// set "Status:" caption; show/hide Save As button and set caption
-function updateStatusCaptions() {
-    jQuery(document).ready(function ($) {
+    // set "Status:" caption; show/hide Save As button and set caption
+    function updateStatusCaptions() {
         postStatus = $('#post_status');
         var status_val = $('option:selected', postStatus).val();
 
@@ -247,10 +261,9 @@ function updateStatusCaptions() {
             default :
                 $('#save-post').show().val(ppObjEdit.draftSaveAs);
         }
-    });
-}
+    }
 
-jQuery(document).ready(function ($) {
+
     var stamp = $('#timestamp').html();
 
     if (typeof ppObjEdit != 'undefined')
@@ -421,6 +434,14 @@ jQuery(document).ready(function ($) {
         return false;
     });
 
+    $('.cancel-post-visibility').on('click', function (e) {
+        setTimeout(() => {
+            if ($('#visibility-radio-public:checked').length) {
+                $('#save-post').toggle(['_public', 'publish', 'future'].indexOf($('#post_status').val()) == -1);
+            }
+        }, 100);
+    });
+
     $('#save-post-status').on('click', function (e) {
         updateStatusCaptions();
         return false;
@@ -441,4 +462,6 @@ jQuery(document).ready(function ($) {
         }
         return false;
     });
+
+    } // Classic Editor elements are rendered
 });

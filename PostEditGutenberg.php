@@ -5,23 +5,7 @@ class PostEditGutenberg
 {
     function __construct() 
     {
-        if ($post_id = \PublishPress_Functions::getPostID()) {
-            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && rvy_in_revision_workflow($post_id)) {
-                return;
-            }
-        }
-        
         add_action('enqueue_block_editor_assets', [$this, 'actEnqueueBlockEditorAssets']);
-
-        // Gutenberg Block Editor support for workflow status progression guidance / limitation
-        add_action('enqueue_block_editor_assets', [$this, 'act_status_guidance_scripts']);
-    }
-
-    // If PressPermit permissions filtering is enabled for this post type and the user may be limited, load scripts to support status progression guidance
-    public function act_status_guidance_scripts()
-    {
-        require_once(__DIR__ . '/PostEditGutenbergStatuses.php');
-        PostEditGutenbergStatuses::loadBlockEditorStatusGuidance();
     }
 
     /**
@@ -29,6 +13,12 @@ class PostEditGutenberg
      */
     public function actEnqueueBlockEditorAssets()
     {
+        if ($post_id = \PublishPress_Functions::getPostID()) {
+            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && rvy_in_revision_workflow($post_id)) {
+                return;
+            }
+        }
+
         if (!$statuses = $this->getStatuses()) {
             return;
         }
@@ -36,6 +26,10 @@ class PostEditGutenberg
         if (\PublishPress_Statuses::DisabledForPostType()) {
             return;
         }
+
+        // Gutenberg Block Editor support for workflow status progression guidance / limitation
+        require_once(__DIR__ . '/PostEditGutenbergStatuses.php');
+        PostEditGutenbergStatuses::loadBlockEditorStatusGuidance();
 
         $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 

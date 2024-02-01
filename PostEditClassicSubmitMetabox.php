@@ -144,6 +144,7 @@ class PostEditClassicSubmitMetabox
 
             <div id="major-publishing-actions">
                 <?php do_action('post_submitbox_start', $post); ?>
+
                 <div id="delete-action">
                     <?php // PP: no change from WP core
                     if (current_user_can("delete_post", $post->ID)) {
@@ -160,6 +161,28 @@ class PostEditClassicSubmitMetabox
                 <div id="publishing-action">
                     <?php self::post_publish_ui($post, $_args); ?>
                 </div>
+                
+                <?php 
+                global $current_user;
+
+                if ((empty($post_status_obj) || (empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status)))
+                && (current_user_can('administrator') 
+                || (!empty($type_obj->cap->publish_posts) && current_user_can($type_obj->cap->publish_posts)) 
+                || current_user_can('pp_bypass_status_sequence'))
+                && (!isset($current_user->allcaps['pp_bypass_status_sequence']) || !empty($current_user->allcaps['pp_bypass_status_sequence'])) // allow explicit blockage
+                )
+                :?>
+                <div class="clear">
+                    <span id="pp-override-sequence" style="float:right; margin: 5px; margin-bottom: 0;">
+                        <label title="<?php echo esc_attr(__('Restore default behavior of publish button', 'publishpress-statuses'));?>">
+                            <input type="checkbox" name="pp_statuses_bypass_sequence" id="pp_statuses_bypass_sequence" /> <?php esc_html_e('Bypass sequence', 'publishpress-statuses');?> 
+                        </label>
+                    </span>
+                </div>
+                <?php endif;?>
+
+                <br />
+
                 <div class="clear"></div>
             </div> <?php // major-publishing-actions ?>
 
@@ -187,7 +210,7 @@ class PostEditClassicSubmitMetabox
             ?>
             <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($save_as) ?>"
                    tabindex="4" class="button button-highlighted"/>
-        <?php elseif ($post_status_obj->moderation) :
+        <?php elseif ($post_status_obj->moderation && ('future' != $post_status_obj->name)) :
             if (apply_filters('presspermit_display_save_as_button', true, $post, $args)):?>
             <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($post_status_obj->labels->save_as) ?>"
                    tabindex="4" class="button button-highlighted"/>
@@ -324,6 +347,8 @@ class PostEditClassicSubmitMetabox
                 }
                 ?>
                 </div>
+
+                <span id="pp_statuses_ui_rendered" style="display:none"></span>
             </div>
 
         <?php }
@@ -398,7 +423,7 @@ class PostEditClassicSubmitMetabox
             $$var = $args[$var];
         }
         ?>
-        <span class="spinner"></span>
+        <span class="spinner" style="display:none"></span>
 
         <?php
         if ((!$post_status_obj->public && !$post_status_obj->private && ('future' != $post_status_obj->name))) {
@@ -415,7 +440,7 @@ class PostEditClassicSubmitMetabox
                     $publish_status_obj = get_post_status_object('publish');
                     ?>
                     <input name="original_publish" type="hidden" id="original_publish" value="<?php echo esc_attr($publish_status_obj->labels->publish) ?>"/>
-                    <input name="publish" type="submit" class="button button-primary button-large" id="publish" tabindex="5" accesskey="p" value="<?php echo esc_attr($publish_status_obj->labels->publish) ?>"/>
+                    <input name="publish" type="submit" class="button button-primary button-large" id="publish" tabindex="5" accesskey="p" value="<?php echo esc_attr(\PublishPress_Statuses::__wp('Update')); ?>"/>
                 <?php
                 endif;
             else :

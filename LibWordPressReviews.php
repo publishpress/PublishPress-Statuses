@@ -54,14 +54,14 @@ class LibWordPressReviews
             return false;
         }
 
-        if ($pagenow === 'admin.php' && isset($_GET['page'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ($pagenow === 'admin.php' && isset($_GET['page'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             $pages = [
                 'publishpress-statuses',
                 'publishpress-statuses-add-new',
                 'publishpress-statuses-settings'
             ];
 
-            if (in_array($_GET['page'], $pages)) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            if (in_array($_GET['page'], $pages)) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 return true;
             }
         }

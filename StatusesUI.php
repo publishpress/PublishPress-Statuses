@@ -37,7 +37,9 @@ class StatusesUI {
         }
 
         if ('publishpress_custom_status_options' === \PublishPress_Functions::POST_key('option_page')) { 
-            $this->handle_settings();
+            add_action('admin_init', function() {
+                $this->handle_settings();
+            });
         }
 
         // Methods for handling the actions of creating, making default, and deleting post stati
@@ -64,7 +66,7 @@ class StatusesUI {
             if (!\PublishPress_Functions::empty_REQUEST('taxonomy')) {
                 if ($tx = get_taxonomy(\PublishPress_Functions::REQUEST_key('taxonomy'))) {
                     $title = sprintf(
-                        __('Add %s Status', 'publishpress_statuses'),
+                        __('Add %s Status', 'publishpress-statuses'),
                         $tx->label
                     );
                 }
@@ -235,6 +237,14 @@ class StatusesUI {
                     $group_name . '_general'
                 );
             }
+
+            add_settings_field(
+                'force_editor_detection',
+                __('Gutenberg / Classic Editor:', 'publishpress-statuses'),
+                [$this, 'settings_force_editor_detection_option'],
+                $group_name,
+                $group_name . '_general'
+            );
         }
     }
 
@@ -321,6 +331,34 @@ class StatusesUI {
         echo '</div>';
     }
 
+    public function settings_force_editor_detection_option() {
+        $module = \PublishPress_Statuses::instance();
+        
+        echo '<div class="c-input-group">';
+
+        $option_val = !empty($module->options->force_editor_detection) ? $module->options->force_editor_detection : '';
+
+        echo sprintf(
+            '<select name="%s" autocomplete="off">',
+            esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[force_editor_detection]'
+        );
+
+        ?>
+        <option value='' <?php if (empty($option_val)) echo "selected";?>><?php esc_html_e('Automatic Detection', 'publishpress-statuses');?></option>
+        <option value='classic' <?php if ('classic' === $option_val) echo "selected";?>><?php esc_html_e('Using Classic Editor', 'publishpress-statuses');?></option>
+        <option value='gutenberg' <?php if ('gutenberg' === $option_val) echo "selected";?>><?php esc_html_e('Using Gutenberg Editor', 'publishpress-statuses');?></option>
+        </select> 
+
+        <p>
+        <?php
+        esc_html_e('If custom statuses in the post editor are not loaded correctly, prevent incorrect detection of editor by specifying it here.', 'publishpress-statuses');
+        ?>
+        </p>
+
+        <?php
+        echo '</div>';
+    }
+    
     public function settings_post_types_option($post_types = [])
     {
         $pp = \PublishPress_Statuses::instance();

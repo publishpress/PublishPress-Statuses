@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PublishPress Statuses 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
-"POT-Creation-Date: 2023-12-14T05:06:26+00:00\n"
-"PO-Revision-Date: 2023-12-14 19:13+0100\n"
+"POT-Creation-Date: 2024-01-02T22:50:26+00:00\n"
+"PO-Revision-Date: 2024-01-05 15:51+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Domain: publishpress-statuses\n"
 
 #. Plugin Name of the plugin
-#: PublishPress_Statuses.php:145 PublishPress_Statuses.php:180
+#: PublishPress_Statuses.php:149 PublishPress_Statuses.php:213
 #: StatusesUI.php:30
 msgid "PublishPress Statuses"
 msgstr "PublishPress Statuses"
@@ -48,7 +48,7 @@ msgstr ""
 "Desideri davvero eliminare lo stato dell'articolo? Tutti gli articoli con "
 "questo stato verranno assegnati allo stato predefinito."
 
-#: Admin.php:168 Admin.php:169 PublishPress_Statuses.php:211
+#: Admin.php:168 Admin.php:169 PublishPress_Statuses.php:244
 msgid "Statuses"
 msgstr "Stati"
 
@@ -69,11 +69,11 @@ msgstr "%s <span class=\"count\">()</span>"
 msgid "Submit for Review"
 msgstr "Invia per la revisione"
 
-#: Admin.php:269 PublishPress_Statuses.php:569
+#: Admin.php:269 PublishPress_Statuses.php:602
 msgid "Approve"
 msgstr "Approva"
 
-#: Admin.php:271 PublishPress_Statuses.php:545
+#: Admin.php:271 PublishPress_Statuses.php:578
 msgid "Assign"
 msgstr "Assegna"
 
@@ -89,27 +89,22 @@ msgstr "Pubblica"
 msgid "Schedule"
 msgstr "Programma"
 
-#: Admin.php:280
+#: Admin.php:283
 msgid "Submit"
 msgstr "Invia"
 
 #. translators: %s is the status label
-#: Admin.php:283
+#: Admin.php:286
 msgid "Set to %s"
 msgstr "Imposta a %s"
-
-#. translators: %s is the status label
-#: Admin.php:286 PostEditClassic.php:203
-msgid "Submit as %s"
-msgstr "Invia come %s"
 
 #: Admin.php:293
 msgid "Save as Pending"
 msgstr "Salva come in attesa"
 
 #: Admin.php:350 PostEditClassic.php:160 PostEditGutenberg.php:64
-#: PostEditGutenberg.php:169 PostEditGutenbergStatuses.php:39
-#: PostEditGutenbergStatuses.php:59 PostEditGutenbergStatuses.php:67
+#: PostEditGutenberg.php:172 PostEditGutenbergStatuses.php:43
+#: PostEditGutenbergStatuses.php:63 PostEditGutenbergStatuses.php:71
 msgid "Advance Status"
 msgstr "Stato avanzato"
 
@@ -117,6 +112,10 @@ msgstr "Stato avanzato"
 #: lib/publishpress-module/ModuleAdminUI_Base.php:100
 msgid "If you like %1$s, please leave us a %2$s rating. Thank you!"
 msgstr "Se ti piace %1$s, per favore lasciaci una valutazione %2$s. Grazie!"
+
+#: PostEdit.php:168 PostEditGutenberg.php:141
+msgid "Pending Review"
+msgstr "In attesa di revisione"
 
 #: PostEditClassic.php:59
 msgid "Draft"
@@ -130,11 +129,15 @@ msgstr "Pubblicato"
 msgid "Current Time"
 msgstr "Ora attuale"
 
-#: PostEditClassicSubmitMetabox.php:262
+#: PostEditClassic.php:204
+msgid "Submit as %s"
+msgstr "Invia come %s"
+
+#: PostEditClassicSubmitMetabox.php:323
 msgid "add workflow status"
 msgstr "Aggiungi stato del flusso di lavoro"
 
-#: PostEditClassicSubmitMetabox.php:313
+#: PostEditClassicSubmitMetabox.php:375
 msgid "Publish %son approval%s"
 msgstr "Pubblicare %sdopo l'approvazione%s"
 
@@ -171,19 +174,19 @@ msgstr "Questo articolo è attualmente pubblicato"
 msgid "This post is currently scheduled"
 msgstr "Questo articolo è attualmente programmato"
 
-#: PostEditGutenberg.php:165
+#: PostEditGutenberg.php:168
 msgid "Save Draft"
 msgstr "Salva bozza"
 
-#: PostEditGutenberg.php:168
+#: PostEditGutenberg.php:171
 msgid "Save"
 msgstr "Salva"
 
-#: PostEditGutenbergStatuses.php:106
+#: PostEditGutenbergStatuses.php:115
 msgid "Workflow"
 msgstr "Flusso di lavoro"
 
-#: PostEditGutenbergStatuses.php:110
+#: PostEditGutenbergStatuses.php:119
 msgid "Submit Revision"
 msgstr "Invia revisione"
 
@@ -191,79 +194,79 @@ msgstr "Invia revisione"
 msgid "Status"
 msgstr "Stato"
 
-#: PublishPress_Statuses.php:227
+#: PublishPress_Statuses.php:260
 msgid "Pre-Publication Statuses"
 msgstr "Stati di pre-pubblicazione"
 
-#: PublishPress_Statuses.php:242
+#: PublishPress_Statuses.php:275
 msgid "Core Post Statuses"
 msgstr "Stati dell'articolo di base"
 
-#: PublishPress_Statuses.php:258
+#: PublishPress_Statuses.php:291
 msgid "Pseudo Statuses"
 msgstr "Pseudo stati"
 
-#: PublishPress_Statuses.php:474
+#: PublishPress_Statuses.php:507
 msgid "New post, not yet submitted."
 msgstr "Nuovo articolo non ancora inviato."
 
-#: PublishPress_Statuses.php:485
+#: PublishPress_Statuses.php:518
 msgid "Post is awaiting review."
 msgstr "L'articolo è in attesa di revisione."
 
-#: PublishPress_Statuses.php:496
+#: PublishPress_Statuses.php:529
 msgid "Post is scheduled for publication."
 msgstr "L'articolo è programmato per la pubblicazione."
 
-#: PublishPress_Statuses.php:506
+#: PublishPress_Statuses.php:539
 msgid "Post is published, publicly visible."
 msgstr "L'articolo è pubblicato, visibile pubblicamente."
 
-#: PublishPress_Statuses.php:517
+#: PublishPress_Statuses.php:550
 msgid "Post is published with private visibility."
 msgstr "L'articolo è pubblicato con visibilità privata."
 
-#: PublishPress_Statuses.php:532 PublishPress_Statuses.php:533
+#: PublishPress_Statuses.php:565 PublishPress_Statuses.php:566
 msgid "Pitch"
 msgstr "Idea"
 
-#: PublishPress_Statuses.php:534
+#: PublishPress_Statuses.php:567
 msgid "Idea proposed; waiting for acceptance."
 msgstr "Idea proposta; in attesa di accettazione."
 
-#: PublishPress_Statuses.php:544
+#: PublishPress_Statuses.php:577
 msgid "Assigned"
 msgstr "Assegnato"
 
-#: PublishPress_Statuses.php:546
+#: PublishPress_Statuses.php:579
 msgid "Post idea assigned to writer."
 msgstr "Idea di articolo assegnato allo scrittore."
 
-#: PublishPress_Statuses.php:556
+#: PublishPress_Statuses.php:589
 msgid "In Progress"
 msgstr "In lavorazione"
 
-#: PublishPress_Statuses.php:557
+#: PublishPress_Statuses.php:590
 msgid "Mark in Progress"
 msgstr "Segna in fase di lavorazione"
 
-#: PublishPress_Statuses.php:558
+#: PublishPress_Statuses.php:591
 msgid "Writer is working on the post."
 msgstr "Lo scrittore sta lavorando sull'articolo."
 
-#: PublishPress_Statuses.php:568
+#: PublishPress_Statuses.php:601
 msgid "Approved"
 msgstr "Approvato"
 
-#: PublishPress_Statuses.php:570
+#: PublishPress_Statuses.php:603
 msgid "Post has been approved for publication."
 msgstr "L'articolo è stato approvato per la pubblicazione."
 
-#: PublishPress_Statuses.php:586
+#: PublishPress_Statuses.php:619
 msgid "Alternate Pre-Publication Workflow:"
 msgstr "Flusso di lavorazione di pre-pubblicazione alternativo:"
 
-#: PublishPress_Statuses.php:599
+#: PublishPress_Statuses.php:632
 msgid "Disabled Statuses:"
 msgstr "Stati disabilitati:"
 
@@ -424,11 +427,15 @@ msgstr "Usda in questi tipi di contenuto:"
 msgid "Workflow sequence:"
 msgstr "Sequenza del flusso di lavoro:"
 
-#: StatusesUI.php:224
+#: StatusesUI.php:223
+msgid "Status dropdown:"
+msgstr "Menu a discesa dello stato:"
+
+#: StatusesUI.php:232
 msgid "Editor capabilities:"
 msgstr "Capacità dell'editore:"
 
-#: StatusesUI.php:251
+#: StatusesUI.php:259
 msgid ""
 "Supplemental Role of Editor for \"standard statuses\" also covers Custom "
 "Statuses"
@@ -436,28 +443,37 @@ msgstr ""
 "Il ruolo supplementare di editore per gli \"stati standard\" comprende anche "
 "gli stati personalizzati."
 
-#: StatusesUI.php:276
+#: StatusesUI.php:284
 msgid "Publish button defaults to highest status available to user"
 msgstr ""
 "Il pulsante di pubblicazione ha come impostazione predefinita lo stato più "
 "alto disponibile per l'utente."
 
-#: StatusesUI.php:288
+#: StatusesUI.php:296
 msgid "Publish button defaults to next status in publication workflow"
 msgstr ""
 "Il pulsante di pubblicazione ha come impostazione predefinita lo stato "
 "successivo nel flusso di lavoro di pubblicazione"
 
+#: StatusesUI.php:319
+msgid ""
+"De-clutter the dropdown by hiding statuses outside current branch (if "
+"defaulting by sequence and some statuses are nested)"
+msgstr ""
+"Ripulire il menu a discesa nascondendo gli stati al di fuori della "
+"diramazione corrente (se l'impostazione predefinita è per sequenza e alcuni "
+"stati sono annidati)."
+
 #. translators: %s is the status name
-#: StatusesUI.php:364
+#: StatusesUI.php:395
 msgid "Edit Status: %s"
 msgstr "Modifica stato: %s"
 
-#: StatusesUI.php:390 StatusesUI.php:454
+#: StatusesUI.php:421 StatusesUI.php:532
 msgid "Add New Pre-Publication Status"
 msgstr "Aggiungi nuovo stato di pre-pubblicazione"
 
-#: StatusesUI.php:395
+#: StatusesUI.php:431
 msgid ""
 "Click any status property to edit. Drag to re-order, nest, or move to a "
 "different section."
@@ -465,23 +481,39 @@ msgstr ""
 "Fai clic sulla proprietà di qualsiasi stato per modificarlo. Trascina per "
 "riordinare, annidare o spostare in una sezione diversa."
 
-#: StatusesUI.php:410
+#: StatusesUI.php:441
+msgid ""
+"Note: The %1$sPublishPress Permissions Pro%2$s plugin is required for custom "
+"Visibility Statuses, but %3$sis not active%4$s."
+msgstr ""
+"Nota: Il plugin %1$sPublishPress Permissions Pro%2$s è necessario per gli "
+"stati di visibilità personalizzati, ma %3$snon è attivo%4$s."
+
+#: StatusesUI.php:454
+msgid ""
+"For custom Visibility Statuses, please %1$senable the Status Control "
+"module%2$s of Permissions Pro."
+msgstr ""
+"Per gli stati di visibilità personalizzati, devi %1$sabilitare il modulo di "
+"controllo degli stati%2$s di Permissions Pro."
+
+#: StatusesUI.php:488
 msgid "Pre-Publication"
 msgstr "Pre-pubblicazione"
 
-#: StatusesUI.php:418
+#: StatusesUI.php:496
 msgid "Visibility"
 msgstr "Visibilità"
 
-#: StatusesUI.php:427
+#: StatusesUI.php:505
 msgid "Revision"
 msgstr "Revisione"
 
-#: StatusesUI.php:453
+#: StatusesUI.php:531
 msgid "Add New Visibility Status"
 msgstr "Aggiungi nuovo stato di visibilità"
 
-#: StatusesUI.php:457
+#: StatusesUI.php:535
 msgid ""
 "This status can be assigned to a post as a different form of Private "
 "Publication with its own capability requirements."
@@ -489,7 +521,7 @@ msgstr ""
 "Questo stato può essere assegnato a un articolo come forma diversa di "
 "pubblicazione privata con i propri requisiti di capacità."
 
-#: StatusesUI.php:458
+#: StatusesUI.php:536
 msgid ""
 "This status can be assigned to an unpublished post using the Post Status "
 "dropdown."
@@ -497,11 +529,11 @@ msgstr ""
 "Questo stato può essere assegnato a un articolo non pubblicato utilizzando "
 "il menu a discesa \"Stato dell'articolo\"."
 
-#: StatusesUI.php:467
+#: StatusesUI.php:545
 msgid "PublishPress Statuses Settings"
 msgstr "Impostazioni di PublishPress Statuses"
 
-#: StatusesUI.php:468
+#: StatusesUI.php:546
 msgid "Note: Post types can also be specified for each individual status."
 msgstr ""
 "Nota: I tipi di contenuto possono essere specificati per ogni singolo stato."
@@ -510,15 +542,15 @@ msgstr ""
 msgid "Sorry, you do not have permission to edit custom statuses."
 msgstr "Non hai i permessi per modificare gli stati personalizzati."
 
-#: StatusHandler.php:46 StatusHandler.php:210
+#: StatusHandler.php:46 StatusHandler.php:229
 msgid "Please enter a name for the status"
 msgstr "Inserisci un nome per lo stato"
 
-#: StatusHandler.php:50 StatusHandler.php:215
+#: StatusHandler.php:50 StatusHandler.php:234
 msgid "Please enter a valid, non-numeric name for the status."
 msgstr "Inserisci un nome non numerico valido per lo stato."
 
-#: StatusHandler.php:67 StatusHandler.php:234
+#: StatusHandler.php:67 StatusHandler.php:253
 msgid "Status name cannot exceed 20 characters. Please try a shorter name."
 msgstr ""
 "Il nome dello stato non può superare i 20 caratteri. Prova con un nome più "
@@ -536,40 +568,40 @@ msgstr "Il nome dello stato è limitato. Scegli un altro nome."
 msgid "Could not add status: "
 msgstr "Impossibile aggiungere lo stato: "
 
-#: StatusHandler.php:152 StatusHandler.php:600
+#: StatusHandler.php:152 StatusHandler.php:619
 msgid "Status does not exist."
 msgstr "Lo stato non esiste."
 
-#: StatusHandler.php:157 StatusHandler.php:595
+#: StatusHandler.php:157 StatusHandler.php:614
 msgid "Could not delete the status: "
 msgstr "Impossibile eliminare lo stato: "
 
-#: StatusHandler.php:176 StatusHandler.php:583 StatusHandler.php:588
-#: StatusHandler.php:615
+#: StatusHandler.php:176 StatusHandler.php:602 StatusHandler.php:607
+#: StatusHandler.php:634
 msgid "You are not permitted to do that."
 msgstr "Non hai i permessi per fare ciò."
 
-#: StatusHandler.php:384
+#: StatusHandler.php:403
 msgid "Error updating post status."
 msgstr "Errore nell'aggiornamento dello stato dell'articolo."
 
-#: StatusHandler.php:525
+#: StatusHandler.php:544
 msgid "Cannot reassign to the status you want to delete"
 msgstr "Impossibile riassegnare allo stato che vuoi eliminare"
 
-#: StatusHandler.php:570
+#: StatusHandler.php:589
 msgid "Restricted status "
 msgstr "Stato limitato "
 
-#: StatusHandler.php:597
+#: StatusHandler.php:616
 msgid "Status deleted"
 msgstr "Stato eliminato"
 
-#: StatusHandler.php:619
+#: StatusHandler.php:638
 msgid "Status positions were not sent."
 msgstr "Le posizioni dello stato non sono state inviate."
 
-#: StatusHandler.php:678
+#: StatusHandler.php:697
 msgid "Status order updated"
 msgstr "Ordine dello stato aggiornato"
 

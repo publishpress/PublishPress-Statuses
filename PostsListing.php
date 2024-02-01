@@ -146,7 +146,6 @@ class PostsListing
 
                 // @todo: ordered, indented statuses in quick edit dropdown
                 ?>
-                $('select[name="_status"]').html('');
                 <?php
                 if ($can_publish) {
                     $moderation_statuses = array_merge(
@@ -157,15 +156,29 @@ class PostsListing
 
                 foreach ($moderation_statuses as $_status => $_status_obj) :
                 ?>
-                    $('select[name="_status"]').append('<?php 
-                        echo '<option value="' . esc_attr($_status) . '">';
+                    if (!$('select[name="_status"] option[value="<?php echo esc_attr($_status);?>"]').length) {
+                        $('select[name="_status"]').append('<?php 
+                            echo '<option value="' . esc_attr($_status) . '">';
 
-                        $caption = (!empty($_status_obj->status_parent) && !empty($moderation_statuses[$_status_obj->status_parent])) 
-                        ? '— ' . $_status_obj->labels->caption
-                        : $_status_obj->labels->caption;
-    
-                        echo esc_html($caption) . '</option>';
-                    ?>');
+                            $caption = (!empty($_status_obj->status_parent) && !empty($moderation_statuses[$_status_obj->status_parent])) 
+                            ? '— ' . $_status_obj->labels->caption
+                            : $_status_obj->labels->caption;
+        
+                            echo esc_html($caption) . '</option>';
+                        ?>');
+
+                        $('select[name="_status"]').on('click', function() {
+                            if ('publish' != $('select[name="_status"]').val()) {
+                                $('div.inline-edit-wrapper input[name="keep_private"]').prop('checked', false);
+                            }
+                        });
+
+                        $('div.inline-edit-wrapper input[name="keep_private"]').on('click', function() {
+                            if ($('div.inline-edit-wrapper input[name="keep_private"]').prop('checked')) {
+                                $('select[name="_status"]').val('publish');
+                            }
+                        });
+                    }
                 <?php endforeach;?> 
             });
             //]]>

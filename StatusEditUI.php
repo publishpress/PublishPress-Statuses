@@ -91,6 +91,23 @@ class StatusEditUI
                     $(panel).find('table').show();
                 }
             });
+
+            // If the basic set status cap is changed on the Roles tab, mirror on Post Access tab and in type-specific Set caps
+            $('#pp-roles_table td.set-status-roles input').on('click', function() {
+                $('#pp-post_access input[name="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked')).next('table').find('td.post-cap input').prop('disabled', !$(this).prop('checked')).prop('checked', $(this).prop('checked'));
+            });
+
+            // If the basic set status cap is changed on the Post Access tab, mirror on Roles tab and in type-specific Set caps
+            $('#pp-post_access input.cme_status_set_basic').on('click', function() {
+                $('#pp-roles_table td.set-status-roles input[name="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked'));
+                $(this).next('table').find('tbody tr td.post-cap label input').prop('checked', $(this).prop('checked'));
+            });
+
+            // Work around status capabilities library bug (displaying Set capability checkbox for disabled post types)
+            var basic_status_set_cap = $('#pp-post_access input.cme_status_set_basic').attr('title');
+            $('#pp-post_access td.post-cap input[title="' + basic_status_set_cap + '"]').parent().remove();
+
+            $('div.pp-subtext').html('<?php esc_html_e('Enforce type-specific post capabilitities for this status, or share capabilities with another status.', 'publishpress-statuses');?>');
         });
         /* ]]> */
         </script>
@@ -284,7 +301,7 @@ class StatusEditUI
                 $roles = \PublishPress_Functions::getRoles(true);
                 ?>
                 <tr class="form-field">
-                    <th><label for="status_assign"><?php esc_html_e('Assign Status', 'publishpress-statuses') ?></label>
+                    <th><label for="status_assign"><?php esc_html_e('Status Availability', 'publishpress-statuses') ?></label>
                     <br /><br />
                     <span class="pp-statuses-field-descript" style="font-weight: normal">
                     <?php esc_html_e('Choose which user roles can assign this status to a post.', 'publishpress-statuses');?>
@@ -320,7 +337,12 @@ class StatusEditUI
             case 'post_types' :
                 ?>
                 <tr class="form-field">
-                <th><label for="status_label"><?php esc_html_e('Post Types', 'publishpress-statuses') ?></label></th>
+                <th><label for="status_label"><?php esc_html_e('Post Types', 'publishpress-statuses') ?></label>
+                <br /><br />
+                <span class="pp-statuses-field-descript" style="font-weight: normal">
+                <?php esc_html_e('Choose which post types can be set to this status.', 'publishpress-statuses');?>
+                </span>
+                </th>
                 <td>
 
                 <?php
