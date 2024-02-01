@@ -29,8 +29,15 @@ class PermissionsImport {
             $status_parent = [];
         }
 
+        // If status order has already been stored by PP Statuses, don't re-apply default order from Permissions Pro Status Control
+        if (get_option('publishpress_status_positions')) {
+            return;
+        }
+
         // migrate status order from Permissions Pro (needs more work to account for status type boundaries)
         if ($_presspermit_status_order = get_option('presspermit_status_order')) {
+            update_option('publishpress_statuses_status_control_import', PUBLISHPRESS_STATUSES_VERSION);
+
             // Merge in Permissions Pro default ordering values
             $_presspermit_status_order = array_merge(
                 [
@@ -137,6 +144,8 @@ class PermissionsImport {
             );
 
             update_option('publishpress_status_positions', $new_status_positions);
+
+            update_option('publishpress_statuses_status_control_positions_import', PUBLISHPRESS_STATUSES_VERSION);
         }
     }
 }
