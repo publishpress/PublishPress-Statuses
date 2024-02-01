@@ -569,8 +569,18 @@ do_action('publishpress_statuses_table_row', $key, []);
                         $caption = esc_html('Disabled', 'publishpress-statuses');
                 
                     } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) {
-                        if (empty($status_obj->capability_status)) {
+                        if (!empty($status_obj->private)
+                        && (class_exists('\PublishPress\StatusCapabilities') && defined('PublishPress\StatusCapabilities::VERSION'))  // verison < 1.0.2 did not have this constant
+                        ) {
+                            if (defined('PPS_CUSTOM_PRIVACY_EDIT_CAPS') && PPS_CUSTOM_PRIVACY_EDIT_CAPS) {
+                                $caption = esc_html('Custom', 'publishpress-statuses');
+                            } else {
+                                $caption = esc_html('Custom Read', 'publishpress-statuses');
+                            }
+
+                        } elseif (empty($status_obj->capability_status)) {
                             $caption = esc_html('Standard', 'publishpress-statuses');
+                        
                         } else {
                             if (!empty($status_obj->capability_status) && ($status_obj->capability_status != $status_obj->name)) {
                                 if ($cap_status_obj = get_post_status_object($status_obj->capability_status)) {

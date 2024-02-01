@@ -27,8 +27,6 @@ class StatusesUI {
     private function load() {
         $plugin_page = \PublishPress_Functions::getPluginPage();
 
-        $title = __('PublishPress Statuses', 'publishpress-statuses');
-
         add_filter('presspermit_edit_status_default_tab', [$this, 'fltEditStatusDefaultTab']);
 
         // Register our settings
@@ -60,6 +58,7 @@ class StatusesUI {
             if ($status_obj = get_post_status_object($status_name)) {
                 // translators: %s is the status label
                 $title = sprintf(__('Edit Post Status: %s', 'publishpress-statuses'), $status_obj->label);
+                $custom_html_title = sprintf(__('%s Status - Edit', 'publishpress-statuses'), $status_obj->label);
             }
 
         } elseif ('publishpress-statuses-add-new' === $plugin_page) {
@@ -75,14 +74,43 @@ class StatusesUI {
             
             if (empty($title)) {
                 $title = __('Add Post Status', 'publishpress-statuses');
+                $custom_html_title = sprintf(__('Add Status', 'publishpress-statuses'));
             }
+
+        } elseif ('publishpress-statuses-settings' === $plugin_page) {
+            $title = __('PublishPress Statuses Settings', 'publishpress-statuses');
+            $custom_html_title = sprintf(__('Statuses Settings', 'publishpress-statuses'));
+
         } else {
             $title = __('Post Statuses', 'publishpress-statuses');
+            $custom_html_title = __('Statuses', 'publishpress-statuses');
+            
+            if ($status_type = \PublishPress_Functions::REQUEST_key('status_type')) { // @todo: implement hook in Permissions
+                $_title = $title;
+                
+                if ('visibility' == $status_type) {
+                    $title = __('Visibility Statuses', 'publishpress-statuses');
+                } else {
+                    $title = apply_filters('publishpress_statuses_admin_title', $title, $status_type);
+                }
+
+                if ($title != $_title) {
+                    $custom_html_title = $title;
+                }
+            }
         }
 
-        $pp = \PublishPress_Statuses::instance();
+        $pp_statuses = \PublishPress_Statuses::instance();
 
-        $pp->title = $title;
+        $pp_statuses->title = $title;
+
+        if (empty($custom_html_title)) {
+            $custom_html_title = $title;
+        }
+
+        add_filter('admin_title', function($admin_title, $_title) use ($custom_html_title) {
+            return $custom_html_title;
+        }, 10, 2);
 
         add_action('init', [$this, 'loadAdminMessages'], 999);
 
