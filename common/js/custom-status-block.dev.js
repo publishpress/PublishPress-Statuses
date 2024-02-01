@@ -299,14 +299,6 @@ setInterval(function () {
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-published').toggle(isPublished && ('future' != status) && !updateDisabled);
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-scheduled').toggle(('future' == status) && !updateDisabled);
 
-    /*
-    if (! $('span.presspermit-editor-toggle button').length
-    && (status == ppLastPostStatus)
-    ) {
-      return;
-    }
-    */
-
     sideEffectL10nManipulation(status);
   });
 }, 250);
