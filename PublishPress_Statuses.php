@@ -304,7 +304,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 [],
                 [
                     'hierarchical' => false,
-                    'update_count_callback' => '_update_post_term_count',
                     'label' => __('Core Post Statuses', 'publishpress-statuses'),
                     'query_var' => false,
                     'rewrite' => false,
@@ -320,7 +319,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     [],
                     [
                         'hierarchical' => false,
-                        'update_count_callback' => '_update_post_term_count',
                         'label' => 'Pseudo Statuses',
                         'query_var' => false,
                         'rewrite' => false,
