@@ -20,6 +20,7 @@ class PostEditClassicSubmitMetabox
         }
 
         $moderation_statuses = Admin::get_selectable_statuses($post, $args);
+        $moderation_statuses = array_diff_key($moderation_statuses, array_fill_keys(['_public', 'publish', 'private', 'future'], true)); // entry for current post status added downstream
 
         $can_publish = current_user_can($type_obj->cap->publish_posts);
 
