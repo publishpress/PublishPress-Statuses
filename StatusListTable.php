@@ -236,7 +236,7 @@ class StatusListTable extends \WP_List_Table
 
                 <div class="row-inner">
                     <table class="status-row" style="width:100%"><tbody><tr>
-                    <td colspan="7" style="text-align: center"><?php _e('Drop any status here to include in main workflow for new posts.', 'publishpress-statuses');?></td>
+                    <td colspan="7" style="text-align: center"><?php _e('Drop any status here to include it in main workflow for new posts.', 'publishpress-statuses');?></td>
                     </tr></tbody></table>
                 </div>
             </div>
