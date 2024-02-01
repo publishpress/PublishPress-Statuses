@@ -73,6 +73,10 @@ class PostEdit
     {
         global $wp_meta_boxes;
 
+        if (\PublishPress_Statuses::DisabledForPostType($post_type)) {
+            return;
+        }
+
         if ('attachment' != $post_type) {
             if (!empty($wp_meta_boxes[$post_type]['side']['core']['submitdiv'])) {
                 // Classic Editor: override WP submit metabox with a compatible equivalent (applying the same hooks as core post_submit_meta_box()
@@ -95,6 +99,10 @@ class PostEdit
         global $post;
 
         if (empty($post) || defined('PUBLISHPRESS_STATUSES_DISABLE_CLASSIC_FAILSAFE')) {
+            return;
+        }
+
+        if (\PublishPress_Statuses::DisabledForPostType($post->post_type)) {
             return;
         }
 
