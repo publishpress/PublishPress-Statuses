@@ -2529,9 +2529,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $save_as_pending = true;
         }
 
-        $status_obj = get_post_status_object($post_status);
+        $post_type = ($_post) ? $_post->post_type : \PublishPress_Functions::findPostType();
 
-        if (!empty($status_obj->private)) { // This filter only deals with pre-publication workflow statuses
+        if (!in_array($post_type, \PublishPress_Statuses::getEnabledPostTypes())) {
             return $post_status;
         }
 
@@ -2556,6 +2556,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         if (!$post_status_obj = get_post_status_object($selected_status)) {
+            return $post_status;
+        }
+
+        if (!empty($post_status_obj->private)) { // This filter only deals with pre-publication workflow statuses
             return $post_status;
         }
 
