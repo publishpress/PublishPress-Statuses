@@ -47,6 +47,14 @@ class PostEdit
             if (!empty($wp_meta_boxes[$post_type]['side']['core']['submitdiv'])) {
                 // Classic Editor: override WP submit metabox with a compatible equivalent (applying the same hooks as core post_submit_meta_box()
 
+                if (!empty($post)) {
+                    if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
+                    || \PublishPress_Statuses::isPostBlacklisted($post->ID)
+                    ) {
+                        return;
+                    }
+                }
+
                 // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
                 $wp_meta_boxes[$post_type]['side']['core']['submitdiv']['callback'] = [$this, 'post_submit_meta_box'];
             }
@@ -57,6 +65,12 @@ class PostEdit
         global $post;
 
         if (empty($post) || defined('PUBLISHPRESS_STATUSES_DISABLE_CLASSIC_FAILSAFE')) {
+            return;
+        }
+
+        if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
+        || \PublishPress_Statuses::isPostBlacklisted($post->ID)
+        ) {
             return;
         }
 
