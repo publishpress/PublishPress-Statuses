@@ -338,6 +338,7 @@ class Admin
 
         if (empty($status->labels->visibility)) {
             if ('publish' == $status->name) {
+                $status->labels->visibility = esc_html(\PublishPress_Statuses::__wp('Public'));
 
             } elseif (!empty($status->public)) {
                 $status->labels->visibility = (!defined('WPLANG') || ('en_EN' == WPLANG)) 

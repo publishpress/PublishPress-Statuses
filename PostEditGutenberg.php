@@ -66,6 +66,7 @@ class PostEditGutenberg
             'publish' => \PublishPress_Statuses::__wp('Publish'),
             'schedule' => \PublishPress_Statuses::_x_wp('Schedule', 'post action/button label'),
             'advance' => __('Advance Status', 'publishpress-statuses'),
+            'postStatus' => __('Post Status', 'publishpress-statuses'),
             // translators: %s is the status label
             'saveAs' => __('Save as %s', 'publishpress-statuses'),
             'setSelected' => __('Set Selected Status', 'publishpress-statuses'),

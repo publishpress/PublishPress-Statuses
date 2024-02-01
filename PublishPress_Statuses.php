@@ -862,6 +862,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $wp_post_statuses['future']->labels->publish = esc_attr(self::_x_wp('Schedule', 'post action/button label'));
     
             if (empty($wp_post_statuses['pending']->labels->publish)) {
+                $wp_post_statuses['pending']->labels->save_as = esc_attr(self::__wp('Save as Pending'));
                 $wp_post_statuses['pending']->labels->publish = esc_attr(self::__wp('Submit for Review'));
             }
 

@@ -181,7 +181,7 @@ class StatusesUI {
             'status-missing' => __("Post status doesn't exist.", 'publishpress-statuses'),
             'default-status-changed' => __('Default post status has been changed.', 'publishpress-statuses'),
             // translators: %1$s is the status name, %2$s is the edit link
-            'term-updated' => sprintf(__('Post status%1$s updated. %2$s', 'publishpress-statuses'), $status_name, $edit_again),
+            'term-updated' => sprintf(__('Post status %1$s updated. %2$s', 'publishpress-statuses'), $status_name, $edit_again),
             'status-deleted' => __('Post status deleted.', 'publishpress-statuses'),
             'status-position-updated' => __("Status order updated.", 'publishpress-statuses'),
         ];
