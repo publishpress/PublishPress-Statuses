@@ -2666,6 +2666,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                 $selected_status_dropdown = isset($rest->params['pp_status_selection']) ? $rest->params['pp_status_selection'] : $selected_status;
 
+                if ('_pending' == $selected_status_dropdown) {
+                    $selected_status_dropdown = 'pending';
+                }
+
                 $post_type = ($post_id) ? '' : \PublishPress_Functions::findPostType();
 
                 switch ($workflow_action) {
