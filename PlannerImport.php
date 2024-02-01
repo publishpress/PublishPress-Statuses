@@ -3,13 +3,12 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
     /*
     * Import status positions, color, icon and description encoded by Planner and merge into existing Planner statuses
     */
-    public function importEncodedProperties($force = false, $args = []) {
-        if (!$force && get_option('publishpress_statuses_planner_import_done')) {
-            return;
-        }
-
-        if (!$terms = get_terms('post_status', ['hide_empty' => false])) {
-            return;
+  
+    public function importEncodedProperties($terms, $args = []) {
+        if (!$terms) {
+            if (!$terms = get_terms('post_status', ['hide_empty' => false])) {
+                return;
+            }
         }
 
         $planner_status_positions = [
@@ -158,7 +157,8 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
 
                     $statuses_before_pending[$child_status] = $child_status;
                 }
-            } elseif ($position <= $planner_status_positions['publish']) {
+
+            } elseif ($position < $planner_status_positions['publish']) {
                 $statuses_after_pending[$post_status]= $post_status;
 
                 // retain any nesting established since Statuses install
