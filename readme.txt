@@ -1,40 +1,55 @@
-=== PublishPress Statuses - Create Your WordPress Publishing Workflows ===
+=== PublishPress Statuses - Custom Post Status and Workflow ===
 Contributors: publishpress, kevinB, stevejburge, andergmartins
 Author: publishpress
 Author URI: https://publishpress.com
-Tags: statuses, custom statuses, workflow, draft, pending review
+Tags: statuses, custom statuses, workflow, draft, pending review, extended post status, archive status, status, status manager, archived status, custom status
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.6.1
+Stable tag: 1.0.6.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-PublishPress Statuses allows you to add custom statuses for your posts. You can use these statuses to create custom publishing workflows.
+The PublishPress Statuses plugin allows you to create additional statuses for your posts. You can use these statuses to create publishing workflows.
 
 == Description ==
 
-PublishPress Statuses allows you to add custom statuses for your posts. You can use these statuses to create custom publishing workflows.
+Have you ever wanted to label a WordPress post something other than "Draft" or "Pending Review"? The [PublishPress Statuses](https://publishpress.com/statuses/) plugin can help. 
 
-WordPress provides "Draft" and "Pending Review". With the PublishPress Statuses plugin, you can add new statuses.
+PublishPress Statuses allows you to create additional statuses for your posts. For example, you can add statuses such as "In Progress", "Needs Work", or "Rejected". You can also control which users can move posts to each status.
+
+## Why Use PublishPress Statuses?
+
+WordPress provides you with only two statuses for your post: "Draft" or "Pending Review". This means that before your content is published it can only be labeled as "Draft" or "Pending Review". 
+
+Those statuses are too limiting for many publishers. For example, what label should you use for content that is assigned to a writer? What label should you use for a post that needs work, or has been rejected? 
+
+With the PublishPress Statuses plugin, you can add new statuses that accurately describe the stages of your publishing process.
 
 ## How to Use PublishPress Statuses
 
-Go to the "Statuses" area in your WordPress site and you'll see five different statuses. You can add, remove or re-arrange most of these statuses.
+Go to the "Statuses" area in your WordPress site and you'll six different statuses. This is the main workflow. Every post on your site must use this workflow. However, with PublishPress Statuses, you can move, rerrange and add to this workflow. 
 
 - **Draft**: This is the WordPress default status and can not be modified. 
-- **Pitch**: This is a new status.
-- **Assigned**: This is a new status.
-- **In Progress**: This is a new status.
+- **Pitch**: This is a new status. You can use this status to indicate the post is just an idea.
+- **Assigned**: This is a new status. You can use this status to show the post has been given to a writer.
+- **In Progress**: This is a new status. You can use this status to if the post is being worked on.
+- **Approved**: This is a new status. You can use this status to when the post has been accepted and it ready for publication.
 - **Pending Review**: This is a core WordPress status and can not be modified.
 
 [Click here to see how to create and use statuses](https://publishpress.com/knowledge-base/start-statuses/).
+
+In addition to the default workflow, PublishPress Statuses allows you to create alternate workflows. These statuses are for content that is not on a direct path to publication. Examples of these alternate workflows include "Deferred", "Needs Work" and "Rejected".
 
 ## Custom Permissions for Statuses
 
 PublishPress Statuses allows to decide which users can move content to which statuses. Go to "Statuses" then "Settings" and click the "Roles" tab. This allows you to choose which user roles can move a post to this status.
 
 [Click here to see how control access to statuses](https://publishpress.com/knowledge-base/statuses-options/).
+
+You can take this further and decide who assign, edit, and delete content in each status. This is possible if you also use the PublishPress Permissions Pro plugin. 
+
+[Click here to see add advanced capabilities to statuses](https://publishpress.com/knowledge-base/extended-capabilities-statuses/).
 
 ## Join PublishPress and get the Pro plugins
 
@@ -58,6 +73,14 @@ Together, these plugins are a suite of powerful publishing tools for WordPress. 
 
 Bug reports for PublishPress Statuses are welcomed in our [repository on GitHub](https://github.com/publishpress/publishpress-statuses). Please note that GitHub is not a support forum, and that issues that are not properly qualified as bugs will be closed.
 
+== Screenshots ==
+
+1. Using PublishPress Statuses you can add custom workflow options that are available when editing posts. You can build one main workflow for your posts. This workflow will be available to your users on the post editing screen. 
+2. In addition to the default workflow, PublishPress Statuses allows you to create alternate workflows. These statuses are for content that is not on a direct path to publication. Examples of these alternate workflows include "Deferred", "Needs Work" and "Rejected".
+3. PublishPress Statuses supports branches in your workflows. You can create parent and child statuses. This allows posts to move through the individual branch before returning to the main workflow.
+4. PublishPress Statuses allows you to customize which roles can assign posts to each status. You can give a user role the ability to move a post to just a single statuses. Or you can give a user role full access to your whole workflow.
+5. With the addition of the PublishPress Capabilities Pro plugin you can create highly custom permissions for each status. You can control who can set, edit, and delete posts in each status.
+
 == Installation ==
 
 This section describes how to install the plugin and get it working.
@@ -65,13 +88,26 @@ This section describes how to install the plugin and get it working.
 1. Unzip the plugin contents to the `/wp-content/plugins/publishpress-statuses/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
-== Screenshots ==
-
 == Frequently Asked Questions ==
+
+= Does PublishPress Statuses integrate with PublishPress Planner? =
+
+Yes, the PublishPress Statuses plugin integrates with the PublishPress Planner plugin. This allows you to use custom statuses, icons, and colors on the "Content Calendar" screen.
+
+= How does this compare the Extended Post Status plugin? =
+
+Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced featuers such as custom capabilities, workflow branching, icons, colors, and much more.
 
 == Changelog ==
 
-= [1.0.6.1] - 18 Jan 2024 =
+= [1.0.6.2] - 18 Jan 2024 =
+* Feature : When completing an alternate workflow, offer to step back to last previously saved main workflow status
+* Fixed : Non-Administrators could not view private pages authored by other users
+* Fixed : Classic Editor - Canceling out of Status selection caused selection to default back to Draft
+* Fixed : Classic Editor - Canceling out of Visibility selection caused wrong Publish button caption under some configurations
+* Fixed : PHP Warning on Planner Import
+
+= [1.0.6.1] - Unreleased =
 * Compat : Permissions Pro - Status-specific editing access was not applied under some configurations
 * Fixed : PHP Warning on user edit
 
@@ -135,19 +171,19 @@ This section describes how to install the plugin and get it working.
 = [1.0.3.4] - 8 Jan 2024 =
 * Fixed : If one of the default statuses was already user-defined in Planner, the import script changed its position
 
-= [1.0.3.3] - 8 Jan 2024 =
+= [1.0.3.3] - Unreleased =
 * Fixed : Colors were not displayed on Statuses management screen
 * Change : Include default alternate workflow statuses: Deferred, Needs Work, Rejected
 * Change : Include a sample alternate workflow (disabled by default): Committee, Committee Review, Committee Progress, Committee Approved
 * Change : Recaption section titles on Statuses screen
 
-= [1.0.3.2] - 8 Jan 2024 =
+= [1.0.3.2] - Unreleased =
 * Change : PublishPress Planner import put some statuses into wrong section
 
-= [1.0.3.1] - 8 Jan 2024 =
+= [1.0.3.1] - Unreleased =
 * Change : PublishPress Planner import will execute again if Planner is re-activated and statuses added or modified
 
-= [1.0.3] - 8 Jan 2024 =
+= [1.0.3] - Unreleased =
 * Fixed : PublishPress Planner status properties (color, icon, position, description) were not imported
 * Compat : Pods - Could not enable Pods-defined custom post types for custom statuses
 * Fixed : Classic Editor - Custom statuses were not available if Classic mode is triggered in a non-standard way
@@ -168,9 +204,11 @@ This section describes how to install the plugin and get it working.
 * Lang : A few string had wrong text domain
 
 = [1.0.2.4] - 4 Jan 2024 =
+* Initial public release
 * Change : Don't allow pre-publish checks to be disabled (unless forced by constant)
 
 = [1.0.2.2] - 20 Dec 2023 =
+* GitHub release
 * Change : In Workflow (Pre-Publish) panel, display selectable radio option for next status even if not defaulting to it
 * Change : Force usage of Pre-Publish panel (unless disabled by constant)
 * Change : New plugin setting "De-clutter status dropdown by hiding statuses outside current branch"; no longer do this by default
@@ -180,6 +218,7 @@ This section describes how to install the plugin and get it working.
 * Fixed : Classic Editor - Numerous captioning and display toggle issues in post publish metabox
 
 = [1.0.2.1] - 19 Dec 2023 =
+* GitHub release
 * Fixed : Non-Administrator login caused Auto Draft publication
 * Fixed : Pending status draggable to Disabled even though disabling is prevented
 * Fixed : Edit Status - First update overrides Roles selection with defaults
@@ -189,6 +228,7 @@ This section describes how to install the plugin and get it working.
 * Fixed : Permissions Pro - Disabled Visibility Statuses still available
 
 = [1.0.2] - 13 Dec 2023 =
+* GitHub release
 * Fixed : Redirect back to Planner Calendar settings after editing a status
 * Fixed : Statuses Admin UI - Minor styling fix for tabs
 * Fixed (Pro) : Visibility Statuses - workflow statuses filtering interfered with selection in some cases
@@ -196,9 +236,10 @@ This section describes how to install the plugin and get it working.
 * Compat : Permissions / Capabilities - Avoid redundant execution of status capabilities update handler
 
 = [1.0.1] - 17 Oct 2023 =
+* GitHub release
 * Fixed : If running without Permissions Pro, users who cannot set a status were not blocked from editing or deleting posts of that status
 * Fixed : Capabilities Pro integration - Typo in PublishPress Statuses tab caption
 * Code : Improved scan results
 
 = [1.0.0] - 10 Oct 2023 =
-* Added : Initial wordpress.org submission
+* Initial wordpress.org submission

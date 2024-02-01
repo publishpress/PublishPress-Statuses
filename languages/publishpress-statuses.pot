@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.0.6.1\n"
+"Project-Id-Version: PublishPress Statuses 1.0.6.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-18T03:03:25+00:00\n"
+"POT-Creation-Date: 2024-01-18T21:46:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -88,9 +88,9 @@ msgstr ""
 #: PostEditClassic.php:160
 #: PostEditGutenberg.php:63
 #: PostEditGutenberg.php:189
-#: PostEditGutenbergStatuses.php:43
-#: PostEditGutenbergStatuses.php:63
-#: PostEditGutenbergStatuses.php:71
+#: PostEditGutenbergStatuses.php:44
+#: PostEditGutenbergStatuses.php:64
+#: PostEditGutenbergStatuses.php:72
 msgid "Advance Status"
 msgstr ""
 
@@ -159,11 +159,11 @@ msgstr ""
 msgid "This post is currently scheduled"
 msgstr ""
 
-#: PostEditGutenbergStatuses.php:115
+#: PostEditGutenbergStatuses.php:116
 msgid "Workflow"
 msgstr ""
 
-#: PostEditGutenbergStatuses.php:119
+#: PostEditGutenbergStatuses.php:120
 msgid "Submit Revision"
 msgstr ""
 
@@ -348,87 +348,87 @@ msgstr ""
 msgid "Labels"
 msgstr ""
 
-#: StatusEditUI.php:65
+#: StatusEditUI.php:66
 #: StatusListTable.php:127
 msgid "Roles"
 msgstr ""
 
-#: StatusEditUI.php:69
-#: StatusEditUI.php:384
+#: StatusEditUI.php:70
+#: StatusEditUI.php:385
 #: StatusListTable.php:128
 msgid "Post Types"
 msgstr ""
 
-#: StatusEditUI.php:131
+#: StatusEditUI.php:132
 msgid "Enforce type-specific post capabilitities for this status, or share capabilities with another status."
 msgstr ""
 
-#: StatusEditUI.php:169
+#: StatusEditUI.php:170
 msgid "Update Status"
 msgstr ""
 
-#: StatusEditUI.php:212
+#: StatusEditUI.php:213
 msgid "Status Label"
 msgstr ""
 
-#: StatusEditUI.php:225
+#: StatusEditUI.php:226
 msgid "The name is used to identify the status. (Max: 20 characters)"
 msgstr ""
 
-#: StatusEditUI.php:248
+#: StatusEditUI.php:249
 msgid "The slug is the unique ID for the status and is changed when the name is changed."
 msgstr ""
 
-#: StatusEditUI.php:259
+#: StatusEditUI.php:260
 msgid "Description"
 msgstr ""
 
-#: StatusEditUI.php:271
+#: StatusEditUI.php:272
 msgid "The description is primarily for administrative use, to give you some context on what the custom status is to be used for."
 msgstr ""
 
-#: StatusEditUI.php:280
+#: StatusEditUI.php:281
 msgid "Color"
 msgstr ""
 
-#: StatusEditUI.php:292
+#: StatusEditUI.php:293
 msgid "The color is used to identify the status."
 msgstr ""
 
-#: StatusEditUI.php:298
+#: StatusEditUI.php:299
 #: StatusListTable.php:126
 msgid "Icon"
 msgstr ""
 
-#: StatusEditUI.php:314
+#: StatusEditUI.php:315
 msgid "Select Icon"
 msgstr ""
 
-#: StatusEditUI.php:320
+#: StatusEditUI.php:321
 msgid "The icon is used to visually represent the status."
 msgstr ""
 
-#: StatusEditUI.php:348
+#: StatusEditUI.php:349
 msgid "Status Availability"
 msgstr ""
 
-#: StatusEditUI.php:351
+#: StatusEditUI.php:352
 msgid "Choose which user roles can assign this status to a post."
 msgstr ""
 
-#: StatusEditUI.php:387
+#: StatusEditUI.php:388
 msgid "Choose which post types can be set to this status."
 msgstr ""
 
-#: StatusEditUI.php:424
+#: StatusEditUI.php:425
 msgid "All Post Types"
 msgstr ""
 
-#: StatusEditUI.php:471
+#: StatusEditUI.php:472
 msgid "Save As Label"
 msgstr ""
 
-#: StatusEditUI.php:479
+#: StatusEditUI.php:480
 msgid "Submit Button Label"
 msgstr ""
 
