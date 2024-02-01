@@ -132,29 +132,6 @@ class PostEditClassic
 	                $status_obj = get_post_status_object($status);
                 }
 
-                //$save_as = isset($status_obj->labels->save_as) ? $status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save');
-
-                /*
-                if ('moderation' == $prop) {
-                    if (!empty($post)) {
-                        // If post is not already at this status, use Submit caption on Save button
-                        if (($post->post_status != $status) && isset($status_obj->labels->publish)) {
-                            $save_as = $status_obj->labels->publish;
-                        }
-
-                        // For legacy behavior, also use Submit caption if status is Pending and user cannot publish
-                        if (('pending' == $status) && ($post->post_status == 'pending') && !defined('PP_STATUSES_PENDING_STATUS_CONSISTENT_SAVE_LABEL')) {
-                            if ($type_obj = get_post_type_object($typenow)) {
-                                if (!empty($type_obj->cap) && !empty($type_obj->cap->publish_posts) && !current_user_can($type_obj->cap->publish_posts)
-                                ) {
-                                    $save_as = $status_obj->labels->publish;
-                                }
-                            }
-                        }
-                    }
-                }
-                */
-
                 $stati[$prop][] = [
                     'name' => $status, 
                     'label' => $status_obj->labels->name, 

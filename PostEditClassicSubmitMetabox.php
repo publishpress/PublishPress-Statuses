@@ -230,15 +230,6 @@ class PostEditClassicSubmitMetabox
             if (apply_filters('presspermit_display_save_as_button', true, $post, $args)):
 
                 $save_caption = isset($post_status_obj->labels->save_as) ? $post_status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save');
-
-                // For legacy behavior, use Submit caption if status is Pending and user cannot publish
-                /*
-                if (('pending' == $post->post_status) && empty($args['can_publish']) && !defined('PP_STATUSES_PENDING_STATUS_CONSISTENT_SAVE_LABEL')) {
-                    $save_caption = isset($post_status_obj->labels->publish) 
-                    ? $post_status_obj->labels->publish 
-                    : \PublishPress_Statuses::__wp('Submit for Review');
-                }
-                */
                 ?>
                 <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($save_caption) ?>"
                     tabindex="4" class="button button-highlighted"/>
