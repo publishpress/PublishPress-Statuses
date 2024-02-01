@@ -150,6 +150,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         add_filter('cme_plugin_capabilities', [$this, 'fltRegisterCapabilities']);
 
+		// ShortPixel Critical CSS plugin: https://wordpress.org/support/topic/conflict-with-taxonomies-that-have-same-name-as-a-wp_post-field/
+        add_filter('shortpixel_critical_css_manual_term_css', function($val) {return false;}, 5);
+
         // Register the module with PublishPress
         
         $this->slug = 'publishpress_statuses';
