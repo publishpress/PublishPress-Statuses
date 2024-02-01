@@ -269,12 +269,14 @@ class StatusesUI {
         $checked = $module->options->supplemental_cap_moderate_any ? 'checked' : '';
 
         echo sprintf(
-            '<input type="checkbox" name="%s" value="1" autocomplete="off" %s>',
+            '<input type="checkbox" name="%s" id="supplemental_cap_moderate_any" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[supplemental_cap_moderate_any]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="supplemental_cap_moderate_any">';
         esc_html_e('Supplemental Role of Editor for "standard statuses" also covers Custom Statuses', 'publishpress-statuses');
+        echo '</label>';
 
         echo '</div>';
     }
@@ -294,24 +296,28 @@ class StatusesUI {
         $checked = !$module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
 
         echo sprintf(
-            '<input type="radio" name="%s" value="0" autocomplete="off" %s>',
+            '<input type="radio" name="%s" id="moderation_statuses_default_to_highest" value="0" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="moderation_statuses_default_to_highest">';
         esc_html_e('Publish button defaults to highest status available to user', 'publishpress-statuses');
+        echo '</label>';
 
-        echo '</div><div style="margin-top: 10px;">';
+        echo '</div><div style="margin-top: 12px;">';
 
         $checked = $module->options->moderation_statuses_default_by_sequence ? 'checked' : '';
 
         echo sprintf(
-            '<input type="radio" name="%s" value="1" autocomplete="off" %s>',
+            '<input type="radio" name="%s" id="moderation_statuses_default_to_next" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[moderation_statuses_default_by_sequence]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="moderation_statuses_default_to_next">';
         esc_html_e('Publish button defaults to next status in publication workflow', 'publishpress-statuses');
+        echo '</label>';
 
         echo '</div></div>';
     }
@@ -329,12 +335,14 @@ class StatusesUI {
         $checked = $module->options->status_dropdown_show_current_branch_only ? 'checked' : '';
 
         echo sprintf(
-            '<input type="checkbox" name="%s" value="1" autocomplete="off" %s>',
+            '<input type="checkbox" name="%s" id="status_dropdown_show_current_branch_only" value="1" autocomplete="off" %s>',
             esc_attr(\PublishPress_Statuses::SETTINGS_SLUG) . '[status_dropdown_show_current_branch_only]',
             esc_attr($checked)
         ) . ' ';
 
+        echo '<label for="status_dropdown_show_current_branch_only">';
         esc_html_e('De-clutter the dropdown by hiding statuses outside current branch (if defaulting by sequence and some statuses are nested)', 'publishpress-statuses');
+        echo '</label>';
 
         echo '</div>';
     }
@@ -357,7 +365,7 @@ class StatusesUI {
         <option value='gutenberg' <?php if ('gutenberg' === $option_val) echo "selected";?>><?php esc_html_e('Using Gutenberg Editor', 'publishpress-statuses');?></option>
         </select> 
 
-        <p>
+        <p class="pp-option-footnote">
         <?php
         esc_html_e('If custom statuses in the post editor are not loaded correctly, prevent incorrect detection of editor by specifying it here.', 'publishpress-statuses');
         ?>
