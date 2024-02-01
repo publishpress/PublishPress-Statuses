@@ -310,28 +310,30 @@ class PP_Statuses_PlannerImport extends PublishPress_Statuses {
             }
 
             // Save the unencoded Planner-stored properties to term_meta (unless another record already exists)
-            foreach ($unencoded_description as $key => $value) {
-                if (in_array($key, ['position', 'color', 'icon'])) {
-                    if ('position' == $key) {
-                        $key = 'original_position';  // archive the original position value from prior to import
+            if (is_array($unencoded_description)) {
+                foreach ($unencoded_description as $key => $value) {
+                    if (in_array($key, ['position', 'color', 'icon'])) {
+                        if ('position' == $key) {
+                            $key = 'original_position';  // archive the original position value from prior to import
 
-                        $planner_status_positions[$term->slug] = $value;
+                            $planner_status_positions[$term->slug] = $value;
 
-                        $any_new_planner_imports = true;
-                    }
+                            $any_new_planner_imports = true;
+                        }
 
-                    if (!isset($meta[$key]) || !empty($args['replace_props'])) {
-                        update_term_meta($term->term_id, $key, $value);
-                    }
+                        if (!isset($meta[$key]) || !empty($args['replace_props'])) {
+                            update_term_meta($term->term_id, $key, $value);
+                        }
 
-                } elseif (('description' == $key) && (!$term->description || ('-' == $term->description))) {
-                    // Save the actual description string to term_meta
-                    if ($value && ('-' != $value) && !preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) {
-                        wp_update_term(
-                            $term->term_id, 
-                            $term->taxonomy, 
-                            ['description' => $value]
-                        );
+                    } elseif (('description' == $key) && (!$term->description || ('-' == $term->description))) {
+                        // Save the actual description string to term_meta
+                        if ($value && ('-' != $value) && !preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $term->description)) {
+                            wp_update_term(
+                                $term->term_id, 
+                                $term->taxonomy, 
+                                ['description' => $value]
+                            );
+                        }
                     }
                 }
             }
