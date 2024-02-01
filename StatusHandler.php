@@ -526,7 +526,7 @@ class StatusHandler {
 
             $args = array_intersect_key(
                 $args, 
-                array_fill_keys(['term_id', 'name', 'slug', 'label', 'term_group', 'term_taxonomy_id', 'taxonomy', 'description', 'parent', 'count'], true)
+                array_fill_keys(['term_id', 'name', 'slug', 'label', 'term_group', 'term_taxonomy_id', 'taxonomy', 'description', 'parent'], true)
             );
 
             $args['description'] = (isset($args['description'])) ? $args['description'] : $term->description;
