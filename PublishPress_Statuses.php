@@ -2537,9 +2537,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             if (!empty($valid_statuses[$last_main_status])) {
                 // Make sure it's still in the main workflow
                 if ('main' == self::getStatusSection($valid_statuses[$last_main_status])) {
-                   $main_status_obj = $valid_statuses[$last_main_status];
-                }
-            }
+                    if (empty($valid_statuses[$last_main_status]->public) && empty($valid_statuses[$last_main_status]->private)) {
+	                   $main_status_obj = $valid_statuses[$last_main_status];
+	                }
+	            }
+	        }
         }
 
         // If no valid last main status is stored, default to In Progress, Pending Review or Approved as applicable.
