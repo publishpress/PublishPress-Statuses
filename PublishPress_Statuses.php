@@ -1961,13 +1961,20 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         // Reset our internal object cache
         $this->custom_statuses_cache = [];
 
-        if ('post_status' == $taxonomy) {   // @todo: review implementation for visibility statuses
-            // Set permissions for the base roles
-            $roles = ['administrator', 'editor', 'author', 'contributor'];
-            foreach ($roles as $roleSlug) {
-                $role = get_role($roleSlug);
-                if (! empty($role)) {
-                    $role->add_cap('status_change_' . str_replace('-', '_', $slug));
+        if (self::TAXONOMY_PRE_PUBLISH == $taxonomy) {   // @todo: review implementation for visibility statuses
+            global $wp_roles;
+
+            if (!empty($wp_roles) && is_object($wp_roles) && !empty($wp_roles->roles)) {
+                foreach($wp_roles->role_objects as $role_name => $role) {
+
+                    // Mirror Planner behavior of enabling standard WP roles to assign statuses, but also grant to other roles based on post / page capabilities
+                    if (in_array($role_name, ['administrator', 'author', 'editor', 'contributor']) || $role->has_cap('edit_posts') || $role->has_cap('edit_pages')) {
+                        $cap_name = 'status_change_' . str_replace('-', '_', $status_name);
+
+                        if (empty($role->capabilties[$cap_name])) {
+                            $role->add_cap($cap_name);
+                        }
+                    }
                 }
             }
         }
