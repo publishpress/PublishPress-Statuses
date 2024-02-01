@@ -188,7 +188,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $this->module = (object) array_merge($args, ['name' => 'custom-status']);
 
         $this->load_options(self::SETTINGS_SLUG);
-
+        
         $this->maybeGrantPendingStatusCap();
         
         if (is_admin()) {
@@ -2538,10 +2538,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 // Make sure it's still in the main workflow
                 if ('main' == self::getStatusSection($valid_statuses[$last_main_status])) {
                     if (empty($valid_statuses[$last_main_status]->public) && empty($valid_statuses[$last_main_status]->private)) {
-	                   $main_status_obj = $valid_statuses[$last_main_status];
-	                }
-	            }
-	        }
+                        $main_status_obj = $valid_statuses[$last_main_status];
+                    }
+                }
+            }
         }
 
         // If no valid last main status is stored, default to In Progress, Pending Review or Approved as applicable.
@@ -2661,7 +2661,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $return[$_status] = true;
                 continue;
             }
-            
+
             if ('draft' == $_status) {
                 $return['draft'] = true;
                 continue;
@@ -2988,7 +2988,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 if ($post_status !== get_post_meta($post_id, '_pp_statuses_last_main_status', true)) {
                     if ($post_status_obj = get_post_status_object($post_status)) {
                         if (empty($post_status_object->public) && empty($post_status_object->private)) {
-                    		update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
+                            update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
                         }
                     }
                 }
