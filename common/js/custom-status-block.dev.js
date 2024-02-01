@@ -286,10 +286,9 @@ var sideEffectL10nManipulation = function sideEffectL10nManipulation(status) {
  * @see https://github.com/WordPress/gutenberg/issues/3144
  */
 
-setInterval(function () {
-  var status = wp.data.select('core/editor').getEditedPostAttribute('status');
-
-  jQuery(document).ready(function ($) {
+jQuery(document).ready(function ($) {
+  setInterval(function () {
+    var status = wp.data.select('core/editor').getEditedPostAttribute('status');    
     var isPublished = (-1 != PPCustomStatuses.publishedStatuses.indexOf(status));
 
     var updateDisabled = ($('span.presspermit-editor-button button').length && $('span.presspermit-editor-button button').attr('aria-disabled'))
@@ -299,17 +298,10 @@ setInterval(function () {
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-published').toggle(isPublished && ('future' != status) && !updateDisabled);
     $('div.publishpress-extended-post-status div.publishpress-extended-post-status-scheduled').toggle(('future' == status) && !updateDisabled);
 
-    /*
-    if (! $('span.presspermit-editor-toggle button').length
-    && (status == ppLastPostStatus)
-    ) {
-      return;
-    }
-    */
-
     sideEffectL10nManipulation(status);
-  });
-}, 250);
+    
+  }, 250);
+});
 
 
 var ppLastWorkflowAction = '';
@@ -318,6 +310,7 @@ var lastWorkflowStatusNext = '';
 var lastWorkflowStatusMax = '';
 var lastSelectedStatus = '';
 
+jQuery(document).ready(function ($) {
 setInterval(function () {
   $('div.editor-post-publish-panel__prepublish div:not([class])').hide();
   $('div.editor-post-publish-panel__prepublish p:not([class])').hide();
@@ -495,10 +488,10 @@ setInterval(function () {
   }
 }, 200);
 
-
-$(document).on('change', 'div.publishpress-extended-post-status select', function(e) {
-  wp.data.dispatch('core/editor').editPost({
-    pp_status_selection: $('div.publishpress-extended-post-status select').val()
+  $(document).on('change', 'div.publishpress-extended-post-status select', function(e) {
+    wp.data.dispatch('core/editor').editPost({
+      pp_status_selection: $('div.publishpress-extended-post-status select').val()
+    });
   });
 });
 
