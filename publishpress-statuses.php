@@ -138,6 +138,12 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             $interrupt_load = true;
         } 
         
+        global $pagenow;
+
+        if (is_admin() && isset($pagenow) && ('customize.php' == $pagenow)) {
+            $interrupt_load = true;
+        }
+        
         if (empty($interrupt_load)) {
             define('PUBLISHPRESS_STATUSES_VERSION', '1.0.3.5');
 
