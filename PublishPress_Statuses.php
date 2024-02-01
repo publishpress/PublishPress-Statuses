@@ -196,6 +196,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $meta_cache = null;
             }
         }
+ 
+        global $post;
+
+        if (!empty($post)) {
+            if (\PublishPress_Statuses::isPostBlacklisted($post->ID)) {
+                return $meta_value;
+            }
+        }
 
         if ( isset( $meta_cache[ $meta_key ] ) ) {
             $meta_value = array_map( 'maybe_unserialize', $meta_cache[ $meta_key ] );
@@ -927,6 +935,36 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     public static function getEnabledPostTypes() {
         return self::instance()->get_enabled_post_types();
+    }
+
+    public static function isUnknownStatus($post_status) {
+        if (!in_array($post_status, ['auto-draft', 'draft', 'pending', 'publish', 'private', 'future'])) {
+            $statuses = self::instance()->getPostStatuses([], 'names');
+
+            if (!in_array($post_status, $statuses)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function isPostBlacklisted($post_id) {
+        // Don't load our scripts if the post has one of these meta values
+        $post_meta_blacklist = (array) apply_filters(
+            'publishpress_statuses_postmeta_blacklist', 
+            ['_dp_is_rewrite_republish_copy', '_dp_has_rewrite_republish_copy']
+        );
+
+        foreach ($post_meta_blacklist as $post_meta_key) {
+            if (is_scalar($post_meta_key)) {
+	            if (get_post_meta($post_id, $post_meta_key, true)) {
+	                return true;
+	            }
+	    	}
+        }
+
+        return false;
     }
 
     /**
@@ -2337,16 +2375,36 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     public function fltPostStatus($post_status)
     {
-        global $current_user;
+        global $current_user, $pagenow;
 
-        if ('auto-draft' == $post_status) {
+        if (('auto-draft' == $post_status)
+        || in_array($post_status, ['inherit', 'trash'])
+        || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+        || ('async-upload.php' == $pagenow)
+        ) {
             return $post_status;
         }
 
-        $post_id = \PublishPress_Functions::getPostID();
+        if (\PublishPress_Statuses::isUnknownStatus($post_status)
+        ) {
+            return $post_status;
+        }
+
+        if ($post_id = \PublishPress_Functions::getPostID()) {
+            if (\PublishPress_Statuses::isPostBlacklisted($post_id)) {
+                return $post_status;
+            }
+        }
 
         if ($_post = get_post($post_id)) {
             $type_obj = get_post_type_object($_post->post_type);
+        }
+
+
+        $post_type = (!$_post) ? $_post->post_type : \PublishPress_Functions::findPostType();
+
+        if (!in_array($post_type, \PublishPress_Statuses::getEnabledPostTypes())) {
+            return $post_status;
         }
 
         if ('_pending' == $post_status) {

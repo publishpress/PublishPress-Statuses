@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.3.4
+Stable tag: 1.0.3.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -70,6 +70,11 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.3.5] - 8 Jan 2024 =
+* Compat : Yoast Duplicate Post - Rewrite & Republish function failed if PP Statuses is active
+* Compat : General precaution to prevent inappropriate modification of post status
+* Fixed : Classic Editor - When editing an unpublished post, Published option was displayed in Post Status dropdown for users who can publish
 
 = [1.0.3.4] - 8 Jan 2024 =
 * Fixed : If one of the default statuses was already user-defined in Planner, the import script changed its position

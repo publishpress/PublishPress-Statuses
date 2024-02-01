@@ -72,10 +72,18 @@ class Admin
      */
     public function action_admin_enqueue_scripts()
     {
-        global $pagenow;
+        global $pagenow, $post;
 
         if (\PublishPress_Statuses::DisabledForPostType()) {
             return;
+        }
+
+        if (!empty($post)) {
+            if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
+            || \PublishPress_Statuses::isPostBlacklisted($post->ID)
+            ) {
+                return;
+            }
         }
 
         $plugin_page = \PublishPress_Functions::getPluginPage();
@@ -262,6 +270,8 @@ class Admin
 
     public static function set_status_labels($status)
     {
+        global $post;
+
         foreach (['icon', 'color'] as $prop) {
             if (empty($status->$prop)) {
                 $status->$prop = '';

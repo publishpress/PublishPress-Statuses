@@ -13,6 +13,16 @@ class PostEditGutenberg
      */
     public function actEnqueueBlockEditorAssets()
     {
+        global $post;
+
+        if (!empty($post)) {
+            if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
+            || \PublishPress_Statuses::isPostBlacklisted($post->ID)
+            ) {
+                return;
+            }
+        }
+
         if ($post_id = \PublishPress_Functions::getPostID()) {
             if (defined('PUBLISHPRESS_REVISIONS_VERSION') && rvy_in_revision_workflow($post_id)) {
                 return;

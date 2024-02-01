@@ -26,6 +26,14 @@ class PostEditClassic
             return;
         }
 
+        if (!empty($post)) {
+            if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
+            || \PublishPress_Statuses::isPostBlacklisted($post->ID)
+            ) {
+                return;
+            }
+        }
+
         // Get current user
         wp_get_current_user();
 
@@ -104,6 +112,14 @@ class PostEditClassic
     public function act_object_edit_scripts()
     {
         global $typenow, $post;
+
+        if (!empty($post)) {
+            if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
+            || \PublishPress_Statuses::isPostBlacklisted($post->ID)
+            ) {
+                return;
+            }
+        }
 
         $stati = [];
         foreach (['public', 'private', 'moderation'] as $prop) {
