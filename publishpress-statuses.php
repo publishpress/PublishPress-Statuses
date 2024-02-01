@@ -3,7 +3,7 @@
  * Plugin Name: PublishPress Statuses
  * Plugin URI:  https://publishpress.com/statuses
  * Description: Manage and create post statuses to customize your editorial workflow
- * Version: 1.0.3
+ * Version: 1.0.3.1
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
  * Text Domain: publishpress-statuses
@@ -193,3 +193,32 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         }
     }
 }, -5);
+
+register_deactivation_hook(
+    __FILE__,
+    function()
+    {
+        if (defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT')) {
+            return;
+        }
+
+        // Restore archived PublishPress Planner term descriptions (with encoded status properties), in case it will be re-activated
+        if ($archived_term_descriptions = maybe_unserialize(get_option('pp_statuses_archived_term_properties'))) {
+            $terms = get_terms('post_status', ['hide_empty' => false]);
+
+            if (is_array($terms)) {
+                foreach ($terms as $term) {
+                    if (!empty($archived_term_descriptions[$term->term_id])) {
+                        $description = $archived_term_descriptions[$term->term_id];
+
+                        if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $description) 
+                        && (strlen($description) > 80) && (false === strpos($description, ' '))
+                        ) {
+                            wp_update_term($term->term_id, 'post_status', ['description' => $description]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+);
