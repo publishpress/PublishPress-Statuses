@@ -2593,8 +2593,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $stored_status_obj = get_post_status_object($stored_status);
         }
 
-        if (('_public' === \PublishPress_Functions::REQUEST_key('post_status'))
-        && !\PublishPress_Functions::isBlockEditorActive()) {
+        $doing_rest = defined('REST_REQUEST') && (!\PublishPress_Functions::empty_REQUEST('meta-box-loader') || $this->doing_rest);
+
+        if (('_public' === \PublishPress_Functions::REQUEST_key('post_status')) && !$doing_rest) {
             $_post_status = 'public';
             $classic_explicit_publish = true;
         } else {
@@ -2627,8 +2628,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if (empty($_post)) {
             return $post_status;
         }
-
-        $doing_rest = defined('REST_REQUEST') && (!\PublishPress_Functions::empty_REQUEST('meta-box-loader') || $this->doing_rest);
 
         // Allow Publish / Submit button to trigger our desired workflow progression instead of Publish / Pending status.
         // Apply this change only if stored post is not already published or scheduled.
