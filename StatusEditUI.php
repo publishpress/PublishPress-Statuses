@@ -10,7 +10,7 @@ class StatusEditUI
         $name = \PublishPress_Functions::REQUEST_key('name');
 
         if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
-            echo '<div class="error"><p>' . esc_html(\PublishPress_Statuses::instance()->messages['status-missing']) . '</p></div>';
+            echo '<div class="error"><p>' . esc_html($module->messages['status-missing']) . '</p></div>';
             return;
         }
 
@@ -58,16 +58,16 @@ class StatusEditUI
                         }
                 }
             }
-
-            if ('pending' != $name) {
-                $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
-            }
                                           // Custom Visibility statuses do not currently support type-agnostic "status_change_" capabilities
                                           // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
             if ((empty($status->private) /*|| (class_exists('\PublishPress\StatusCapabilities') && \PublishPress\StatusCapabilities::postStatusHasCustomCaps($status->name))*/)
             && (('pending' != $name) || \PublishPress_Statuses::instance()->options->pending_status_regulation)
             ) {
                 $tabs['roles'] = __('Roles', 'publishpress-statuses');
+            }
+
+            if ('pending' != $name) {
+                $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
             }
         }
 
@@ -122,10 +122,7 @@ class StatusEditUI
             // If the basic set status cap is changed on the Post Access tab, mirror on Roles tab and in type-specific Set caps
             $('#pp-post_access input.cme_status_set_basic').on('click', function() {
                 $('#pp-roles_table td.set-status-roles input[name="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked'));
-
-                if (!$(this).prop('checked')) {
-                    $(this).next('table').find('tbody tr td.post-cap label input').prop('checked', $(this).prop('checked'));
-                }
+                $(this).next('table').find('tbody tr td.post-cap label input').prop('checked', $(this).prop('checked'));
             });
 
             // Work around status capabilities library bug (displaying Set capability checkbox for disabled post types)
