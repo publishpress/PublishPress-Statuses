@@ -58,16 +58,16 @@ class StatusEditUI
                         }
                 }
             }
+
+            if ('pending' != $name) {
+                $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
+            }
                                           // Custom Visibility statuses do not currently support type-agnostic "status_change_" capabilities
                                           // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
             if ((empty($status->private) /*|| (class_exists('\PublishPress\StatusCapabilities') && \PublishPress\StatusCapabilities::postStatusHasCustomCaps($status->name))*/)
             && (('pending' != $name) || \PublishPress_Statuses::instance()->options->pending_status_regulation)
             ) {
                 $tabs['roles'] = __('Roles', 'publishpress-statuses');
-            }
-
-            if ('pending' != $name) {
-                $tabs['post_types'] = __('Post Types', 'publishpress-statuses');
             }
         }
 
