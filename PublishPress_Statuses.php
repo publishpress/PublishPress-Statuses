@@ -552,6 +552,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'position' => 0,
                         'order' => 0,
                         '_builtin' => true,
+                        'protected' => true,
                     ],
 
                     'pending' => (object) [
@@ -573,6 +574,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'order' => 200,
                         '_builtin' => true,
                         'moderation' => true,
+                        'protected' => true,    // this is also applied as a default property for all moderation statuses
                     ],
 
                     'future' => (object) [
@@ -590,6 +592,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'position' => 7,
                         'order' => 700,
                         '_builtin' => true,
+                        'protected' => true,
                     ],
 
                     'publish' => (object) [
@@ -853,7 +856,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     private function apply_default_status_properties($status) {
-        foreach (['public', 'private', 'protected', 'moderation', 'label', 'description', 'disabled'] as $prop) {
+        foreach (['public', 'private', 'moderation', 'label', 'description', 'disabled'] as $prop) {
             if (!isset($status->$prop)) {
                 switch ($prop) {
                     case 'label':
@@ -862,7 +865,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                     case 'public':
                     case 'private':
-                    case 'protected':
                     case 'moderation':
                     case 'disabled':
                         $status->$prop = false;
@@ -1657,6 +1659,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     continue;
                 }
             }
+
             $status_by_position[$key] = $this->apply_default_status_properties($status_by_position[$key]);
 
             $status_name = $status_by_position[$key]->name;
@@ -1700,7 +1703,27 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                             }
                         }
 
-                        $wp_post_statuses[$status_name]->$prop = $val;
+						// We already confirmed that the wp_post_statuses object has this property
+                        if (is_object($wp_post_statuses[$status_name]->$prop)) {
+                            // If our property is not an object, skip it as invalid
+                            if (is_object($val)) {
+                                $wp_post_statuses[$status_name]->$prop = (object) array_merge(
+                                    (array) $wp_post_statuses[$status_name]->$prop,
+                                    (array) $val
+                                );
+                            }
+
+                        } elseif (is_array($wp_post_statuses[$status_name]->$prop)) {
+                            // If our property is not an array, skip it as invalid
+                            if (is_array($val)) {
+                                $wp_post_statuses[$status_name]->$prop = array_merge(
+                                    $wp_post_statuses[$status_name]->$prop,
+                                    $val
+                                );
+                            }
+                        } else {
+                            $wp_post_statuses[$status_name]->$prop = $val;
+                        }
                     }
                 }
             }
