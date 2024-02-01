@@ -15,6 +15,10 @@ jQuery(document).ready(function ($) {
         if ($('#post_status option[value="publish"]').length && !$('#visibility-radio-public option [value="public"]:checked').length) {
             $('#post_status option[value="_public"]').html($('#post_status option[value="publish"]').html());
             $('#post_status option[value="publish"]').remove();
+
+            if ('publish' == $('#post_status').val()) {
+                $('#post_status').val('_public');
+            }
         }
     }, 100);
 
@@ -106,6 +110,25 @@ jQuery(document).ready(function ($) {
                     });
 
                     $('#save-post').val(publishCaption).show();
+                }
+            }, 100);
+        });
+
+        $('a.cancel-post-visibility').click(function() {
+            setTimeout(() => {
+                setPublishString();
+                ppUpdateText();
+            }, 100);
+        });
+
+        $('a.pp-cancel-post-status').click(function() {
+            setTimeout(() => {
+                if ($('#hidden_post_status').length && $('#hidden_post_status').val()) {
+                    if ($('#post_status [option value="' + $('#hidden_post_status').val() + '"]').length) {
+                        $('#post_status').val($('#hidden_post_status').val());
+                        updateStatusCaptions();
+                        ppUpdateText();
+                    }
                 }
             }, 100);
         });
