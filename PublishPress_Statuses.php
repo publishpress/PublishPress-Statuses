@@ -2155,7 +2155,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         if (empty($moderation_statuses)) {
-            $moderation_statuses = \PublishPress_Statuses::getPostStati(['moderation' => true], 'object');
+            $moderation_statuses = \PublishPress_Statuses::getPostStati(['moderation' => true, 'post_type' => $post_type], 'object');
         }
 
         if (empty($post_status_obj->alternate)) {
