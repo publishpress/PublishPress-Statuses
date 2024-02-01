@@ -524,7 +524,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $default_alternate_position = 6;
         $default_disabled_position = 13;
 
-        if ($stored_positions = (array) maybe_unserialize(get_option('publishpress_status_positions'))) {
+        if ($stored_positions = (array) get_option('publishpress_status_positions')) {
             if ($pos = array_search('_pre-publish-alternate', $stored_positions)) {
                 $default_alternate_position = $pos;
             }

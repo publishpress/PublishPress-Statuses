@@ -47,7 +47,7 @@ class Admin
             return;
         }
 
-        $processed_roles = (array) maybe_unserialize(get_option('publishpress_statuses_processed_roles'));
+        $processed_roles = (array) get_option('publishpress_statuses_processed_roles');
         $changed_statuses = [];
 
         foreach($wp_roles->role_objects as $role_name => $role) {
