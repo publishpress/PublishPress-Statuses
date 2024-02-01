@@ -336,7 +336,7 @@ setInterval(function () {
   }
 
   if (currentWorkflowSelection == 'current') {
-    ppObjEdit.publish = 'Update';
+    ppObjEdit.publish = ppObjEdit.update;
   }
 
   if (currentWorkflowSelection == 'next') {
@@ -525,6 +525,8 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
   var publishIcon = (publishStatusObj) ? publishStatusObj.icon : '';
   var futureIcon = (futureStatusObj) ? futureStatusObj.icon : '';
 
+  var __ = wp.i18n.__;
+
   return React.createElement(
     PluginPostStatusInfo, 
     
@@ -533,7 +535,7 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
     }, 
     
     React.createElement(SelectControl, {
-      label: 'Post Status',
+      label: window.PPCustomStatuses.captions.postStatus,
       value: status,
       options: statusOptions,
       onChange: onUpdate
