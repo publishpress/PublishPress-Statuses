@@ -15,6 +15,15 @@ class Admin
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
 
         add_filter('display_post_states', [$this, 'fltDisplayPostStates'], 10, 2);
+
+        if ($activated = get_option('publishpress_statuses_activate')) {
+            delete_option('publishpress_statuses_activate');
+        }
+
+        if (!get_option('publishpress_statuses_version') || $activated) {
+            add_action('pp_statuses_init', [$this, 'assignDefaultRoleCapabilities']);
+        }
+        
         if (!get_option('publishpress_statuses_version')) {
             if (!defined('PP_STATUSES_DISABLE_PENDING_STATUS_FIX')) {
                 global $wpdb;
@@ -27,6 +36,63 @@ class Admin
         if (get_option('publishpress_statuses_version') != PUBLISHPRESS_STATUSES_VERSION) {
             update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
         }
+    }
+
+    public function assignDefaultRoleCapabilities() {
+        global $wp_roles;
+
+        if (empty($wp_roles) || !is_object($wp_roles) || empty($wp_roles->roles)) {
+            return;
+        }
+
+        $processed_roles = (array) maybe_unserialize(get_option('publishpress_statuses_processed_roles'));
+        $changed_statuses = [];
+
+        foreach($wp_roles->role_objects as $role_name => $role) {
+            if (isset($processed_roles[$role_name])) {
+                continue;
+            }
+
+            foreach (\PublishPress_Statuses::getPostStati([], 'names', ['show_disabled' => true]) as $status_name) {
+                // Mirror Planner behavior of enabling standard WP roles to assign statuses, but also grant to other roles based on post / page capabilities
+                if (in_array($status_name, ['pitch', 'in-progress', 'assigned', 'pending'])) {
+                    if (!in_array($role_name, ['administrator', 'author', 'editor', 'contributor']) && !$role->has_cap('edit_posts') && !$role->has_cap('edit_pages')) {
+                        continue;
+                    }
+    
+                } elseif (in_array($status_name, ['approved', 'needs-work', 'rejected'])) {
+                    if (!in_array($role_name, ['administrator', 'editor']) && !$role->has_cap('edit_others_posts') && !$role->has_cap('edit_others_pages')) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+                
+                $cap_name = 'status_change_' . str_replace('-', '_', $status_name);
+
+                if (empty($role->capabilties[$cap_name])) {
+                    $role->add_cap($cap_name);
+                    $changed_statuses [$status_name] = true;
+                }
+            }
+
+            if (in_array($role_name, ['administrator', 'editor']) || $role->has_cap('publish_posts') || $role->has_cap('publish_pages')) {
+                $cap_name = 'pp_bypass_status_sequence';
+                if (empty($role->capabilties[$cap_name])) {
+                    $role->add_cap($cap_name);
+                }
+            }
+
+            $processed_roles[$role_name] = true;
+        }
+
+        update_option('publishpress_statuses_processed_roles', $processed_roles);
+
+        foreach (array_keys($changed_statuses) as $status_name) {
+            \PublishPress_Statuses::updateStatusNumRoles($status_name, ['force_refresh' => true]);
+        }
+
+        update_option('pp_changed_statuses', $changed_statuses);
     }
 
     // status display in Edit Posts table rows
