@@ -445,6 +445,11 @@ setInterval(function () {
       }
     }
 
+    // Provide confirmation that workflow progression is being specified
+    wp.data.dispatch('core/editor').editPost({
+      pp_statuses_selecting_workflow: true
+    });
+
     lastSelectedStatus = selectedStatus;
 
     if ((lastWorkflowStatusNext != ppObjEdit.nextStatus) || (lastWorkflowStatusMax != ppObjEdit.maxStatus)) {
