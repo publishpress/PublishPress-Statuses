@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.4.1
+Stable tag: 1.0.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,7 +32,7 @@ Go to the "Statuses" area in your WordPress site and you'll see five different s
 
 ## Custom Permissions for Statuses
 
-PublishPress Statuses allows to decide which users can move content to which statuses. Go to "Statuses" then "Settings" and click the �Roles� tab. This allows you to choose which user roles can move a post to this status.
+PublishPress Statuses allows to decide which users can move content to which statuses. Go to "Statuses" then "Settings" and click the "Roles" tab. This allows you to choose which user roles can move a post to this status.
 
 [Click here to see how control access to statuses](https://publishpress.com/knowledge-base/statuses-options/).
 
@@ -71,8 +71,32 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= [1.0.5] - 16 Jan 2024 =
+* Lang : Some Publish and Save As button labels were not translated if saved (in Statuses > Edit Status) with default values
+* Fixed : Gutenberg editor - Using Post Status dropdown to select Pending status, followed by "Selected status" Workflow selection, caused post to be saved with an invalid status value, making it inaccessible
+* Fixed : Restore Pending Review posts previously made inaccessible by Gutenberg UI integration glitch
+* Fixed : Gutenberg editor - Button captions and workflow labels were non-standard after selecting Pending Review from Post Status dropdown
+* Fixed : Improved Gutenberg / Classic detection is much simpler and more reliable
+* Fixed : Classic Editor usage triggered by some 3rd party plugins required Statuses plugin setting change for compatibility
+* Fixed : Editor usage setting (Gutenberg / Classic) was not effective under some conditions
+* Fixed : Statuses > Settings could not disable all post types
+* Import : On sites with imported PublishPress Planner statuses, plugin de/re-activation modified the position and enable / disable of some statuses
+* Import : Planner 3.x import - some inconsistencies in the how status positions were imported
+* Import : Permissions Pro 3.x import - status post types, nesting, labels were not imported
+* Import : On deactivation, encoded status properties used by Planner 3.x were not restored
+* Import : On deactivation, Planner 3.x post types settings  (using "on" / "off" value storage) were not restored
+* Import : Option to re-import Planner configuration, with or without Permissions Pro Status Control properties
+* Import : Failsafe mechanism disables auto-import if last attempt did not complete normally
+* Feature : Automatic and Manual backup of colors, icons, labels and post types for all statuses
+* Feature : Restore status colors, icons, labels or post types from automatic or manual backup
+* Feature : Revert status  colors, icons, labels or post types to defaults
+* Feature : Revert status  colors, icons, labels or post types to Planner defaults
+* Change : Rearranged plugin settings UI and clarified some captions
+* Change : Hide "Sub-status selection" option if Workflow Guidance is not set to "Sequence by default"
+* Change : On new status creation, give status assignment capability to all roles that can edit Posts or Pages (not just standard roles)
+
 = [1.0.4.1] - 11 Jan 2024 =
-* Fixed : Status assignment capabilities were not granted to Editor, Author, Contributor by default
+* Fixed : Status assignment capabilities for plugin-defined statuses were not granted to Editor, Author, Contributor by default
 * Change : Don't enforce capability requirements for Pending Review status assignment by default, but introduce a plugin setting to do so
 * Fixed : Using Post Status dropdown in Gutenberg editor to select the Pending status caused post to be saved with an invalid status value, making it inaccessible
 * Fixed : Pending Review checkbox was still active in Gutenberg editor even if access has been removed from role
