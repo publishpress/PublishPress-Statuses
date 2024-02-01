@@ -720,8 +720,8 @@ class StatusHandler {
 
             $statuses = \PublishPress_Statuses::getPostStati(
                 [], 
-                ['output' => 'object', 'context' => 'load'], 
-                ['show_disabled' => true]
+                ['output' => 'object'], 
+                ['show_disabled' => true, 'context' => 'load']
             );
 
             // Update any modified status_parent value as an term meta value

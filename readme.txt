@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.6
+Stable tag: 1.0.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -70,6 +70,10 @@ This section describes how to install the plugin and get it working.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= [1.0.6.1] - 18 Jan 2024 =
+* Compat : Permissions Pro - Status-specific editing access was not applied under some configurations
+* Fixed : PHP Warning on user edit
 
 = [1.0.6] - 17 Jan 2024 =
 * Fixed : Post permalink for new posts defaulted to plain format regardless of permalink settings
