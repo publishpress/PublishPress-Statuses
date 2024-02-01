@@ -10,7 +10,7 @@ class StatusEditUI
         $name = \PublishPress_Functions::REQUEST_key('name');
 
         if (!$status = \PublishPress_Statuses::getStatusBy('id', $name)) {
-            echo '<div class="error"><p>' . esc_html($module->messages['status-missing']) . '</p></div>';
+            echo '<div class="error"><p>' . esc_html(\PublishPress_Statuses::instance()->messages['status-missing']) . '</p></div>';
             return;
         }
 
