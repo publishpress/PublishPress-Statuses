@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review, extended post 
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.6.2
+Stable tag: 1.0.6.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -99,6 +99,13 @@ Yes, the PublishPress Statuses plugin integrates with the PublishPress Planner p
 Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced featuers such as custom capabilities, workflow branching, icons, colors, and much more.
 
 == Changelog ==
+
+= [1.0.6.3] - 22 Jan 2024 =
+* Change : Edit Status, Add Status screens - Distinct html titles for browser tab navigation
+* Change : Swap the position of Post Types, Roles tabs on Edit Status screen
+* Change : Visibility Statuses - Acknowledge installation of updated Status Capabilities library (in Capabilities Pro or Permissions Pro) by labeling Custom Visibility Capabilities as "Custom" or "Custom Read"
+* Change : Edit Status - Don't toggle selection of type-specific Set capabilities when basic set capability is selected. It is a separate capability, not a toggle button.
+* Fixed : Blank error message displayed on attempt to edit a status that is not defined.
 
 = [1.0.6.2] - 18 Jan 2024 =
 * Feature : When completing an alternate workflow, offer to step back to last previously saved main workflow status
