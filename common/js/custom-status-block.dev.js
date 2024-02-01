@@ -311,8 +311,8 @@ var lastWorkflowStatusMax = '';
 var lastSelectedStatus = '';
 
 setInterval(function () {
-  $('div.editor-post-publish-panel__prepublish div:not([class])').hide();
-  $('div.editor-post-publish-panel__prepublish p:not([class])').hide();
+  $('div.editor-post-publish-panel__prepublish > div:not([class])').hide();
+  $('div.editor-post-publish-panel__prepublish > p:not([class])').hide();
 
   var currentStatus = wp.data.select('core/editor').getCurrentPostAttribute('status');
   var currentStatusPublished = -1 !== PPCustomStatuses.publishedStatuses.indexOf(currentStatus);
