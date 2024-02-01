@@ -173,7 +173,7 @@ class StatusHandler {
         check_admin_referer('edit-status');
 
         if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-            wp_die(esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+            wp_die(esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
         }
 
         $name = !empty($_REQUEST['name']) ? trim(sanitize_text_field($_REQUEST['name'])) : '';
@@ -608,12 +608,12 @@ class StatusHandler {
 
         if ($status_name = \PublishPress_Functions::REQUEST_key('delete_status')) {
             if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-                self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+                self::printAjaxResponse('error', esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
             }
 
             if ($status = \PublishPress_Statuses::getStatusBy('slug', $status_name)) {
                 if (!empty($status->_builtin) || !empty($status->pp_builtin)) {
-                    self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+                    self::printAjaxResponse('error', esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
                     return;
                 }
                 
@@ -640,7 +640,7 @@ class StatusHandler {
         check_ajax_referer('custom-status-sortable');
 
         if (!current_user_can('manage_options') && !current_user_can('pp_manage_statuses')) {
-            self::printAjaxResponse('error', esc_html__('You are not permitted to do that.', 'publishpress-statuses'));
+            self::printAjaxResponse('error', esc_html(\PublishPress_Statuses::__wp('Sorry, you are not allowed to access this page.')));
         }
 
         if (!isset($_POST['status_positions']) || !is_array($_POST['status_positions'])) {
@@ -703,7 +703,7 @@ class StatusHandler {
             }
         }
         
-        self::printAjaxResponse('success', esc_html__('Status order updated', 'publishpress-statuses'));
+        self::printAjaxResponse('success', esc_html__('Status order updated.', 'publishpress-statuses'));
     }
 
     /**

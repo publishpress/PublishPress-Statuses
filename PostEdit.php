@@ -256,7 +256,7 @@ class PostEdit
                 if (!empty($status_term->slug) && ($status_term->slug == $status)) {
                     if (('pending' == $status) && \PublishPress_Functions::isBlockEditorActive()) {
                         $status_obj = get_post_status_object('pending');
-                        $status_label = (empty($status_obj)) ? $status_obj->label : esc_html__('Pending Review', 'publishpress-statuses');
+                        $status_label = (empty($status_obj)) ? $status_obj->label : esc_html(\PublishPress_Statuses::__wp('Pending Review'));
 
                         // Alternate item to allow use of "Save as Pending" button
                         //

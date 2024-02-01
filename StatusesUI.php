@@ -369,8 +369,8 @@ class StatusesUI {
 
         if (empty($post_types)) {
             $post_types = [
-                'post' => __('Posts'),
-                'page' => __('Pages'),
+                'post' => \PublishPress_Statuses::__wp('Posts'),
+                'page' => \PublishPress_Statuses::__wp('Pages'),
             ];
 
             $custom_post_types = $pp->get_supported_post_types();
@@ -457,7 +457,7 @@ class StatusesUI {
                 if (('visibility' != $status_type) || (defined('PRESSPERMIT_STATUSES_VERSION') && get_option('presspermit_privacy_statuses_enabled') )) {
                     echo '<a class="button primary add-new" title="' 
                         . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
-                        . '" href="' . esc_url($url) . '">' . esc_html__('Add New') . '</a>';
+                        . '" href="' . esc_url($url) . '">' . esc_html__('Add New', 'publishpress-statuses') . '</a>';
                 }
             });
 
@@ -531,7 +531,7 @@ class StatusesUI {
                     if ('visibility' == $status_type) {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    _e('Visibility', 'publishpress-statuses'); ?></a>
+                    \PublishPress_Statuses::_e_wp('Visibility', 'publishpress-statuses'); ?></a>
                 
                 <!--
                 <a href="<?php
@@ -540,7 +540,7 @@ class StatusesUI {
                     if ('revision' == $status_type) {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    _e('Revision', 'publishpress-statuses'); ?></a>
+                    \PublishPress_Statuses::_e_wp('Revision', 'publishpress-statuses'); ?></a>
                 -->
             </div>
             <?php

@@ -297,7 +297,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     [
                         'hierarchical' => false,
                         'update_count_callback' => '_update_post_term_count',
-                        'label' => __('Pseudo Statuses', 'publishpress-statuses'),
+                        'label' => 'Pseudo Statuses',
                         'query_var' => false,
                         'rewrite' => false,
                         'show_ui' => false,
@@ -581,7 +581,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $statuses = [
                     'pitch' => (object) [
                         'label' => __('Pitch', 'publishpress-statuses'),
-                        'labels' => (object) ['publish' => __('Pitch', 'publishpress-statuses')],
+                        'labels' => (object) ['publish' => _x('Pitch', 'post action/button label', 'publishpress-statuses')],
                         'description' => __('Idea proposed; waiting for acceptance.', 'publishpress-statuses'),
                         'color' => '#887618',
                         'icon' => 'dashicons-lightbulb',
@@ -605,7 +605,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     
                     'in-progress' => (object) [
                         'label' => __('In Progress', 'publishpress-statuses'),
-                        'labels' => (object) ['publish' => __('Mark in Progress', 'publishpress-statuses')],
+                        'labels' => (object) ['publish' => __('Mark In Progress', 'publishpress-statuses')],
                         'description' => __('Writer is working on the post.', 'publishpress-statuses'),
                         'color' => '#8c5400',
                         'icon' => 'dashicons-performance',
@@ -815,7 +815,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         if (is_admin()) {
             $wp_post_statuses['publish']->labels->publish = esc_attr(self::__wp('Publish'));
-            $wp_post_statuses['future']->labels->publish = esc_attr(self::__wp('Schedule'));
+            $wp_post_statuses['future']->labels->publish = esc_attr(self::_x_wp('Schedule', 'post action/button label'));
     
             if (empty($wp_post_statuses['pending']->labels->publish)) {
                 $wp_post_statuses['pending']->labels->publish = esc_attr(self::__wp('Submit for Review'));
@@ -825,7 +825,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $wp_post_statuses['draft']->labels->publish = esc_attr(self::__wp('Save Draft'));
     
             if (empty($wp_post_statuses['pending']->labels->caption)) {
-                $wp_post_statuses['pending']->labels->caption = self::__wp('Pending Review');
+                $wp_post_statuses['pending']->labels->caption = $wp_post_statuses['pending']->label; //self::__wp('Pending Review');
             }
 
             $wp_post_statuses['private']->labels->caption = self::__wp('Privately Published');
@@ -2569,7 +2569,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         register_post_status(
             '_pending', 
             [
-                'label'                     => esc_html__('Pending'),
+                'label'                     => esc_html(\PublishPress_Statuses::__wp('Pending')),
                 'label_count'               => false,
                 'exclude_from_search'       => true,
                 'public'                    => false,

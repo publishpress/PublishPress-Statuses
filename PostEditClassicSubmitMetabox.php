@@ -47,22 +47,22 @@ class PostEditClassicSubmitMetabox
 
                     <?php if (!defined('PRESSPERMIT_STATUSES_VERSION') || !get_option('presspermit_privacy_statuses_enabled')):?>
                     <div class="misc-pub-section misc-pub-visibility" id="visibility">
-                        <?php _e( 'Visibility:' ); ?>
+                        <?php \PublishPress_Statuses::_e_wp( 'Visibility:' ); ?>
                         <span id="post-visibility-display">
                             <?php
                             if ( 'private' === $post->post_status ) {
                                 $post->post_password = '';
                                 $visibility          = 'private';
-                                $visibility_trans    = __( 'Private' );
+                                $visibility_trans    = \PublishPress_Statuses::__wp( 'Private' );
                             } elseif ( ! empty( $post->post_password ) ) {
                                 $visibility       = 'password';
-                                $visibility_trans = __( 'Password protected' );
+                                $visibility_trans = \PublishPress_Statuses::__wp( 'Password protected' );
                             } elseif ( 'post' === $post->post_type && is_sticky( $post->ID ) ) {
                                 $visibility       = 'public';
-                                $visibility_trans = __( 'Public, Sticky' );
+                                $visibility_trans = \PublishPress_Statuses::__wp( 'Public, Sticky' );
                             } else {
                                 $visibility       = 'public';
-                                $visibility_trans = __( 'Public' );
+                                $visibility_trans = \PublishPress_Statuses::__wp( 'Public' );
                             }
 
                             echo esc_html( $visibility_trans );
@@ -70,10 +70,10 @@ class PostEditClassicSubmitMetabox
                         </span>
 
                         <?php if ( $can_publish ) { ?>
-                            <a href="#visibility" class="edit-visibility hide-if-no-js" role="button"><span aria-hidden="true"><?php _e( 'Edit' ); ?></span> <span class="screen-reader-text">
+                            <a href="#visibility" class="edit-visibility hide-if-no-js" role="button"><span aria-hidden="true"><?php \PublishPress_Statuses::_e_wp( 'Edit' ); ?></span> <span class="screen-reader-text">
                                 <?php
                                 /* translators: Hidden accessibility text. */
-                                _e( 'Edit visibility' );
+                                \PublishPress_Statuses::_e_wp( 'Edit visibility' );
                                 ?>
                             </span></a>
 
@@ -84,20 +84,20 @@ class PostEditClassicSubmitMetabox
                                 <?php endif; ?>
 
                                 <input type="hidden" name="hidden_post_visibility" id="hidden-post-visibility" value="<?php echo esc_attr( $visibility ); ?>" />
-                                <input type="radio" name="visibility" id="visibility-radio-public" value="public" <?php checked( $visibility, 'public' ); ?> /> <label for="visibility-radio-public" class="selectit"><?php _e( 'Public' ); ?></label><br />
+                                <input type="radio" name="visibility" id="visibility-radio-public" value="public" <?php checked( $visibility, 'public' ); ?> /> <label for="visibility-radio-public" class="selectit"><?php \PublishPress_Statuses::_e_wp( 'Public' ); ?></label><br />
 
                                 <?php if ( 'post' === $post->post_type && current_user_can( 'edit_others_posts' ) ) : ?>
-                                    <span id="sticky-span"><input id="sticky" name="sticky" type="checkbox" value="sticky" <?php checked( is_sticky( $post->ID ) ); ?> /> <label for="sticky" class="selectit"><?php _e( 'Stick this post to the front page' ); ?></label><br /></span>
+                                    <span id="sticky-span"><input id="sticky" name="sticky" type="checkbox" value="sticky" <?php checked( is_sticky( $post->ID ) ); ?> /> <label for="sticky" class="selectit"><?php \PublishPress_Statuses::_e_wp( 'Stick this post to the front page' ); ?></label><br /></span>
                                 <?php endif; ?>
 
-                                <input type="radio" name="visibility" id="visibility-radio-password" value="password" <?php checked( $visibility, 'password' ); ?> /> <label for="visibility-radio-password" class="selectit"><?php _e( 'Password protected' ); ?></label><br />
-                                <span id="password-span"><label for="post_password"><?php _e( 'Password:' ); ?></label> <input type="text" name="post_password" id="post_password" value="<?php echo esc_attr( $post->post_password ); ?>"  maxlength="255" /><br /></span>
+                                <input type="radio" name="visibility" id="visibility-radio-password" value="password" <?php checked( $visibility, 'password' ); ?> /> <label for="visibility-radio-password" class="selectit"><?php \PublishPress_Statuses::_e_wp( 'Password protected' ); ?></label><br />
+                                <span id="password-span"><label for="post_password"><?php \PublishPress_Statuses::_e_wp( 'Password:' ); ?></label> <input type="text" name="post_password" id="post_password" value="<?php echo esc_attr( $post->post_password ); ?>"  maxlength="255" /><br /></span>
 
-                                <input type="radio" name="visibility" id="visibility-radio-private" value="private" <?php checked( $visibility, 'private' ); ?> /> <label for="visibility-radio-private" class="selectit"><?php _e( 'Private' ); ?></label><br />
+                                <input type="radio" name="visibility" id="visibility-radio-private" value="private" <?php checked( $visibility, 'private' ); ?> /> <label for="visibility-radio-private" class="selectit"><?php \PublishPress_Statuses::_e_wp( 'Private' ); ?></label><br />
 
                                 <p>
-                                    <a href="#visibility" class="save-post-visibility hide-if-no-js button"><?php _e( 'OK' ); ?></a>
-                                    <a href="#visibility" class="cancel-post-visibility hide-if-no-js button-cancel"><?php _e( 'Cancel' ); ?></a>
+                                    <a href="#visibility" class="save-post-visibility hide-if-no-js button"><?php \PublishPress_Statuses::_e_wp( 'OK' ); ?></a>
+                                    <a href="#visibility" class="cancel-post-visibility hide-if-no-js button-cancel"><?php \PublishPress_Statuses::_e_wp( 'Cancel' ); ?></a>
                                 </p>
                             </div>
                         <?php } ?>
@@ -115,10 +115,10 @@ class PostEditClassicSubmitMetabox
                             if ($revisions_to_keep > 0 && $revisions_to_keep <= $args['args']['revisions_count']) {
                                 echo '<span title="' . esc_attr(sprintf(__('Your site is configured to keep only the last %s revisions.'),
                                         number_format_i18n($revisions_to_keep))) . '">';
-                                printf(esc_html__('Revisions: %s'), '<b>' . (int) number_format_i18n($args['args']['revisions_count']) . '+</b>');
+                                printf(esc_html(\PublishPress_Statuses::__wp('Revisions: %s')), '<b>' . (int) number_format_i18n($args['args']['revisions_count']) . '+</b>');
                                 echo '</span>';
                             } else {
-                                printf(esc_html__('Revisions: %s'), '<b>' . (int) number_format_i18n($args['args']['revisions_count']) . '</b>');
+                                printf(esc_html(\PublishPress_Statuses::__wp('Revisions: %s')), '<b>' . (int) number_format_i18n($args['args']['revisions_count']) . '</b>');
                             }
                             ?>
                             <a class="hide-if-no-js"
@@ -219,7 +219,7 @@ class PostEditClassicSubmitMetabox
             endif;
             ?>
         <?php else : ?>
-            <input type="submit" name="save" id="save-post" value="<?php esc_attr_e('Save'); ?>"
+            <input type="submit" name="save" id="save-post" value="<?php echo esc_attr(\PublishPress_Statuses::__wp('Save')); ?>"
                    class="button button-highlighted" style="display:none"/>
         <?php endif; ?>
 
@@ -380,32 +380,30 @@ class PostEditClassicSubmitMetabox
             $date = date_i18n($datef, strtotime($post->post_date));
 
             if ('future' == $post_status_obj->name) { // scheduled for publishing at a future date
-                printf(esc_html__('Scheduled for: %s%s%s'), '<strong>', esc_html($date), '</strong>');
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                printf(\PublishPress_Statuses::__wp('Scheduled for: %s'), '<b>' . esc_html($date) . '</b>');
 
             } elseif (in_array($post_status_obj->name, $published_stati)) { // already published
-                printf(esc_html__('Published on: %s%s%s'), '<strong>', esc_html($date), '</strong>');
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                printf(\PublishPress_Statuses::__wp('Published on: %s'),  '<b>' . esc_html($date) . '</b>');
 
             } elseif (in_array($post->post_date_gmt, [constant('PRESSPERMIT_MIN_DATE_STRING'), '0000-00-00 00:00:00'])) { // draft, 1 or more saves, no date specified
-                printf(
-                    esc_html__('Publish %simmediately%s'),
-                    '<strong>',
-                    '</strong>'
-                );
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo \PublishPress_Statuses::__wp('Publish <b>immediately</b>');
 
             } elseif (time() < strtotime($post->post_date_gmt . ' +0000')) { // draft, 1 or more saves, future date specified
-                printf(esc_html__('Schedule for: %s%s%s'), '<strong>', esc_html($date), '</strong>');
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                printf(esc_html(\PublishPress_Statuses::__wp('Schedule for: %s')), '<b>' . esc_html($date) . '</b>');
 
             } elseif (!function_exists('rvy_in_revision_workflow') || !rvy_in_revision_workflow($post->ID) || (strtotime($post->post_date_gmt) > agp_time_gmt())) { // draft, 1 or more saves, date specified
-                printf(esc_html__('Publish on: %s%s%s'), '<strong>', esc_html($date), '</strong>');
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                printf(\PublishPress_Statuses::__wp('Publish on: %s'), '<b>' . esc_html($date) . '</b>');
             } else {
                 printf(esc_html__('Publish %son approval%s', 'publishpress-statuses'), '<b>', '</b>');
             }
         } else { // draft (no saves, and thus no date specified)
-            printf(
-                esc_html__('Publish %simmediately%s'),
-                '<strong>',
-                '</strong>'
-            );
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            echo \PublishPress_Statuses::__wp('Publish <b>immediately</b>');
         }
         ?></span>
         <a href="#edit_timestamp" class="edit-timestamp hide-if-no-js" tabindex='4'><?php echo esc_html(\PublishPress_Statuses::__wp('Edit')) ?></a>

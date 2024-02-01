@@ -36,7 +36,7 @@ class StatusEditUI
         $class_selected = "nav-tab nav-tab-active";
         $class_unselected = "nav-tab";
 
-        $tabs = ['name' => __('Name', 'publishpress-statuses')];
+        $tabs = ['name' => \PublishPress_Statuses::__wp('Name')];
 
         if (empty($status->publish) && !in_array($name, ['draft', 'future', 'publish', 'private'])) {
             if (empty($status->private)) {
@@ -189,7 +189,7 @@ class StatusEditUI
             <?php if (!empty($name)):?>
             <tr class="form-field">
                 <th scope="row" valign="top"><?php
-                    _e('Slug', 'publishpress-statuses'); ?></th>
+                    \PublishPress_Statuses::_e_wp('Slug', 'publishpress-statuses'); ?></th>
                 <td>
                     <input type="text" name="slug" id="slug" disabled
                             value="<?php
