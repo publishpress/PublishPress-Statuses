@@ -53,6 +53,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     const TAXONOMY_PSEUDO_STATUS = 'pseudo_status_pp';
 
     private $custom_statuses_cache = [];
+    private $sanitizing_post_id = false;
 
     public $messages = [];
 
@@ -117,6 +118,26 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             add_filter('presspermit_order_statuses', [$this, 'orderStatuses'], 10, 2);
         }
+
+        // Log the post ID field for the sanitize_post() call by wp_insert_post(), 
+        // to provide context for subsequent pre_post_status, pre_post_parent, pre_post_category, pre_post_tags_input filter applications
+        add_filter('pre_post_ID', 
+            function($post_id) {
+                $this->sanitizing_post_id = $post_id;
+                return $post_id;
+            }
+        );
+
+        // Use the next filter called by wp_insert_post() too mark the end of sanitize_text_field() calls for this post
+        add_filter('wp_insert_post_empty_content',
+            function($maybe_empty, $postarr) {
+                if ($this->sanitizing_post_id && !empty($postarr['ID']) && ($postarr['ID'] == $this->sanitizing_post_id)) {
+                    $this->sanitizing_post_id = false;
+                }
+
+                return $maybe_empty;
+            }, 1, 2
+        );
 
         add_action('user_has_cap', [$this, 'fltUserHasCap'], 20, 3);
 
@@ -184,6 +205,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $init_priority = (defined('PUBLISHPRESS_ACTION_PRIORITY_INIT')) ? PUBLISHPRESS_ACTION_PRIORITY_INIT : 10;
             add_action('init', [$this, 'init'], $init_priority);
         }
+    }
+
+    public function useSanitizePostID($post_id = 0) {
+        if (!empty($this->sanitizing_post_id)) {
+            $post_id = $this->sanitizing_post_id;
+        }
+
+        return $post_id;
     }
 
     public function fltEnsureValidStatus($data, $postarr) {
@@ -2773,7 +2802,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             return $post_status;
         }
 
-        if ($post_id = \PublishPress_Functions::getPostID()) {
+        if (!$post_id = \PublishPress_Statuses::instance()->useSanitizePostID()) {
+            $post_id = \PublishPress_Functions::getPostID();
+        }
+
+        if ($post_id) {
             if (\PublishPress_Statuses::isPostBlacklisted($post_id)) {
                 if (in_array($post_status, ['public', '_public'])) {
                     $post_status = 'publish';
