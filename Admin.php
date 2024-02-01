@@ -93,8 +93,6 @@ class Admin
         foreach (array_keys($changed_statuses) as $status_name) {
             \PublishPress_Statuses::updateStatusNumRoles($status_name, ['force_refresh' => true]);
         }
-
-        update_option('pp_changed_statuses', $changed_statuses);
     }
 
     // status display in Edit Posts table rows
