@@ -2986,7 +2986,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             if ('main' == $status_section) {
                 if ($post_status !== get_post_meta($post_id, '_pp_statuses_last_main_status', true)) {
-                    update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
+                    if ($post_status_obj = get_post_status_object($post_status)) {
+                        if (empty($post_status_object->public) && empty($post_status_object->private)) {
+                    		update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
+                        }
+                    }
                 }
             }
         }
