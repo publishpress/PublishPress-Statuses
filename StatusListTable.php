@@ -214,7 +214,7 @@ class StatusListTable extends \WP_List_Table
 	public function display_rows() {
         $this->display_section_row('_pre-publish', 
             [
-                'label' => __('Pre-Publication Workflow Sequence:', 'publishpress-statuses'),
+                'label' => __('Main Workflow:', 'publishpress-statuses'),
                 'class' => 'moderation-status'
             ]);
 
@@ -282,7 +282,7 @@ do_action('publishpress_statuses_table_row', $key, []);
     
                     <div class="row-inner">
                         <table class="status-row" style="width:100%"><tbody><tr>
-                        <td colspan="7" style="text-align: center"><?php _e('Drop any status here for alternate workflows.', 'publishpress-statuses');?></td>
+                        <td colspan="7" style="text-align: center"><?php _e('Drop any status here to make it manually selectable outside the main workflow.', 'publishpress-statuses');?></td>
                         </tr></tbody></table>
                     </div>
                 </div>
@@ -355,7 +355,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         } elseif ('_pre-publish-alternate' == $item->name) {
             $this->display_section_row('_pre-publish-alternate', 
             [
-                'label' => __('Manually Selectable Pre-Publication Statuses:', 'publishpress-statuses'),
+                'label' => __('Alternate Workflows:', 'publishpress-statuses'),
                 'class' => 'alternate-moderation-status'
             ]);
 

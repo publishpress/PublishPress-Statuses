@@ -496,6 +496,18 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
      * @return array
      */
     protected function get_default_statuses($taxonomy, $args = []) {
+        $default_alternate_position = 6;
+        $default_disabled_position = 13;
+
+        if ($stored_positions = (array) maybe_unserialize(get_option('publishpress_status_positions'))) {
+            if ($pos = array_search('_pre-publish-alternate', $stored_positions)) {
+                $default_alternate_position = $pos;
+            }
+
+            if ($pos = array_search('_disabled', $stored_positions)) {
+                $default_disabled_position = $pos;
+            }
+        }
 
         switch ($taxonomy) {
             case self::TAXONOMY_CORE_STATUS : 
@@ -575,7 +587,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('Assigned', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Assign', 'publishpress-statuses')],
                         'description' => __('Post idea assigned to writer.', 'publishpress-statuses'),
-                        'color' => '#007780',
+                        'color' => '#009ba0',
                         'icon' => 'dashicons-admin-users',
                         'position' => 2,
                         'order' => 200,
@@ -587,10 +599,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'label' => __('In Progress', 'publishpress-statuses'),
                         'labels' => (object) ['publish' => __('Mark in Progress', 'publishpress-statuses')],
                         'description' => __('Writer is working on the post.', 'publishpress-statuses'),
-                        'color' => '#774800',
+                        'color' => '#8c5400',
                         'icon' => 'dashicons-performance',
                         'position' => 3,
-                        'order' => 300,
+                        'order' => 225,
                         'moderation' => true,
                         'pp_builtin' => true,
                     ],
@@ -605,6 +617,94 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'order' => 250,
                         'moderation' => true,
                         'pp_builtin' => true,
+                    ],
+
+                    'deferred' => (object) [
+                        'label' => __('Deferred', 'publishpress-statuses'),
+                        'labels' => (object) ['publish' => __('Defer', 'publishpress-statuses')],
+                        'description' => __('Post has been deferred for future consideration.', 'publishpress-statuses'),
+                        'color' => '#9b9b9b',
+                        'icon' => 'dashicons-coffee',
+                        'position' => $default_alternate_position + 1,
+                        'order' => 280,
+                        'moderation' => true,
+                        'pp_builtin' => true,
+                    ],
+
+                    'needs-work' => (object) [
+                        'label' => __('Needs Work', 'publishpress-statuses'),
+                        'labels' => (object) ['publish' => __('Set to Needs Work', 'publishpress-statuses')],
+                        'description' => __('Post needs work before further review.', 'publishpress-statuses'),
+                        'color' => '#A88F8D',
+                        'icon' => 'dashicons-image-crop',
+                        'position' => $default_alternate_position + 2,
+                        'order' => 290,
+                        'moderation' => true,
+                        'pp_builtin' => true,
+                    ],
+
+                    'rejected' => (object) [
+                        'label' => __('Rejected', 'publishpress-statuses'),
+                        'labels' => (object) ['publish' => __('Reject', 'publishpress-statuses')],
+                        'description' => __('Post has been rejected.', 'publishpress-statuses'),
+                        'color' => '#6b0000',
+                        'icon' => 'dashicons-thumbs-down',
+                        'position' => $default_alternate_position + 2,
+                        'order' => 290,
+                        'moderation' => true,
+                        'pp_builtin' => true,
+                    ],
+
+                    'committee' => (object) [
+                        'label' => __('Committee', 'publishpress-statuses'),
+                        'labels' => (object) ['publish' => __('Refer to Committee', 'publishpress-statuses')],
+                        'description' => __('Post has been referred to committee.', 'publishpress-statuses'),
+                        'color' => '#791bb7',
+                        'icon' => 'dashicons-welcome-learn-more',
+                        'position' => $default_disabled_position + 2,
+                        'order' => 350,
+                        'moderation' => true,
+                        'pp_builtin' => true,
+                        'status_parent' => 'committee',
+                    ],
+
+                    'committee-review' => (object) [
+                        'label' => __('Committee Review', 'publishpress-statuses'),
+                        'labels' => (object) ['publish' => __('Set to Committee Review', 'publishpress-statuses')],
+                        'description' => __('Committee is reviewing the post.', 'publishpress-statuses'),
+                        'color' => '#ba7925',
+                        'icon' => 'dashicons-search',
+                        'position' => $default_disabled_position + 2,
+                        'order' => 352,
+                        'moderation' => true,
+                        'pp_builtin' => true,
+                        'status_parent' => 'committee',
+                    ],
+
+                    'committee-progress' => (object) [
+                        'label' => __('Committee Progress', 'publishpress-statuses'),
+                        'labels' => (object) ['publish' => __('Set to Committee Progress', 'publishpress-statuses')],
+                        'description' => __('Committee is editing the post.', 'publishpress-statuses'),
+                        'color' => '#A8902B',
+                        'icon' => 'dashicons-format-chat',
+                        'position' => $default_disabled_position + 3,
+                        'order' => 354,
+                        'moderation' => true,
+                        'pp_builtin' => true,
+                        'status_parent' => 'committee',
+                    ],
+
+                    'committee-approved' => (object) [
+                        'label' => __('Committee Approved', 'publishpress-statuses'),
+                        'labels' => (object) ['publish' => __('Set Committee Approval', 'publishpress-statuses')],
+                        'description' => __('Committee has approved the post.', 'publishpress-statuses'),
+                        'color' => '#22a522',
+                        'icon' => 'dashicons-editor-break',
+                        'position' => $default_disabled_position + 4,
+                        'order' => 358,
+                        'moderation' => true,
+                        'pp_builtin' => true,
+                        'status_parent' => 'committee',
                     ],
                 ];
 
@@ -631,7 +731,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'description' => '',
                         'color' => '',
                         'icon' => '',
-                        'position' => 13,
+                        'position' => $default_disabled_position,
                         'order' => 300,
                         'moderation' => false,
                         'disabled' => true,
@@ -1231,7 +1331,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         // de-emphasized in status selection UI and not included in any status workflow auto-progression.
                         if ($status->position >= $all_statuses['_pre-publish-alternate']->position) {
                             $status->alternate = true;
-                        
+
                         } elseif ($status->position >= $all_statuses['pending']->position) {
                             $status->post_pending = true;
                         }
@@ -1653,26 +1753,26 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
-        $import_done_version = get_option('pp_statuses_planner_import_done');
+        $import_run_version = get_option('publishpress_statuses_planner_import');
 
-        // Statuses < 1.0.3.1 updated archive array without performing import
-        if ($new_archived_descriptions || !$import_done_version || version_compare($import_done_version, '1.0.3', '<')
+        // Statuses < 1.0.3.2 updated archive array without performing import
+        if ($new_archived_descriptions || !$import_run_version || version_compare($import_run_version, '1.0.3.2', '<')
         ) {
             update_option('pp_statuses_archived_term_properties', maybe_serialize($archived_term_descriptions));
 
             if (('post_status' == $taxonomy)) {
-                if (!defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
-                    if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
-                        require_once(__DIR__ . '/PermissionsImport.php');
-                        \PublishPress_Statuses\PermissionsImport::import($terms);
-                    }
-                }
-
                 if (!defined('PUBLISHPRESS_STATUSES_NO_PLANNER_IMPORT')) {
                     require_once(__DIR__ . '/PlannerImport.php');
                     $import = new \PP_Statuses_PlannerImport();
                     if ($planner_import_done = $import->importEncodedProperties($terms)) {
                         wp_cache_delete('publishpress_status_positions', 'options');
+                    }
+                }
+
+                if (!defined('PUBLISHPRESS_STATUSES_NO_PERMISSIONS_IMPORT')) {
+                    if (get_option('presspermit_status_parent') || get_option('presspermit_status_order')) {
+                        require_once(__DIR__ . '/PermissionsImport.php');
+                        \PublishPress_Statuses\PermissionsImport::import($terms);
                     }
                 }
             }

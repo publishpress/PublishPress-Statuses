@@ -6,7 +6,7 @@ Tags: statuses, custom statuses, workflow, draft, pending review
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.4
-Stable tag: 1.0.3
+Stable tag: 1.0.3.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -71,8 +71,20 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= [1.0.3.4] - 8 Jan 2024 =
+* Fixed : If one of the default statuses was already user-defined in Planner, the import script changed its position
+
+= [1.0.3.3] - 8 Jan 2024 =
+* Fixed : Colors were not displayed on Statuses management screen
+* Change : Include default alternate workflow statuses: Deferred, Needs Work, Rejected
+* Change : Include a sample alternate workflow (disabled by default): Committee, Committee Review, Committee Progress, Committee Approved
+* Change : Recaption section titles on Statuses screen
+
+= [1.0.3.2] - 8 Jan 2024 =
+* Change : PublishPress Planner import put some statuses into wrong section
+
 = [1.0.3.1] - 8 Jan 2024 =
-* Change : PublishPress Planner statuses import will execute again if Planner is re-activated and statuses added or modified
+* Change : PublishPress Planner import will execute again if Planner is re-activated and statuses added or modified
 
 = [1.0.3] - 8 Jan 2024 =
 * Fixed : PublishPress Planner status properties (color, icon, position, description) were not imported
