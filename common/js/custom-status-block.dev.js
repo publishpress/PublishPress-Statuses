@@ -168,51 +168,55 @@ var refreshSelectableStatuses = function (status) {
 * The goal is to allow recaptioning "Save draft" to "Save as Pitch" etc.
 */
 function PPCS_RecaptionButton(btnSelector, btnCaption) {
-  var node = $(btnSelector);
+  jQuery(document).ready(function ($) {
+    var node = $(btnSelector);
 
-  if (!btnCaption) {
-    var status = wp.data.select('core/editor').getEditedPostAttribute('status');
-    btnCaption = ppGetStatusSaveAs(status);
-  }
+    if (!btnCaption) {
+      var status = wp.data.select('core/editor').getEditedPostAttribute('status');
+      btnCaption = ppGetStatusSaveAs(status);
+    }
 
-  if ($(btnSelector).length && btnCaption 
-  && (btnCaption != $('span.presspermit-save-button button').html() || !$('span.presspermit-save-button button:visible').length || $('button.editor-post-save-draft:visible').length)
-  ) {
-    $('span.presspermit-save-button').remove();
+    if ($(btnSelector).length && btnCaption 
+    && (btnCaption != $('span.presspermit-save-button button').html() || !$('span.presspermit-save-button button:visible').length || $('button.editor-post-save-draft:visible').length)
+    ) {
+      $('span.presspermit-save-button').remove();
 
-    var hideClass = 'presspermit-save-hidden';
+      var hideClass = 'presspermit-save-hidden';
 
-    // Hide the stock button
-    node.addClass(hideClass).hide().css('z-index', -999);
+      // Hide the stock button
+      node.addClass(hideClass).hide().css('z-index', -999);
 
-    // Clone the stock button
-    node.after('<span class="presspermit-save-button">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-save-draft').removeAttr('disabled').removeAttr('aria-disabled').css('white-space', 'nowrap').css('position', 'relative').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
+      // Clone the stock button
+      node.after('<span class="presspermit-save-button">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-save-draft').removeAttr('disabled').removeAttr('aria-disabled').css('white-space', 'nowrap').css('position', 'relative').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
 
-    node.addClass(hideClass).attr('aria-disabled', true);
-  }
+      node.addClass(hideClass).attr('aria-disabled', true);
+    }
+  });
 }
 
 // Update main publish ("Publish" / "Submit Pending") button width and span caption
 function PPCS_RecaptionOnDisplay(caption) {
-  if (($('button.editor-post-save-draft').filter(':visible').length || !$('.is-saving').length)
-  && $('button.editor-post-save-draft').length) {  // indicates save operation (or return from Pre-Publish) is done
-    PPCS_RecaptionButton('button.editor-post-save-draft', caption);
-    $('span.presspermit-save-button button').removeAttr('aria-disabled');
-  } else {
-    var SaveRecaptionInterval = setInterval(WaitForRecaption, 100);
-    var SaveRecaptionTimeout = setTimeout(function () {
-        clearInterval(SaveRecaptionInterval);
-    }, 20000);
+  jQuery(document).ready(function ($) {
+    if (($('button.editor-post-save-draft').filter(':visible').length || !$('.is-saving').length)
+    && $('button.editor-post-save-draft').length) {  // indicates save operation (or return from Pre-Publish) is done
+      PPCS_RecaptionButton('button.editor-post-save-draft', caption);
+      $('span.presspermit-save-button button').removeAttr('aria-disabled');
+    } else {
+      var SaveRecaptionInterval = setInterval(WaitForRecaption, 100);
+      var SaveRecaptionTimeout = setTimeout(function () {
+          clearInterval(SaveRecaptionInterval);
+      }, 20000);
 
-    function WaitForRecaption() {
-      if ($('button.editor-post-save-draft').filter(':visible').length || !$('.is-saving').length) { // indicates save operation (or return from Pre-Publish) is done
-        clearInterval(SaveRecaptionInterval);
-        clearTimeout(SaveRecaptionTimeout);
+      function WaitForRecaption() {
+        if ($('button.editor-post-save-draft').filter(':visible').length || !$('.is-saving').length) { // indicates save operation (or return from Pre-Publish) is done
+          clearInterval(SaveRecaptionInterval);
+          clearTimeout(SaveRecaptionTimeout);
 
-        PPCS_RecaptionButton('button.editor-post-save-draft', '');
+          PPCS_RecaptionButton('button.editor-post-save-draft', '');
+        }
       }
     }
-  }
+  });
 }
 
 jQuery(document).ready(function ($) {
@@ -496,17 +500,19 @@ var ppcsDisablePostUpdate = function ppDisablePostUpdate() {
 }
 
 var ppcsEnablePostUpdate = function ppEnablePostUpdate() {
-  var intRestoreToggle = setInterval(function() {
-    if ($('span.presspermit-editor-toggle button:visible').length && $('span.presspermit-editor-toggle button').parent().prev('button').attr('aria-disabled') == 'false'
-    || ($('span.presspermit-editor-button button:visible').length && $('span.presspermit-editor-button button').parent().prev('button').attr('aria-disabled') == 'false')
-    ) {
-      $('span.presspermit-editor-toggle button').removeAttr('aria-disabled');
-      $('span.presspermit-editor-button button').removeAttr('aria-disabled');
-      clearInterval(intRestoreToggle);
-    }
-  }, 100);
+  jQuery(document).ready(function ($) {
+    var intRestoreToggle = setInterval(function() {
+      if ($('span.presspermit-editor-toggle button:visible').length && $('span.presspermit-editor-toggle button').parent().prev('button').attr('aria-disabled') == 'false'
+      || ($('span.presspermit-editor-button button:visible').length && $('span.presspermit-editor-button button').parent().prev('button').attr('aria-disabled') == 'false')
+      ) {
+        $('span.presspermit-editor-toggle button').removeAttr('aria-disabled');
+        $('span.presspermit-editor-button button').removeAttr('aria-disabled');
+        clearInterval(intRestoreToggle);
+      }
+    }, 100);
 
-  $('div.publishpress-extended-post-status select').removeAttr('disabled');
+    $('div.publishpress-extended-post-status select').removeAttr('disabled');
+  });
 }
 
 /**
