@@ -2,7 +2,7 @@
 Contributors: publishpress, kevinB, stevejburge, andergmartins
 Author: publishpress
 Author URI: https://publishpress.com
-Tags: statuses, custom statuses, workflow, draft, pending review, extended post status, archive status, status, status manager, archived status, custom status
+Tags: custom statuses, workflow, pending review, status manager, archived status
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.5
