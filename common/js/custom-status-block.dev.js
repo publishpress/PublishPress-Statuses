@@ -393,7 +393,7 @@ setInterval(function () {
       }
       
       if (statusCaption) {
-        $('div.pp-statuses-workflow input[type="radio"][value="' + buttonWorkflowAction + '"]').next('label').after(
+        $('div.pp-statuses-workflow input[type="radio"][value="' + buttonWorkflowAction + '"]').next('label').parent().after(
           '<div class="pp-editor-prepublish-' + buttonWorkflowAction + '-status pp-editor-workflow-caption pp-status-' + buttonStatus + '">' + statusCaption + '</div>'
         );
       }
