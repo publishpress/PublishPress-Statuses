@@ -395,13 +395,13 @@ class PublishPress_Functions
         global $plugin_page, $pagenow;
 
         if (!is_admin()) {
-            return false;
+            return '';
 
         } elseif (!empty($plugin_page)) {
-            return $plugin_page;
+            return (is_string($plugin_page)) ? $plugin_page : '';
 
         } elseif (empty($pagenow) || ('admin.php' != $pagenow)) {
-            return false;
+            return '';
 
         } else {
             return self::REQUEST_key('page');
