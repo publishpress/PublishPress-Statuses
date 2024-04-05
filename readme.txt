@@ -170,6 +170,7 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 = [1.0.6.8] - 5 Apr 2024
 * Compat : WP 6.5 - Workflow labels in post editor sidebar were mis-aligned
 * Fixed : Fatal error in PHP 8.2 if another plugin sets $plugin_page to array
+* Lang : Brazilian Portuguese translation
 
 = [1.0.6.7] - 7 Feb 2024
 * Compat : The Events Calendar, other plugins - Avoid js errors due to scripts being loaded before jQuery
