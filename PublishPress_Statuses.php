@@ -2159,7 +2159,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $response = wp_insert_term(
             $status_name,
             $taxonomy,
-            ['slug' => $slug, 'description' => $args['description']]
+            ['slug' => $slug, 'description' => !empty($args['description']) ? $args['description'] : '']
         );
 
         if (is_array($response) && !empty($response['term_id'])) {
