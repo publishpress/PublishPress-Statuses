@@ -167,6 +167,12 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
+= [1.0.6.9] =
+* Fixed : Could not create new Statuses with Multibyte label
+* Fixed : Status backup / restore / default operation was not applied to core statuses (Draft, Pending)
+* Fixed : Status default operation did not restore default Planner colors and icons under some conditions
+* Compat : Planner - If one or more post types have Statuses integration disabled, customized status colors are not applied to paged results on Planner Content Calendar
+
 = [1.0.6.8] - 5 Apr 2024
 * Compat : WP 6.5 - Workflow labels in post editor sidebar were mis-aligned
 * Fixed : Fatal error in PHP 8.2 if another plugin sets $plugin_page to array
