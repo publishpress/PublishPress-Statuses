@@ -997,6 +997,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
                 $postStatusArgs = apply_filters('publishpress_new_custom_status_args', $this->moderation_status_properties($status), $status);
 
+                if (empty($postStatusArgs['taxonomy'])) {
+                    $postStatusArgs['taxonomy'] = 'post_status';
+                }
+
                 register_post_status($status->slug, $postStatusArgs);
             }
         }
@@ -1205,6 +1209,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $statuses = self::get_default_statuses(self::TAXONOMY_CORE_STATUS);
 
         foreach (array_keys($statuses) as $status_name) {
+            if (!is_object($statuses[$status_name])) {
+                continue;
+            }
+
             $statuses[$status_name]->slug = $status_name;
             $statuses[$status_name]->name = $status_name;
 
@@ -1362,7 +1370,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         if (!did_action('publishpress_statuses_pre_init')) {
-            $args['skip_archive'] = true;
+            $function_args['skip_archive'] = true;
         }
 
         // We are using the terms and term_taxonomy tables to store and configure several types of post statuses, but disregarding term_id and term_taxonomy_id. 
@@ -1380,9 +1388,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
 
             // Under PublishPress / PublishPress Planner, post_status properties were encoded in the description column of the term_taxonomy table
-            if (is_admin() && empty($args['skip_archive']) && (self::TAXONOMY_PRE_PUBLISH == $taxonomy) && did_action('pp_statuses_init')) {
+            if (is_admin() && empty($function_args['skip_archive']) && in_array($taxonomy, [self::TAXONOMY_CORE_STATUS, self::TAXONOMY_PRE_PUBLISH]) 
+            && (did_action('pp_statuses_init') || (!empty($_REQUEST['message']) && ('settings-updated' == $_REQUEST['message'])))
+            ) {
                 require_once(__DIR__ . '/Admin.php');
                 $_terms = \PublishPress_Statuses\Admin::apply_status_maintenance($_terms, $taxonomy);
+                $did_status_maint = true;
             }
 
             foreach ($_terms as $term) {
@@ -1500,6 +1511,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
         }
 
+        if (!empty($did_status_maint)) {
+            do_action('publishpress_statuses_maintenance_done');
+        }
+        
         // restore previously merged status positions (@todo: restore any other properties?)
         foreach ($all_statuses as $status_name => $status) {
             if (isset($stored_status_positions[$status_name])) {
@@ -1714,6 +1729,15 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         foreach (array_keys($status_by_position) as $key) {
             if (!$function_args['show_disabled']) {
                 if (!empty($status_by_position[$key]->disabled)) {
+                    unset($status_by_position[$key]);
+                    continue;
+                }
+            }
+
+            if (!is_object($status_by_position[$key])) {
+                if (is_array($status_by_position[$key])) {
+                    $status_by_position[$key] = (object) $status_by_position[$key];
+                } else {
                     unset($status_by_position[$key]);
                     continue;
                 }
@@ -2103,7 +2127,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     public static function import_status_properties($terms, $taxonomy) {
         require_once(__DIR__ . '/Admin.php');
-        return \PublishPress_Statuses\Admin::apply_status_maintenance($terms, $taxonomy);
+        $retval = \PublishPress_Statuses\Admin::apply_status_maintenance($terms, $taxonomy);
+
+        do_action('publishpress_statuses_maintenance_done');
+
+        return $retval;
     }
 
     /**
