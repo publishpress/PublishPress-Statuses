@@ -139,7 +139,7 @@ class StatusEditUI
 
         <div id="ajax-response"></div>
         <form method="post" action="<?php
-        echo esc_url($edit_status_link); ?>">
+        echo esc_url($edit_status_link); ?>" id="editstatus">
             <input type="hidden" name="name" value="<?php
             echo esc_attr($name); ?>"/>
             <?php
@@ -234,29 +234,27 @@ class StatusEditUI
                 </td>
             </tr>
 
-            <?php if (!empty($name)):?>
             <tr class="form-field">
                 <th scope="row" valign="top"><?php
                     \PublishPress_Statuses::_e_wp('Slug', 'publishpress-statuses'); ?></th>
                 <td>
-                    <input type="text" name="slug" id="slug" disabled
+                    <input type="text" name="slug" id="slug" 
                             value="<?php
                             echo esc_attr($name); ?>" <?php
 
                     $status_obj = get_post_status_object($name);
-                    if (!empty($status_obj) && !empty($status_obj->_builtin)) : echo 'disabled="disabled"';
+                    if ($name && !empty($status_obj) && !empty($status_obj->_builtin)) : echo 'disabled="disabled"';
                     endif; ?> />
                     <?php
                     \PublishPress_Statuses\StatusesUI::printErrorOrDescription(
                         'slug',
                         __(
-                            'The slug is the unique ID for the status and is changed when the name is changed.',
+                            'The slug is the unique ID for the status.',
                             'publishpress-statuses'
                         )
                     ); ?>
                 </td>
             </tr>
-            <?php endif;?>
 
             <tr class="form-field">
                 <th scope="row" valign="top"><label for="description"><?php
