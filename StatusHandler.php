@@ -20,7 +20,7 @@ class StatusHandler {
         // Validate and sanitize the form data
         $status_label = !empty($_POST['status_label']) ? sanitize_text_field(trim(sanitize_text_field($_POST['status_label']))) : '';
 
-        $status_name = sanitize_title($status_label);
+        $status_name = !empty($_POST['slug']) ? sanitize_title($_POST['slug']) : '';
 
         $status_description = !empty($_POST['description']) ? stripslashes(wp_filter_nohtml_kses(trim(sanitize_text_field($_POST['description'])))) : '';
 
@@ -45,8 +45,13 @@ class StatusHandler {
         if (empty($status_label)) {
             $form_errors['label'] = __('Please enter a name for the status', 'publishpress-statuses');
         }
+
+        if (empty($status_name)) {
+            $form_errors['label'] = __('Please enter a slug for the status', 'publishpress-statuses');
+        }
+
         // Check that the name isn't numeric
-        if (is_numeric($status_label)) {
+        if (is_numeric($status_name)) {
             $form_errors['label'] = __(
                 'Please enter a valid, non-numeric name for the status.',
                 'publishpress-statuses'
@@ -66,6 +71,25 @@ class StatusHandler {
         if (! $name_is_valid) {
             $form_errors['label'] = __(
                 'Status name cannot exceed 20 characters. Please try a shorter name.',
+                'publishpress-statuses'
+            );
+
+            return;
+        }
+
+        $name_is_valid = true;
+        if (function_exists('mb_strlen')) {
+            if (mb_strlen($status_name) > 20) {
+                $name_is_valid = false;
+            }
+        } else {
+            if (strlen($status_name) > 20) {
+                $name_is_valid = false;
+            }
+        }
+        if (! $name_is_valid) {
+            $form_errors['label'] = __(
+                'Status slug cannot exceed 20 characters. Please try a shorter name.',
                 'publishpress-statuses'
             );
 
@@ -97,7 +121,8 @@ class StatusHandler {
         // Try to add the status
         $status_args = [
             'description' => $status_description,
-            'name' => $status_name,
+            'slug' => $status_name,
+            //'name' => $status_name,
             'color' => $status_color,
             'icon' => $status_icon,
         ];
