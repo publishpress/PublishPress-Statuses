@@ -1142,6 +1142,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         }
 
         if (is_null($post_type)) {
+            if (defined('DOING_AJAX') && DOING_AJAX) {
+                return false;
+            }
+
             $post_type = self::getCurrentPostType();
         }
 
