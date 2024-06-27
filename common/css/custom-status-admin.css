@@ -362,7 +362,8 @@ border-radius: 3px;
 
 
 /* Add Status Form */
-#addstatus .form-table th, #addstatus .form-table th label {
+#addstatus .form-table th, #addstatus .form-table th label
+{
 text-align: left;
 line-height: 1.3;
 font-weight: 600;
@@ -372,6 +373,11 @@ font-weight: 600;
 margin-top: 10px;
 }
 
+#addstatus #label, #addstatus #slug,
+#editstatus #label, #editstatus #slug
+{
+width: 300px;
+}
 
 
 /* Icon Picker */
