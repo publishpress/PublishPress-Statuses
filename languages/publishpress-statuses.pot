@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.0.6.8\n"
+"Project-Id-Version: PublishPress Statuses 1.0.6.9-rc4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-05T20:34:09+00:00\n"
+"POT-Creation-Date: 2024-05-31T16:47:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -349,7 +349,7 @@ msgid "Labels"
 msgstr ""
 
 #: StatusEditUI.php:63
-#: StatusEditUI.php:388
+#: StatusEditUI.php:386
 #: StatusListTable.php:128
 msgid "Post Types"
 msgstr ""
@@ -375,60 +375,60 @@ msgstr ""
 msgid "The name is used to identify the status. (Max: 20 characters)"
 msgstr ""
 
-#: StatusEditUI.php:252
-msgid "The slug is the unique ID for the status and is changed when the name is changed."
+#: StatusEditUI.php:251
+msgid "The slug is the unique ID for the status."
 msgstr ""
 
-#: StatusEditUI.php:263
+#: StatusEditUI.php:261
 msgid "Description"
 msgstr ""
 
-#: StatusEditUI.php:275
+#: StatusEditUI.php:273
 msgid "The description is primarily for administrative use, to give you some context on what the custom status is to be used for."
 msgstr ""
 
-#: StatusEditUI.php:284
+#: StatusEditUI.php:282
 msgid "Color"
 msgstr ""
 
-#: StatusEditUI.php:296
+#: StatusEditUI.php:294
 msgid "The color is used to identify the status."
 msgstr ""
 
-#: StatusEditUI.php:302
+#: StatusEditUI.php:300
 #: StatusListTable.php:126
 msgid "Icon"
 msgstr ""
 
-#: StatusEditUI.php:318
+#: StatusEditUI.php:316
 msgid "Select Icon"
 msgstr ""
 
-#: StatusEditUI.php:324
+#: StatusEditUI.php:322
 msgid "The icon is used to visually represent the status."
 msgstr ""
 
-#: StatusEditUI.php:352
+#: StatusEditUI.php:350
 msgid "Status Availability"
 msgstr ""
 
-#: StatusEditUI.php:355
+#: StatusEditUI.php:353
 msgid "Choose which user roles can assign this status to a post."
 msgstr ""
 
-#: StatusEditUI.php:391
+#: StatusEditUI.php:389
 msgid "Choose which post types can be set to this status."
 msgstr ""
 
-#: StatusEditUI.php:428
+#: StatusEditUI.php:426
 msgid "All Post Types"
 msgstr ""
 
-#: StatusEditUI.php:475
+#: StatusEditUI.php:473
 msgid "Save As Label"
 msgstr ""
 
-#: StatusEditUI.php:483
+#: StatusEditUI.php:481
 msgid "Submit Button Label"
 msgstr ""
 
@@ -499,7 +499,7 @@ msgid "Post status deleted."
 msgstr ""
 
 #: StatusesUI.php:217
-#: StatusHandler.php:744
+#: StatusHandler.php:770
 msgid "Status order updated."
 msgstr ""
 
@@ -726,68 +726,76 @@ msgid "This status can be assigned to an unpublished post using the Post Status 
 msgstr ""
 
 #: StatusHandler.php:17
-#: StatusHandler.php:153
+#: StatusHandler.php:179
 msgid "Sorry, you do not have permission to edit custom statuses."
 msgstr ""
 
 #: StatusHandler.php:46
-#: StatusHandler.php:237
+#: StatusHandler.php:263
 msgid "Please enter a name for the status"
 msgstr ""
 
 #: StatusHandler.php:50
-#: StatusHandler.php:242
+msgid "Please enter a slug for the status"
+msgstr ""
+
+#: StatusHandler.php:55
+#: StatusHandler.php:268
 msgid "Please enter a valid, non-numeric name for the status."
 msgstr ""
 
-#: StatusHandler.php:67
-#: StatusHandler.php:261
+#: StatusHandler.php:73
+#: StatusHandler.php:287
 msgid "Status name cannot exceed 20 characters. Please try a shorter name."
 msgstr ""
 
-#: StatusHandler.php:77
+#: StatusHandler.php:92
+msgid "Status slug cannot exceed 20 characters. Please try a shorter name."
+msgstr ""
+
+#: StatusHandler.php:102
 msgid "Name conflicts with existing status. Please choose another."
 msgstr ""
 
-#: StatusHandler.php:84
+#: StatusHandler.php:109
 msgid "Status name is restricted. Please choose another name."
 msgstr ""
 
-#: StatusHandler.php:108
+#: StatusHandler.php:134
 msgid "Could not add status: "
 msgstr ""
 
-#: StatusHandler.php:160
-#: StatusHandler.php:666
+#: StatusHandler.php:186
+#: StatusHandler.php:692
 msgid "Status does not exist."
 msgstr ""
 
-#: StatusHandler.php:165
-#: StatusHandler.php:661
+#: StatusHandler.php:191
+#: StatusHandler.php:687
 msgid "Could not delete the status: "
 msgstr ""
 
-#: StatusHandler.php:190
+#: StatusHandler.php:216
 msgid "Post status doesn't exist."
 msgstr ""
 
-#: StatusHandler.php:420
+#: StatusHandler.php:446
 msgid "Error updating post status."
 msgstr ""
 
-#: StatusHandler.php:591
+#: StatusHandler.php:617
 msgid "Cannot reassign to the status you want to delete"
 msgstr ""
 
-#: StatusHandler.php:636
+#: StatusHandler.php:662
 msgid "Restricted status "
 msgstr ""
 
-#: StatusHandler.php:663
+#: StatusHandler.php:689
 msgid "Status deleted"
 msgstr ""
 
-#: StatusHandler.php:685
+#: StatusHandler.php:711
 msgid "Status positions were not sent."
 msgstr ""
 

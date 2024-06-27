@@ -6,7 +6,7 @@ Tags: custom statuses, workflow, pending review, status manager, archived status
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.5
-Stable tag: 1.0.6.8
+Stable tag: 1.0.6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -166,6 +166,13 @@ A post in the Future status is not published yet, but is scheduled to be publish
 Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced featuers such as custom capabilities, workflow branching, icons, colors, and much more.
 
 == Changelog ==
+
+= [1.0.6.9] - 18 Jun 2024
+* Fixed : Could not create new Statuses with Multibyte label
+* Fixed : Status backup / restore / default operation was not applied to core statuses (Draft, Pending)
+* Fixed : Status default operation did not restore default Planner colors and icons under some conditions
+* Compat : Planner - If one or more post types have Statuses integration disabled, customized status colors are not applied to paged results on Planner Content Calendar
+* Compat : Disable Gutenberg - Classic Editor mode was not detected under some configurations
 
 = [1.0.6.8] - 5 Apr 2024
 * Compat : WP 6.5 - Workflow labels in post editor sidebar were mis-aligned

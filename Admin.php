@@ -538,19 +538,11 @@ class Admin
     	}
     
         if (!$terms) {
-            if (!$terms = get_terms(self::TAXONOMY_PRE_PUBLISH, ['hide_empty' => false])) {
+            if (!$terms = get_terms($taxonomy, ['hide_empty' => false])) {
                 $busy = false;
                 return $terms;
             }
         }
-
-        if (get_transient('publishpress_statuses_maintenance')) {
-            $busy = false;
-            return $terms;
-        }
-
-        // Just in case this function terminates abnormally due to external factors, use a transient even though we'll clear it manually
-        set_transient('publishpress_statuses_maintenance', true, 20);
 
         // We are re-using the option row of Planner 3.x Custom Statuses module, but storing switch values as 1 / 0 instead of "on" / "off"
         // Re-check on each execution to make sure Planner 3.x wasn't re-activated and updated the array.
@@ -612,6 +604,12 @@ class Admin
 
                 update_option('pp_statuses_archived_term_properties', $archived_term_descriptions);
             }
+        }
+
+        if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH == $taxonomy) {
+        	$default_terms = get_terms(\PublishPress_Statuses::TAXONOMY_CORE_STATUS, ['hide_empty' => false]);
+
+        	self::applyBackupOperations($default_terms, \PublishPress_Statuses::TAXONOMY_CORE_STATUS);
         }
 
         // Apply backup / restore / default request from settings. @todo: move?
@@ -738,11 +736,15 @@ class Admin
 
     public static function applyBackupOperations($terms, $taxonomy, $args = []) {
         if (get_option('pp_statuses_set_backup_props')) {
-            delete_option('pp_statuses_set_backup_props');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_set_backup_props');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -755,11 +757,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_backup_colors')) {
-            delete_option('pp_statuses_restore_backup_colors');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_backup_colors');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -775,11 +781,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_backup_icons')) {
-            delete_option('pp_statuses_restore_backup_icons');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_backup_icons');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -795,11 +805,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_backup_labels')) {
-            delete_option('pp_statuses_restore_backup_labels');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_backup_labels');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -815,11 +829,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_backup_post_types')) {
-            delete_option('pp_statuses_restore_backup_post_types');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_backup_post_types');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -835,11 +853,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_autobackup_colors')) {
-            delete_option('pp_statuses_restore_autobackup_colors');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_autobackup_colors');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -861,11 +883,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_autobackup_icons')) {
-            delete_option('pp_statuses_restore_autobackup_icons');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_autobackup_icons');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -887,11 +913,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_autobackup_labels')) {
-            delete_option('pp_statuses_restore_autobackup_labels');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_autobackup_labels');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -913,11 +943,15 @@ class Admin
         }
 
         if (get_option('pp_statuses_restore_autobackup_post_types')) {
-            delete_option('pp_statuses_restore_autobackup_post_types');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_restore_autobackup_post_types');
+                });
+            });
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -939,13 +973,17 @@ class Admin
         }
 
         if (get_option('pp_statuses_default_colors')) {
-            delete_option('pp_statuses_default_colors');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_default_colors');
+                });
+            });
 
             $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -966,13 +1004,17 @@ class Admin
         }
 
         if (get_option('pp_statuses_default_icons')) {
-            delete_option('pp_statuses_default_icons');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_default_icons');
+                });
+            });
 
             $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -995,13 +1037,17 @@ class Admin
         }
 
         if (get_option('pp_statuses_default_labels')) {
-            delete_option('pp_statuses_default_labels');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_default_labels');
+                });
+            });
 
             $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -1028,13 +1074,17 @@ class Admin
         }
 
         if (get_option('pp_statuses_default_post_types')) {
-            delete_option('pp_statuses_default_post_types');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_default_post_types');
+                });
+            });
 
             $statuses = \PublishPress_Statuses::getPostStati([], 'object', ['show_disabled' => true]);
 
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -1055,7 +1105,11 @@ class Admin
         }
 
         if (get_option('pp_statuses_default_planner_colors')) {
-            delete_option('pp_statuses_default_planner_colors');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_default_planner_colors');
+                });
+            });
 
             $planner_colors = [
                 'pitch' => '#cc0000',
@@ -1068,9 +1122,29 @@ class Admin
                 'publish' => '#655997',
             ];
 
+            // If a status exists only as a code-defined default, create a term so termmeta can be stored
+            foreach (array_keys($planner_colors) as $status) {
+                foreach ($terms as $k => $term) {
+                    if ($term->slug == $status) {
+                        continue 2;
+                    }
+                }
+
+                if ($status_obj = get_post_status_object($status)) {
+                    if ((($taxonomy == \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH) && !empty($status_obj->moderation))
+                    || (($taxonomy == \PublishPress_Statuses::TAXONOMY_CORE_STATUS) && !empty($status_obj->_builtin)))
+                    {
+                        if ($term_id = \PublishPress_Statuses::instance()->addStatus($taxonomy, $status_obj->label, ['slug' => $status])) {
+                            $term = get_term_by('slug', $status, $taxonomy);
+                            $terms []= $term;
+                        }
+                    }
+                }
+            }
+
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
@@ -1091,7 +1165,11 @@ class Admin
         }
 
         if (get_option('pp_statuses_default_planner_icons')) {
-            delete_option('pp_statuses_default_planner_icons');
+            add_action('publishpress_statuses_maintenance_done', function() {
+                add_action('shutdown', function() {
+                    delete_option('pp_statuses_default_planner_icons');
+                });
+            });
 
             $planner_icons = [
                 'pitch' => 'dashicons-post-status',
@@ -1104,9 +1182,29 @@ class Admin
                 'publish' => 'dashicons-yes',
             ];
 
+            // If a status exists only as a code-defined default, create a term so termmeta can be stored
+            foreach (array_keys($planner_icons) as $status) {
+                foreach ($terms as $k => $term) {
+                    if ($term->slug == $status) {
+                        continue 2;
+                    }
+                }
+
+                if ($status_obj = get_post_status_object($status)) {
+                    if ((($taxonomy == \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH) && !empty($status_obj->moderation))
+                    || (($taxonomy == \PublishPress_Statuses::TAXONOMY_CORE_STATUS) && !empty($status_obj->_builtin)))
+                    {
+                        if ($term_id = \PublishPress_Statuses::instance()->addStatus($taxonomy, $status_obj->label, ['slug' => $status])) {
+                            $term = get_term_by('slug', $status, $taxonomy);
+                            $terms []= $term;
+                        }
+                    }
+                }
+            }
+
             foreach ($terms as $k => $term) {
                 // Extra precaution in case terms were passed from the wrong taxonomy
-                if (\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH != $term->taxonomy) {
+                if (!in_array($term->taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_CORE_STATUS])) {
                     continue;
                 }
 
