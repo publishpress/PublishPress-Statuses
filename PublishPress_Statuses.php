@@ -1406,7 +1406,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
 
                 // Map taxonomy schema columns to Post Status properties
-                $term->label = (!empty($core_statuses[$term->slug])) ? $core_statuses[$term->slug]->label : $term->name;
+
+                // We need to avoid replacing a translation of "Pending Review" with the stored default English caption
+                $term->label = (!empty($core_statuses[$term->slug]) && (('pending' != $term->slug) || ('Pending Review' == $term->name))) 
+                ? $core_statuses[$term->slug]->label 
+                : $term->name;
 
                 $term->name = $term->slug;
                 
@@ -1808,7 +1812,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                                     $val
                                 );
                             }
-                        } else {
+                        } elseif (!in_array($status_name, ['draft', 'pending', 'future', 'publish', 'private'])) {
                             $wp_post_statuses[$status_name]->$prop = $val;
                         }
                     }
