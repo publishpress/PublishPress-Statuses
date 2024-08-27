@@ -167,6 +167,11 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
+= [1.0.6.10] =
+* Fixed : On translated sites, post permalink was forced to plain format
+* Fixed : Pending Review status label could not be customized by Edit Status screen
+* Fixed : Classic Editor - PHP Warning for undefined array index "moderation"
+
 = [1.0.6.9] - 18 Jun 2024
 * Fixed : Could not create new Statuses with Multibyte label
 * Fixed : Status backup / restore / default operation was not applied to core statuses (Draft, Pending)
