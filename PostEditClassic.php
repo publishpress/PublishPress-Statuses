@@ -133,7 +133,8 @@ class PostEditClassic
             return;
         }
 
-        $stati = [];
+        $stati = array_fill_keys(['public', 'private', 'moderation'], []);
+        
         foreach (['public', 'private', 'moderation'] as $prop) {
             foreach (\PublishPress_Statuses::getPostStati([$prop => true, 'post_type' => $typenow], 'object') as $status => $status_obj) {
 	            // Safeguard: Fall back on native WP object if our copy was corrupted. 
