@@ -21,8 +21,6 @@ class PostEditGutenbergStatuses
             wp_enqueue_style('publishpress-statuses-post-block-edit', PUBLISHPRESS_STATUSES_URL . '/common/css/post-block-edit.css', [], PUBLISHPRESS_STATUSES_VERSION);
         }
         
-        //div.editor-post-publish-panel button.editor-post-publish-button
-
         $current_status = get_post_field('post_status', $post_id);
 
         if (in_array($current_status, ['', 'auto-draft'])) {
@@ -49,7 +47,7 @@ class PostEditGutenbergStatuses
 
         if (($current_status == $next_status_obj->name) || ( (!empty($current_status_obj->public) || !empty($current_status_obj->private)) && (!empty($next_status_obj->public) || !empty($next_status_obj->private)))) {
             if (!empty($next_status_obj->public) || !empty($next_status_obj->private)) {
-                $publish_label = esc_html(\PublishPress_Statuses::__wp('Update'));
+                $publish_label = esc_html(\PublishPress_Statuses::__wp('Save'));
                 $save_as_label = $publish_label;
             } else {
                 $publish_label = $next_status_obj->labels->save_as;
@@ -65,7 +63,7 @@ class PostEditGutenbergStatuses
             }
         }
 
-        $args['update'] = esc_html(\PublishPress_Statuses::__wp('Update'));
+        $args['update'] = esc_html(\PublishPress_Statuses::__wp('Save'));
 
         if (!isset($save_as_label)) {
             if ((!empty($next_status_obj->labels->publish))) {
@@ -122,6 +120,11 @@ class PostEditGutenbergStatuses
         $args['disableRecaption'] = defined('PRESSPERMIT_EDITOR_NO_RECAPTION');
 
         $args['hidePending'] = \PublishPress_Statuses::instance()->options->pending_status_regulation && !current_user_can('status_change_pending');
+
+        $args['parentLabel'] = __('Parent');
+        $args['publishLabel'] = __('Publish');
+
+        $args['moveParentUI'] = defined('PP_STATUSES_MOVE_PARENT_UI');
 
         wp_localize_script('publishpress-statuses-post-block-edit', 'ppObjEdit', $args);
     }
