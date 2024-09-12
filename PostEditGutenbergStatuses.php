@@ -126,6 +126,8 @@ class PostEditGutenbergStatuses
 
         $args['moveParentUI'] = defined('PP_STATUSES_MOVE_PARENT_UI');
 
+        $args['timezoneOffset'] = get_option('gmt_offset');
+
         wp_localize_script('publishpress-statuses-post-block-edit', 'ppObjEdit', $args);
     }
 }
