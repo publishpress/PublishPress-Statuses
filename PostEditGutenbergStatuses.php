@@ -121,6 +121,11 @@ class PostEditGutenbergStatuses
 
         $args['hidePending'] = \PublishPress_Statuses::instance()->options->pending_status_regulation && !current_user_can('status_change_pending');
 
+        $args['parentLabel'] = __('Parent');
+        $args['publishLabel'] = __('Publish');
+
+        $args['moveParentUI'] = defined('PP_STATUSES_MOVE_PARENT_UI');
+
         wp_localize_script('publishpress-statuses-post-block-edit', 'ppObjEdit', $args);
     }
 }

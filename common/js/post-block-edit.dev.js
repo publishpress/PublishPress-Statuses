@@ -174,6 +174,16 @@ jQuery(document).ready(function ($) {
 
     setInterval(
         function() {
+			if (ppObjEdit.moveParentUI) {
+	            $('div.editor-post-panel__row-label').each(function (i, e) {
+	                if ($(e).html() == ppObjEdit.parentLabel) {
+	                    $(e).closest('div.editor-post-panel__row').insertAfter(
+	                        $('div.editor-post-panel__row-label:contains(' + ppObjEdit.publishLabel + ')').closest('div.editor-post-panel__row').next()
+	                    ); 
+	                }
+	            });
+        	}
+        	
             if ($('div.editor-post-publish-panel__header-cancel-button').length) {
                 PP_SetPublishButtonCaption(ppObjEdit.publish, false);
             }
