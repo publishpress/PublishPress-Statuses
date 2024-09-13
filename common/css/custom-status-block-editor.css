@@ -9,11 +9,6 @@ white-space: nowrap;
 padding-right: 80px;
 }
 
-div.publishpress-extended-post-status {
-margin-top: 0;
-margin-bottom: 8px;
-}
-
 /* Status Dropdown */
 div.publishpress-extended-post-status .dashicons {
   margin-right: 3px;
