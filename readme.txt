@@ -167,6 +167,10 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
+= [1.0.7] =
+* Compat : WP 6.6 - Gutenberg UI integration was partially broken
+* Fixed : Publication Workflow caption showed new post defaulting to Scheduled, not Published
+
 = [1.0.6.10] =
 * Fixed : On translated sites, post permalink was forced to plain format
 * Fixed : Pending Review status label could not be customized by Edit Status screen

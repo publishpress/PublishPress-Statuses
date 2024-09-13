@@ -40,6 +40,11 @@ class Admin
         if (get_option('publishpress_statuses_version') != PUBLISHPRESS_STATUSES_VERSION) {
             update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
         }
+
+        if ($activated) {
+            wp_redirect(admin_url("admin.php?page=publishpress-statuses"));
+            exit;
+        }
     }
 
     public function assignDefaultRoleCapabilities() {

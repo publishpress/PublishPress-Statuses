@@ -409,7 +409,8 @@ setInterval(function () {
     let postDate = new Date(wp.data.select('core/editor').getEditedPostAttribute('date'));
     let currentDate = new Date();
 
-    if (postDate.getTime() > currentDate.getTime()) {
+    if (postDate.getTime() - ((currentDate.getTimezoneOffset() / 60 + parseInt(ppObjEdit.timezoneOffset)) * 3600000) > currentDate.getTime()
+    ) {
       ppObjEdit.maxStatus = 'future';
     } else {
       ppObjEdit.maxStatus = 'publish';
