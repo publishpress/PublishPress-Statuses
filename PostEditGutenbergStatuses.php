@@ -126,12 +126,13 @@ class PostEditGutenbergStatuses
 
         $args['moveParentUI'] = defined('PP_STATUSES_MOVE_PARENT_UI');
 
-		    global $wp_version;
+        $args['timezoneOffset'] = get_option('gmt_offset');
+
+        global $wp_version;
         
         $args['isGutenbergLegacy'] = ! ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>=')));
-
-        $args['timezoneOffset'] = get_option('gmt_offset');
 
         wp_localize_script('publishpress-statuses-post-block-edit', 'ppObjEdit', $args);
     }
 }
+
