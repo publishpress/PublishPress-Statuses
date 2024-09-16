@@ -3,7 +3,7 @@
  *
  * By Kevin Behrens
  *
- * Copyright 2023, PublishPress
+ * Copyright 2024, PublishPress
  */
 jQuery(document).ready(function ($) {
 
@@ -64,7 +64,16 @@ jQuery(document).ready(function ($) {
                 node.after('<span class="' + ppClass + '">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-publish-button').removeAttr('aria-disabled').css('position', 'relative').css('background-color', 'var(--wp-admin-theme-color)').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
         
                 // If the stock button is not the pre-publish toggle, really hide it (re-add hide class; set background color, position and aria-disabled properties)
-                node.not('.editor-post-publish-panel__toggle').addClass(hideClass).css('background-color', 'inherit').css('position', 'fixed').attr('aria-disabled', true);
+                if (ppObjEdit.isGutenbergLegacy) {
+                	node.not('.editor-post-publish-panel__toggle').addClass(hideClass).css('background-color', 'inherit').css('position', 'fixed').attr('aria-disabled', true);
+            	} else {
+	                if ('button.editor-post-publish-button' == btnSelector) {
+	                    if ($('.presspermit-save-button:visible').length || $('div.editor-post-publish-panel__content:visible').length 
+	                    || ($('.presspermit-editor-button button:visible').length && $('.publishpress-extended-post-status select:visible').length)) {
+	                        node.not('.editor-post-publish-panel__toggle').addClass(hideClass).css('background-color', 'inherit').css('position', 'fixed').attr('aria-disabled', true);
+	                    }
+	                }
+	            }
             }
         }
 
@@ -169,6 +178,16 @@ jQuery(document).ready(function ($) {
 
     setInterval(
         function() {
+			if (ppObjEdit.moveParentUI) {
+	            $('div.editor-post-panel__row-label').each(function (i, e) {
+	                if ($(e).html() == ppObjEdit.parentLabel) {
+	                    $(e).closest('div.editor-post-panel__row').insertAfter(
+	                        $('div.editor-post-panel__row-label:contains(' + ppObjEdit.publishLabel + ')').closest('div.editor-post-panel__row').next()
+	                    ); 
+	                }
+	            });
+        	}
+        	
             if ($('div.editor-post-publish-panel__header-cancel-button').length) {
                 PP_SetPublishButtonCaption(ppObjEdit.publish, false);
             }
@@ -217,8 +236,6 @@ jQuery(document).ready(function ($) {
         },
         500
     );
-
-    
 
     var PP_InitializeStatuses = function () {
         if ($('div.publishpress-extended-post-status select').length) {

@@ -8,7 +8,7 @@ class PostEditGutenberg
      */
     public function actEnqueueBlockEditorAssets()
     {
-        global $post;
+        global $post, $wp_version;
 
         if (!empty($post)) {
             if (\PublishPress_Statuses::isUnknownStatus($post->post_status)
@@ -40,9 +40,12 @@ class PostEditGutenberg
 
         $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 
+        $filename = ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>=')))
+        ? 'custom-status-block' : 'custom-status-block-legacy';
+
         wp_enqueue_script(
             'publishpress-custom-status-block',
-            PUBLISHPRESS_STATUSES_URL . "common/js/custom-status-block{$suffix}.js",
+            PUBLISHPRESS_STATUSES_URL . "common/js/{$filename}{$suffix}.js",
             ['wp-blocks', 'wp-i18n', 'wp-element', 'wp-hooks'],
             PUBLISHPRESS_STATUSES_VERSION,
             true
@@ -86,6 +89,38 @@ class PostEditGutenberg
                 'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')
             ]
         );
+
+        add_action('admin_print_scripts', [$this, 'actPrintScripts']);
+
+        global $wp_version;
+
+        if ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))) {
+            wp_enqueue_script(
+                'publishpress-post-edit-sidebar',
+                PUBLISHPRESS_STATUSES_URL . "common/js/post-block-edit-sidebar{$suffix}.js",
+                ['wp-blocks', 'wp-i18n', 'wp-element', 'wp-hooks'],
+                PUBLISHPRESS_STATUSES_VERSION,
+                true
+            );
+        }
+    }
+
+    function actPrintScripts() {
+        global $wp_version;
+
+        if ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))) :?>
+            <style type="text/css">
+            div.publishpress-extended-post-status div.components-flex-item label {
+                text-transform: none !important;
+                font-size: inherit !important;
+            }
+
+            div.publishpress-extended-post-status {
+                margin-top: 0;
+                margin-bottom: 8px;
+                    }
+            </style>
+        <?php endif;
     }
 
     /**

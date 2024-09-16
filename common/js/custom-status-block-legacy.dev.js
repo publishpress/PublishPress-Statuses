@@ -3,7 +3,7 @@
 /**
  * PublishPress Statuses
  *
- * Copyright 2024, PublishPress
+ * Copyright 2023, PublishPress
  */
 
 /**
@@ -77,23 +77,7 @@ var ppGetStatusSaveAs = function ppGetStatusSaveAs(slug) {
     return s.value === slug;
   });
 
-  // @todo: API
-  if (!item && ('undefined' != typeof(window.PPCustomPrivacy))) {
-    var privacyStatuses = window.PPCustomPrivacy.statuses.map(function (s) {
-      return {
-        label: s.label,
-        value: s.name
-      };
-    });
-
-    item = privacyStatuses.find(function (s) {
-      return s.value === slug;
-    });
-
-    return (item) ? __('Save as %s').replace('%s', item.label) : '';
-  } else {
-    return (item) ? item.save_as : '';
-  }
+  return (item) ? item.save_as : '';
 };
 
 var ppGetStatusSubmit = function ppGetStatusSubmit(slug) {
@@ -180,70 +164,32 @@ var refreshSelectableStatuses = function (status) {
 
 /******************** FUNCTIONS FOR RECAPTIONING SAVE AS BUTTON **************************/
 
-var ppLastPrepanelVisibility = false;
-
 /*
 * The goal is to allow recaptioning "Save draft" to "Save as Pitch" etc.
 */
 function PPCS_RecaptionButton(btnSelector, btnCaption) {
-
   jQuery(document).ready(function ($) {
     var node = $(btnSelector);
 
-    var status = '';
-    
-    if ($('div.publishpress-extended-post-status select:visible').length) {
-      status = wp.data.select('core/editor').getEditedPostAttribute('pp_status_selection');
-    }
-
-    if (!status) {
-      status = wp.data.select('core/editor').getEditedPostAttribute('status');
-    }
-
-    if (!btnCaption || $('div.publishpress-extended-post-status select:visible').length) { //@todo: review now that pp_status_selection property is used
+    if (!btnCaption) {
+      var status = wp.data.select('core/editor').getEditedPostAttribute('status');
       btnCaption = ppGetStatusSaveAs(status);
-    }
-
-    if (wp.data.select('core/editor').isSavingPost()) {
-      return;
-    }
-
-    if (('draft' == status) || !$(btnSelector).length) {
-      $('.presspermit-save-button').remove();
-      return;
     }
 
     if ($(btnSelector).length && btnCaption 
     && (btnCaption != $('span.presspermit-save-button button').html() || !$('span.presspermit-save-button button:visible').length || $('button.editor-post-save-draft:visible').length)
     ) {
+      $('span.presspermit-save-button').remove();
+
       var hideClass = 'presspermit-save-hidden';
 
-      if (!$('.presspermit-save-button').length
-      ) {
-        // Clone the stock button
-        node.after('<span class="presspermit-save-button">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-save-draft').removeAttr('disabled').removeAttr('aria-disabled').removeAttr('style').css('white-space', 'nowrap').css('position', 'relative').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
-      
-        // Force regeneration of label if prepublish panel is displayed, then hidden
-        setInterval(function() {
-          var prepanelVisible = $('.editor-post-publish-panel__prepublish:visible').length;
-
-          if (ppLastPrepanelVisibility) {
-            if (!prepanelVisible) {
-              if ($('div.publishpress-extended-post-status select:visible').length) {
-                $('span.presspermit-save-button').remove();
-                PPCS_RecaptionButton('.editor-post-save-draft', '');
-              }
-            }
-          }
-
-          ppLastPrepanelVisibility = prepanelVisible;
-        }, 500);
-      }
-      
       // Hide the stock button
-      node.addClass(hideClass).attr('aria-disabled', true).css('color', $('.editor-header').css('background-color'));
-    
-      $('span.presspermit-save-button button').removeClass('editor-post-save-draft').removeClass(hideClass).html(btnCaption);
+      node.addClass(hideClass).hide().css('z-index', -999);
+
+      // Clone the stock button
+      node.after('<span class="presspermit-save-button">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-save-draft').removeAttr('disabled').removeAttr('aria-disabled').css('white-space', 'nowrap').css('position', 'relative').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
+
+      node.addClass(hideClass).attr('aria-disabled', true);
     }
   });
 }
@@ -276,23 +222,12 @@ function PPCS_RecaptionOnDisplay(caption) {
 jQuery(document).ready(function ($) {
   $(document).on('click', 'span.presspermit-save-button button', function() {
     if (!wp.data.select('core/editor').isSavingPost() && !$('span.presspermit-save-button button').attr('aria-disabled')) {
-        $(this).parent().prev('button.editor-post-save-draft').trigger('click');
+        $(this).parent().prev('button.editor-post-save-draft').trigger('click').css('z-index', 0).css('position', 'relative').show();
     }
   });
-
-  setInterval(function() {
-    if ($('editor-change-status__content:visible'.length)) {
-      if ($('div.publishpress-extended-post-status select:visible').length) {
-        $('.editor-change-status__options input[value="draft"],.editor-change-status__options input[value="pending"]').prop('disabled', 'disabled').parent().hide();
-      } else {
-        $('.editor-change-status__options input[value="draft"],.editor-change-status__options input[value="pending"]').removeProp('disabled').parent().show();
-      }
-    }
-  }, 500);
 });
 /*****************************************************************************************************************/
 
-var ppLastExtendedStatusVisible = false;
 
 /**
  * Hack :(
@@ -308,14 +243,10 @@ var sideEffectL10nManipulation = function sideEffectL10nManipulation(status) {
     }
 
     if (wp.data.select('core/editor').isSavingPost() || $('span.editor-post-saved-state:visible').length) {
-      $('div.presspermit-save-button-wrap').hide();
-      $('span.presspermit-save-button').remove();
+      $('span.presspermit-save-button').css('z-index', -999).attr('aria-disabled', true).hide();
       return;
     } else {
-      setTimeout(function() {
-        $('div.presspermit-save-button-wrap').show();
-        PPCS_RecaptionButton('.editor-post-save-draft', '');
-      }, 500);
+      $('span.presspermit-save-button').css('z-index', 0).attr('aria-disabled', false);
     }
 
     refreshSelectableStatuses(status);
@@ -325,12 +256,11 @@ var sideEffectL10nManipulation = function sideEffectL10nManipulation(status) {
     if (node) {
       var saveAsLabel = ppGetStatusSaveAs(status);
 
-      if (saveAsLabel && (-1 == ['publish', 'future'].indexOf(status))) {
-        PPCS_RecaptionOnDisplay(saveAsLabel);
-
-        if ((-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
-          $('div.publishpress-extended-post-status div.components-base-control').show();
-        }
+      if (saveAsLabel && (-1 == PPCustomStatuses.publishedStatuses.indexOf(status))) {
+        $('div.publishpress-extended-post-status div.components-base-control').show();
+          if (-1 === PPCustomStatuses.publishedStatuses.indexOf(status)) {
+            PPCS_RecaptionOnDisplay(saveAsLabel);
+          }
       }
     }
 
@@ -343,17 +273,6 @@ var sideEffectL10nManipulation = function sideEffectL10nManipulation(status) {
     } else {
       $('div.publishpress-extended-post-status select').hide();
     }
-
-    var extendedStatusVisible = $('div.extended-post-status select:visible').length;
-
-    // Prevent previous status selection from being applied to next post update after published / private status is selected
-    if (!extendedStatusVisible && ppLastExtendedStatusVisible) {
-      dispatch('core/editor').editPost({
-        pp_status_selection: ''
-      });
-    }
-
-    ppLastExtendedStatusVisible = extendedStatusVisible;
   });
 };
 
@@ -397,20 +316,14 @@ setInterval(function () {
   var currentStatusPublished = -1 !== PPCustomStatuses.publishedStatuses.indexOf(currentStatus);
   var showPublishSuggestions = currentStatusPublished;
 
-  var selectedStatus = wp.data.select('core/editor').getEditedPostAttribute('pp_status_selection');
-
-  if (!selectedStatus) {
-    selectedStatus = wp.data.select('core/editor').getEditedPostAttribute('status');
-  }
-
+  var selectedStatus = wp.data.select('core/editor').getEditedPostAttribute('status');
   var currentWorkflowSelection = wp.data.select('core/editor').getEditedPostAttribute('pp_workflow_action');
 
   if ('publish' == ppObjEdit.maxStatus || 'future' == ppObjEdit.maxStatus) {
     let postDate = new Date(wp.data.select('core/editor').getEditedPostAttribute('date'));
     let currentDate = new Date();
 
-    if (postDate.getTime() - ((currentDate.getTimezoneOffset() / 60 + parseInt(ppObjEdit.timezoneOffset)) * 3600000) > currentDate.getTime()
-    ) {
+    if (postDate.getTime() > currentDate.getTime()) {
       ppObjEdit.maxStatus = 'future';
     } else {
       ppObjEdit.maxStatus = 'publish';
@@ -577,7 +490,6 @@ setInterval(function () {
       pp_status_selection: $('div.publishpress-extended-post-status select').val()
     });
   });
-
 });
 
 
@@ -629,29 +541,32 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
     }, 
     
     React.createElement(SelectControl, {
-      label: '',
+      label: window.PPCustomStatuses.captions.postStatus,
       value: status,
       options: statusOptions,
       onChange: onUpdate
-    })
+    }),
+    React.createElement("div", {className: "publishpress-extended-post-status-published"}, 
+      React.createElement("span", {className: "dashicons " + publishIcon}, ''),
+      React.createElement("span", null, ppsCaptions.currentlyPublished)
+    ),
+    React.createElement("div", {className: "publishpress-extended-post-status-scheduled"}, 
+      React.createElement("span", {className: "dashicons " + futureIcon}, ''),
+      React.createElement("span", null, ppsCaptions.currentlyScheduled)
+    )
   );
 };
 
 var plugin = compose(withSelect(function (select) {
-  var setStatus = select('core/editor').getEditedPostAttribute('pp_status_selection');
-
-  if (!setStatus) {
-      setStatus = select('core/editor').getEditedPostAttribute('status');
-  }
-  
   return {
-    status: setStatus
+    status: select('core/editor').getEditedPostAttribute('status')
   };
 }), withDispatch(function (dispatch) {
   return {
     onUpdate: function onUpdate(status) {
+
       dispatch('core/editor').editPost({
-        pp_status_selection: status
+        status: status
       });
       
       refreshSelectableStatuses(status);

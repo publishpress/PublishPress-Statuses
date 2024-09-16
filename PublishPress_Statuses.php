@@ -141,6 +141,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         add_action('user_has_cap', [$this, 'fltUserHasCap'], 20, 3);
 
+        add_filter('pre_post_status', [$this, 'fltApplySelectedPostStatus'], 2);
+
         add_filter('get_user_metadata', [$this, 'fltForcePrepublishPanel'], 10, 5);
         add_filter('rest_pre_dispatch', [$this, 'fltRestPreDispatch'], 10, 3);
         add_action('rest_api_init', [$this, 'actRestInit'], 1);
@@ -655,10 +657,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         'default_label' => 'Private',
                         'label' => !empty($wp_post_statuses['private']) && !empty($wp_post_statuses['private']->label) ? $wp_post_statuses['private']->label : \PublishPress_Statuses::__wp('Private'),
                         'default_labels' => (object) [
-                            'publish' => 'Update'
+                            'publish' => 'Save'
                         ],
                         'labels' => (object) [
-                            'publish' => \PublishPress_Statuses::__wp('Update')
+                            'publish' => \PublishPress_Statuses::__wp('Save')
                         ],
                         'description' => __('Post is published with private visibility.', 'publishpress-statuses'),
                         'color' => '#b40000',
@@ -1406,7 +1408,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 }
 
                 // Map taxonomy schema columns to Post Status properties
-                $term->label = (!empty($core_statuses[$term->slug])) ? $core_statuses[$term->slug]->label : $term->name;
+
+                // We need to avoid replacing a translation of "Pending Review" with the stored default English caption
+                $term->label = (!empty($core_statuses[$term->slug]) && (('pending' != $term->slug) || ('Pending Review' == $term->name))) 
+                ? $core_statuses[$term->slug]->label 
+                : $term->name;
 
                 $term->name = $term->slug;
                 
@@ -1808,7 +1814,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                                     $val
                                 );
                             }
-                        } else {
+                        } elseif (!in_array($status_name, ['draft', 'pending', 'future', 'publish', 'private'])) {
                             $wp_post_statuses[$status_name]->$prop = $val;
                         }
                     }
@@ -2823,6 +2829,18 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         return 'main';
     }
 
+    public function fltApplySelectedPostStatus($post_status) {
+        if (defined('REST_REQUEST') && REST_REQUEST) {
+            $rest = \PublishPress_Statuses\REST::instance();
+
+            if (!empty($rest->params['pp_status_selection'])) {
+                $post_status = $rest->params['pp_status_selection'];
+            }
+        }
+
+        return $post_status;
+    }
+
     public function fltPostStatus($post_status)
     {
         global $current_user, $pagenow;
@@ -2882,11 +2900,15 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $doing_rest = defined('REST_REQUEST') && (!\PublishPress_Functions::empty_REQUEST('meta-box-loader') || $this->doing_rest);
 
+        if (!empty($rest->params['pp_status_selection'])) {
+            $_post_status = $rest->params['pp_status_selection'];
+        } else {
         if (('_public' === \PublishPress_Functions::REQUEST_key('post_status')) && !$doing_rest) {
             $_post_status = 'public';
             $classic_explicit_publish = true;
         } else {
         	$_post_status = \PublishPress_Functions::POST_key('post_status');
+        }
         }
 
         $selected_status = ($_post_status && ('publish' != $_post_status)) ? $_post_status : $post_status;
@@ -2944,7 +2966,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $rest = \PublishPress_Statuses\REST::instance();
                 $workflow_action = isset($rest->params['pp_workflow_action']) ? $rest->params['pp_workflow_action'] : false;
 
-                $selected_status_dropdown = isset($rest->params['pp_status_selection']) ? $rest->params['pp_status_selection'] : $selected_status;
+                $selected_status_dropdown = $selected_status;
 
                 if ('_pending' == $selected_status_dropdown) {
                     $selected_status_dropdown = 'pending';

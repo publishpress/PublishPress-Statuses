@@ -5,8 +5,8 @@ Author URI: https://publishpress.com
 Tags: custom statuses, workflow, pending review, status manager, archived status
 Requires at least: 5.5
 Requires PHP: 7.2.5
-Tested up to: 6.5
-Stable tag: 1.0.6.9
+Tested up to: 6.6
+Stable tag: 1.0.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -166,6 +166,13 @@ A post in the Future status is not published yet, but is scheduled to be publish
 Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced featuers such as custom capabilities, workflow branching, icons, colors, and much more.
 
 == Changelog ==
+
+= [1.0.7] - 16 Sep 2024 =
+* Compat : WP 6.6 - Gutenberg UI integration was partially broken
+* Fixed : Publication Workflow caption showed new post defaulting to Scheduled, not Published
+* Fixed : On translated sites, post permalink was forced to plain format
+* Fixed : Pending Review status label could not be customized by Edit Status screen
+* Fixed : Classic Editor - PHP Warning for undefined array index "moderation"
 
 = [1.0.6.9] - 18 Jun 2024
 * Fixed : Could not create new Statuses with Multibyte label

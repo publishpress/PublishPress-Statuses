@@ -575,7 +575,7 @@ class StatusHandler {
             // temp (@todo: test status slug rename
             unset($args['slug']);
 
-            if (!empty($status_obj->_builtin)) {
+            if (!empty($status_obj->_builtin) && ('pending' != $name)) {
                 $args['name'] = $status_obj->label;
             }
 
