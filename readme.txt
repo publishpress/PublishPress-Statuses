@@ -163,7 +163,7 @@ A post in the Future status is not published yet, but is scheduled to be publish
 
 = How does this compare to the Extended Post Status plugin? =
 
-Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced featuers such as custom capabilities, workflow branching, icons, colors, and much more.
+Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced features such as custom capabilities, workflow branching, icons, colors, and much more.
 
 == Changelog ==
 
