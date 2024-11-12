@@ -42,17 +42,14 @@ border-top: none;
 padding-top: 0;
 }
 
-div.pp-statuses-workflow div.components-radio-control__option {
-margin-top: 20px !important;
-}
-
 div.pp-statuses-workflow div.components-radio-control__option label {
 vertical-align: text-top !important;
+padding-left: 5px;
 }
 
 div.pp-statuses-workflow div.pp-editor-workflow-caption {
 padding-left: 25px;
-padding-top: 5px;
+padding-bottom: 10px;
 }
 
 .pp-status-color {
