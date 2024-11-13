@@ -192,8 +192,14 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                 }
             }
 
-            @load_plugin_textdomain('publishpress-statuses', false, dirname(plugin_basename(__FILE__)) . '/languages');
-
+            add_action(
+                'init', 
+                function() {
+            		@load_plugin_textdomain('publishpress-statuses', false, dirname(plugin_basename(__FILE__)) . '/languages');
+                },
+                5
+            );
+            
             if (!class_exists('PP_Custom_Status') 
             && (defined('PRESSPERMIT_VERSION') || (!defined('PUBLISHPRESS_VERSION') || version_compare(PUBLISHPRESS_VERSION, '4.0', '<')))
             ) {

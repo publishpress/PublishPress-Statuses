@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        if ('undefined' !== typeof(statusCaption)) {
+        if ('undefined' !== typeof(statusCaption) && 'undefined' !== statusCaption) {
             if ($('div.editor-post-status button').html()) {
                 $('span.presspermit-status-span').remove();
 
