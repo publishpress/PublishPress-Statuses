@@ -167,7 +167,7 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
-= [1.0.8] - 12 Nov 2024 =
+= [1.0.8] - 13 Nov 2024 =
 * Compat : WP 6.7 - Some display issues with post editor integration
 
 = [1.0.7] - 16 Sep 2024 =
