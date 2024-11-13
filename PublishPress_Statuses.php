@@ -178,7 +178,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $this->post_type_support_slug = 'pp_custom_statuses'; // This has been plural in all of our docs
 
         $args = [
-            'title' => __('PublishPress Statuses', 'publishpress-statuses'),
+            'title' => 'PublishPress Statuses',
             'short_description' => false,
             'extended_description' => false,
             'module_url' => PUBLISHPRESS_STATUSES_URL,
@@ -279,7 +279,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     }
 
     public function fltRegisterCapabilities($cme_caps) {
-        $cme_caps[__('PublishPress Statuses', 'publishpress-statuses')] = ['pp_manage_statuses', 'pp_bypass_status_sequence'];
+        $cme_caps['PublishPress Statuses'] = ['pp_manage_statuses', 'pp_bypass_status_sequence'];
 
         return $cme_caps;
     }
