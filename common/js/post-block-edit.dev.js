@@ -64,7 +64,7 @@ jQuery(document).ready(function ($) {
                 node.after('<span class="' + ppClass + '">' + node.clone().css('z-index', 0).removeClass(hideClass).removeClass('editor-post-publish-button').removeAttr('aria-disabled').css('position', 'relative').css('background-color', 'var(--wp-admin-theme-color)').show().html(btnCaption).wrap('<span>').parent().html() + '</span>');
         
                 // If the stock button is not the pre-publish toggle, really hide it (re-add hide class; set background color, position and aria-disabled properties)
-                if (ppObjEdit.isGutenbergLegacy) {
+                if ((typeof ppObjEdit['isGutenbergLegacy'] != undefined) && ppObjEdit.isGutenbergLegacy) {
                 	node.not('.editor-post-publish-panel__toggle').addClass(hideClass).css('background-color', 'inherit').css('position', 'fixed').attr('aria-disabled', true);
             	} else {
 	                if ('button.editor-post-publish-button' == btnSelector) {
@@ -142,9 +142,19 @@ jQuery(document).ready(function ($) {
             }
         }
         
-        if ((typeof forceRefresh != "undefined" && forceRefresh) || (($('button.editor-post-publish-button').length || $('button.editor-post-publish-panel__toggle').length) 
-        && ($('button.editor-post-save-draft').length || ($('div.publishpress-extended-post-status select option[value="_pending"]').length && ('pending' == $('div.publishpress-extended-post-status select').val() || '_pending' == $('div.publishpress-extended-post-status select').val())))
-        )) {
+        if (
+        (typeof forceRefresh != "undefined" && forceRefresh) 
+        || (
+        	($('button.editor-post-publish-button').length || $('button.editor-post-publish-panel__toggle').length) 
+        	&& (
+        		$('button.editor-post-save-draft').length
+        		|| (
+	        		$('div.publishpress-extended-post-status select option[value="_pending"]').length 
+	        		&& ('pending' == $('div.publishpress-extended-post-status select').val() || '_pending' == $('div.publishpress-extended-post-status select').val())
+	        	)
+	        )
+        )
+        ) {
             clearInterval(initInterval);
             initInterval = null;
 
@@ -249,7 +259,7 @@ jQuery(document).ready(function ($) {
                 }
 
                 // Blank option for Safari, which cannot hide it
-                $('div.publishpress-extended-post-status select > option[value="pending"]').html('').hide().appendTo('div.publishpress-extended-post-status select');
+				$('div.publishpress-extended-post-status select > option[value="pending"]').html('').hide();
 
                 $(document).on('click', 'div.publishpress-extended-post-status select option[value="pending"]', function() {
                     $('div.publishpress-extended-post-status select').val('_pending');
@@ -306,7 +316,7 @@ jQuery(document).ready(function ($) {
 
         ppcsEnablePostUpdate();
 
-        let status = wp.data.select('core/editor').getCurrentPostAttribute('status');
+        let status = wp.data.select('core/editor').getEditedPostAttribute('status');
 
         var redirectProp = 'redirectURL' + status;
         if (typeof ppObjEdit[redirectProp] != undefined) {
