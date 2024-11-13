@@ -3,7 +3,7 @@
  * Plugin Name: PublishPress Statuses
  * Plugin URI:  https://publishpress.com/statuses
  * Description: Manage and create post statuses to customize your editorial workflow
- * Version: 1.0.7
+ * Version: 1.0.8
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
  * Text Domain: publishpress-statuses
@@ -148,7 +148,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         }
         
         if (empty($interrupt_load)) {
-            define('PUBLISHPRESS_STATUSES_VERSION', '1.0.7');
+            define('PUBLISHPRESS_STATUSES_VERSION', '1.0.8');
 
             define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
             define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
@@ -192,8 +192,14 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                 }
             }
 
-            @load_plugin_textdomain('publishpress-statuses', false, dirname(plugin_basename(__FILE__)) . '/languages');
-
+            add_action(
+                'init', 
+                function() {
+            		@load_plugin_textdomain('publishpress-statuses', false, dirname(plugin_basename(__FILE__)) . '/languages');
+                },
+                5
+            );
+            
             if (!class_exists('PP_Custom_Status') 
             && (defined('PRESSPERMIT_VERSION') || (!defined('PUBLISHPRESS_VERSION') || version_compare(PUBLISHPRESS_VERSION, '4.0', '<')))
             ) {

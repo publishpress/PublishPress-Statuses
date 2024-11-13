@@ -5,8 +5,8 @@ Author URI: https://publishpress.com
 Tags: custom statuses, workflow, pending review, status manager, archived status
 Requires at least: 5.5
 Requires PHP: 7.2.5
-Tested up to: 6.6
-Stable tag: 1.0.7
+Tested up to: 6.7
+Stable tag: 1.0.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -167,6 +167,9 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
+= [1.0.8] - 13 Nov 2024 =
+* Compat : WP 6.7 - Some display issues with post editor integration
+
 = [1.0.7] - 16 Sep 2024 =
 * Compat : WP 6.6 - Gutenberg UI integration was partially broken
 * Fixed : Publication Workflow caption showed new post defaulting to Scheduled, not Published
@@ -174,19 +177,19 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 * Fixed : Pending Review status label could not be customized by Edit Status screen
 * Fixed : Classic Editor - PHP Warning for undefined array index "moderation"
 
-= [1.0.6.9] - 18 Jun 2024
+= [1.0.6.9] - 18 Jun 2024 =
 * Fixed : Could not create new Statuses with Multibyte label
 * Fixed : Status backup / restore / default operation was not applied to core statuses (Draft, Pending)
 * Fixed : Status default operation did not restore default Planner colors and icons under some conditions
 * Compat : Planner - If one or more post types have Statuses integration disabled, customized status colors are not applied to paged results on Planner Content Calendar
 * Compat : Disable Gutenberg - Classic Editor mode was not detected under some configurations
 
-= [1.0.6.8] - 5 Apr 2024
+= [1.0.6.8] - 5 Apr 2024 =
 * Compat : WP 6.5 - Workflow labels in post editor sidebar were mis-aligned
 * Fixed : Fatal error in PHP 8.2 if another plugin sets $plugin_page to array
 * Lang : Brazilian Portuguese translation
 
-= [1.0.6.7] - 7 Feb 2024
+= [1.0.6.7] - 7 Feb 2024 =
 * Compat : The Events Calendar, other plugins - Avoid js errors due to scripts being loaded before jQuery
 
 = [1.0.6.6] - 31 Jan 2024 =

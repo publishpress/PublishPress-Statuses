@@ -172,7 +172,7 @@ var refreshSelectableStatuses = function (status) {
   if (status != ppLastPostStatus) {
     ppLastPostStatus = status;
 
-    querySelectableStatuses();
+    querySelectableStatuses(status);
   }
 }
 
@@ -456,6 +456,10 @@ setInterval(function () {
 
     // This is called for each workflow action caption (current, next and max)
     var appendWorkflowCaption = function appendWorkflowCaption(buttonWorkflowAction, buttonStatus) {
+      if ('auto-draft' == buttonStatus) {
+        buttonStatus = 'draft';
+      }
+      
       var statusCaption = ppGetStatusLabel(buttonStatus);
       var statusObj = ppGetStatusObject(buttonStatus);
 
@@ -491,9 +495,13 @@ setInterval(function () {
     $('input[name="pp_statuses_workflow_selection"][value="next"]').closest('div.components-radio-control__option').toggle(!currentStatusPublished && (ppObjEdit.nextStatus != currentStatus) && (ppObjEdit.nextStatus != ppObjEdit.maxStatus));
     $('input[name="pp_statuses_workflow_selection"][value="max"]').closest('div.components-radio-control__option').toggle(!currentStatusPublished && (ppObjEdit.maxStatus != currentStatus));
 
+    if (!$('input[name="pp_statuses_workflow_selection"][value="next"]').closest('div.components-radio-control__option:visible').length) {
+      $('div.pp-statuses-workflow div.pp-editor-prepublish-next-status').hide();
+    }
+
     // default to current status if checked option is hidden
     if ((currentStatusPublished || (!$('input[name="pp_statuses_workflow_selection"]:visible:checked').length 
-    && (!ppObjEdit.defaultBySequence || $('input[name="pp_statuses_workflow_selection"]:checked').val() != 'next')))
+    && (!ppObjEdit.defaultBySequence || $('input[name="pp_statuses_workflow_selection"]:visible:checked').val() != 'next')))
     && (-1 == PPCustomStatuses.publishedStatuses.indexOf(selectedStatus))
     ) {
       $('input[name="pp_statuses_workflow_selection"][value="current"]').trigger('click');

@@ -5,3 +5,12 @@ display: none;
 div.editor-post-publish-panel__footer div.components-checkbox-control div:first-of-type {
 display: none;
 }
+
+div.pp-statuses-workflow div.components-radio-control__option {
+display: block;
+}
+
+div.pp-statuses-workflow span.pp-status-color-title {
+margin-left: 5px;
+margin-top: 1px;
+}
