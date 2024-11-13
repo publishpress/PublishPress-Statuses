@@ -118,7 +118,7 @@ class PostEditGutenberg
             div.publishpress-extended-post-status {
                 margin-top: 0;
                 margin-bottom: 8px;
-                    }
+            }
             </style>
         <?php endif;
     }

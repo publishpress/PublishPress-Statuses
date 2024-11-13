@@ -580,6 +580,7 @@ do_action('publishpress_statuses_table_row', $key, []);
 
                         } elseif (empty($status_obj->capability_status)) {
                             $caption = esc_html('Standard', 'publishpress-statuses');
+                        
                         } else {
                             if (!empty($status_obj->capability_status) && ($status_obj->capability_status != $status_obj->name)) {
                                 if ($cap_status_obj = get_post_status_object($status_obj->capability_status)) {

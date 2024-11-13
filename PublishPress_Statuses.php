@@ -510,7 +510,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                         }
 
                         if ($max_status_obj) {
-                            $params['maxStatus'] =  $max_status_obj->name;
+                            $params['maxStatus'] = $max_status_obj->name;
                         }
                     }
                 }
@@ -2903,12 +2903,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if (!empty($rest->params['pp_status_selection'])) {
             $_post_status = $rest->params['pp_status_selection'];
         } else {
-        if (('_public' === \PublishPress_Functions::REQUEST_key('post_status')) && !$doing_rest) {
-            $_post_status = 'public';
-            $classic_explicit_publish = true;
-        } else {
-        	$_post_status = \PublishPress_Functions::POST_key('post_status');
-        }
+            if (('_public' === \PublishPress_Functions::REQUEST_key('post_status')) && !$doing_rest) {
+                $_post_status = 'public';
+                $classic_explicit_publish = true;
+            } else {
+                $_post_status = \PublishPress_Functions::POST_key('post_status');
+            }
         }
 
         $selected_status = ($_post_status && ('publish' != $_post_status)) ? $_post_status : $post_status;
