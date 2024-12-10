@@ -25,7 +25,7 @@ class Admin
         if (!$last_statuses_version || $activated) {
             add_action('pp_statuses_init', [$this, 'assignDefaultRoleCapabilities']);
         }
-        
+
         if (!$last_statuses_version || version_compare($last_statuses_version, '1.0.4.2', '<')) {
             if (!defined('PP_STATUSES_DISABLE_PENDING_STATUS_FIX')) {
                 global $wpdb;
@@ -36,6 +36,8 @@ class Admin
                 $wpdb->query("UPDATE $wpdb->posts SET post_status = 'pending' WHERE post_status = '_pending'");
             }
         }
+
+        do_action('publishpress_statuses_version_check');
 
         if (get_option('publishpress_statuses_version') != PUBLISHPRESS_STATUSES_VERSION) {
             update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
@@ -92,6 +94,26 @@ class Admin
                 }
             }
 
+            if (in_array($role_name, ['administrator', 'editor']) || $role->has_cap('edit_posts') || $role->has_cap('edit_pages')) {
+                foreach (['draft-revision', 'pending-revision'] as $status_name) {
+                    $cap_name = 'status_change_' . str_replace('-', '_', $status_name);
+
+                    if (empty($role->capabilties[$cap_name])) {
+                        $role->add_cap($cap_name);
+                        $changed_statuses [$status_name] = true;
+                    }
+                }
+            }
+
+            if (in_array($role_name, ['administrator', 'editor']) || $role->has_cap('publish_posts') || $role->has_cap('publish_pages')) {
+                $cap_name = 'status_change_future-revision';
+
+                if (empty($role->capabilties[$cap_name])) {
+                    $role->add_cap($cap_name);
+                    $changed_statuses [$status_name] = true;
+                }
+            }
+
             $processed_roles[$role_name] = true;
         }
 
@@ -145,7 +167,16 @@ class Admin
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
-            wp_enqueue_style('presspermit-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/libs/publishpress/publishpress-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
+            wp_enqueue_style('publishpress-statuses-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/libs/publishpress/publishpress-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
+
+            if (defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) {
+                wp_enqueue_style(
+                    'publishpress-status-admin-pro-css',
+                    PUBLISHPRESS_STATUSES_PRO_URL . 'common/css/custom-status-admin-pro.css',
+                    [],
+                    PUBLISHPRESS_STATUSES_PRO_VERSION
+                );
+            }
         }
     }
 
@@ -245,6 +276,16 @@ class Admin
                     ),
                 ]
             );
+
+            if (defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) {
+                wp_enqueue_script(
+                    'publishpress-custom-status-configure-pro',
+                    PUBLISHPRESS_STATUSES_PRO_URL . "common/js/custom-status-configure-pro{$suffix}.js",
+                    ['jquery', 'jquery-ui-sortable'],
+                    PUBLISHPRESS_STATUSES_PRO_VERSION,
+                    true
+                );
+            }
         }
 
         // Custom javascript to modify the post status dropdown where it shows up
@@ -379,7 +420,8 @@ class Admin
 
         if (empty($status->label_count) && empty($status->_builtin)) {
             // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingular,WordPress.WP.I18n.NonSingularStringLiteralPlural
-            $status->label_count = _n_noop($status->label, $status->label);
+            $label = (!empty($status->labels->short)) ? $status->labels->short : $status->label;
+            $status->label_count = _n_noop($label . ' <span class="count">(%s)</span>', $label . ' <span class="count">(%s)</span>');
         }
 
         if (empty($status->labels->publish)) {
@@ -443,7 +485,16 @@ class Admin
 
         $is_administrator = \PublishPress_Statuses::isContentAdministrator();
 
-        $post_status = (!empty($args['post_status'])) ? $args['post_status'] : $post->post_status;
+		if (!empty($args['post_status'])) {
+			$post_status = $args['post_status'];	
+		} else {
+			$post_status = apply_filters(
+				'publishpress_statuses_post_status',
+				$post->post_status,
+				$post
+			);
+		}
+
         $post_type = (!empty($args['post_type'])) ? $args['post_type'] : $post->post_type;
 
         if (!empty($post)) {
@@ -458,7 +509,25 @@ class Admin
             $post_status_obj = get_post_status_object('draft');
         }
 
-        $moderation_statuses = \PublishPress_Statuses::getPostStati(['moderation' => true, 'internal' => false, 'post_type' => $post_type], 'object');
+        $post_status_obj = apply_filters(
+            'publishpress_statuses_get_post_status_object',
+            $post_status_obj,
+            $post_status,
+            $post
+        );
+
+        $status_args = array_merge(['moderation' => true, 'internal' => false], compact('post_type'));
+
+        if ($post) {
+            $status_args = apply_filters(
+                'publishpress_statuses_edit_post_status_args',
+                $status_args,
+                $post->ID
+            );
+        }
+
+        $moderation_statuses = \PublishPress_Statuses::getPostStati($status_args, 'object');
+
         unset($moderation_statuses['future']);
 
         $default_by_sequence = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence;
@@ -479,7 +548,11 @@ class Admin
 
         $moderation_statuses = apply_filters('presspermit_available_moderation_statuses', $moderation_statuses, $moderation_statuses, $post);
 
-        $moderation_statuses = array_merge(['draft' => get_post_status_object('draft')], $moderation_statuses);
+		$moderation_statuses = apply_filters(
+			'publishpress_statuses_available_moderation_statuses', 
+			array_merge(['draft' => get_post_status_object('draft')], $moderation_statuses), 
+			$post
+		);
 
         // Don't exclude the current status, regardless of other arguments
         $_args = ['include_status' => $post_status_obj->name];

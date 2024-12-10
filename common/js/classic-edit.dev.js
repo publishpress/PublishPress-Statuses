@@ -130,7 +130,7 @@ jQuery(document).ready(function ($) {
         $('a.pp-cancel-post-status').click(function() {
             setTimeout(() => {
                 if ($('#hidden_post_status').length && $('#hidden_post_status').val()) {
-                    if ($('#post_status [option value="' + $('#hidden_post_status').val() + '"]').length) {
+                    if ($('#post_status option[value="' + $('#hidden_post_status').val() + '"]').length) {
                         $('#post_status').val($('#hidden_post_status').val());
                         updateStatusCaptions();
                         ppUpdateText();
@@ -172,6 +172,20 @@ jQuery(document).ready(function ($) {
                 }
             }, 200);
         });
+
+        if (ppObjEdit.isStatusesPro && (typeof rvyObjEdit != 'undefined') && (typeof rvyObjEdit.updateCaption == 'undefined')) {
+            $('a.pp-cancel-post-status').click(function() {
+                setTimeout(() => {
+                    if ($('#hidden_post_status').length && $('#hidden_post_status').val()) {
+                        if ($('#post_status [option value="' + $('#hidden_post_status').val() + '"]').length) {
+                            $('#post_status').val($('#hidden_post_status').val());
+                            updateStatusCaptions();
+                            ppUpdateText();
+                        }
+                    }
+                }, 100);
+            });
+        }
     }
 
     // Advanced Custom Fields compat
@@ -411,27 +425,27 @@ jQuery(document).ready(function ($) {
         return false;
     });
 
-    if (!$('#timestampdiv a.now-timestamp').length) {
+    if (!$('#timestampdiv a.now-timestamp').length && (typeof ppObjEdit.nowCaption != 'undefined')) {
         $('#timestampdiv a.cancel-timestamp').after('<a href="#timestamp_now" class="now-timestamp now-pp-statuses hide-if-no-js button-now">' + ppObjEdit.nowCaption + '</a>');
+
+        $('#timestampdiv a.now-pp-statuses').on('click', function () {
+            var nowDate = new Date();
+            var month = nowDate.getMonth() + 1;
+            if (month.toString().length < 2) {
+                month = '0' + month;
+            }
+            $('#mm').val(month);
+            $('#jj').val(nowDate.getDate());
+            $('#aa').val(nowDate.getFullYear());
+            $('#hh').val(nowDate.getHours());
+
+            var minutes = nowDate.getMinutes();
+            if (minutes.toString().length < 2) {
+                minutes = '0' + minutes;
+            }
+            $('#mn').val(minutes);
+        });
     }
-
-    $('#timestampdiv a.now-pp-statuses').on('click', function () {
-        var nowDate = new Date();
-        var month = nowDate.getMonth() + 1;
-        if (month.toString().length < 2) {
-            month = '0' + month;
-        }
-        $('#mm').val(month);
-        $('#jj').val(nowDate.getDate());
-        $('#aa').val(nowDate.getFullYear());
-        $('#hh').val(nowDate.getHours());
-
-        var minutes = nowDate.getMinutes();
-        if (minutes.toString().length < 2) {
-            minutes = '0' + minutes;
-        }
-        $('#mn').val(minutes);
-    });
 
     $('.save-post-status', '#post-status-select').on('click', function () {
         $('#post-status-select').slideUp("fast");

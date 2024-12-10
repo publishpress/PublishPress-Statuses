@@ -191,6 +191,9 @@
                     $(ui.item).addClass('disabled-status').find('ol li').addClass('disabled-status');
                 }
 
+                var e = jQuery.Event('pp-status-update-item');
+                $('body').trigger(e, $(ui.item));
+                
                 $(ui.item).prop('style', '');
 
                 ppUpdateStatusPositions();
