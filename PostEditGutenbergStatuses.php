@@ -8,7 +8,7 @@ class PostEditGutenbergStatuses
     public static function loadBlockEditorStatusGuidance() 
     {
         if ($post_id = \PublishPress_Functions::getPostID()) {
-            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && rvy_in_revision_workflow($post_id)) {
+            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && !class_exists('PublishPress_Statuses\Revisions') && rvy_in_revision_workflow($post_id)) {
                 return;
             }
         }
@@ -20,6 +20,8 @@ class PostEditGutenbergStatuses
         if (!defined('PP_STATUSES_ALLOW_PREPUBLISH_DISABLE')) {
             wp_enqueue_style('publishpress-statuses-post-block-edit', PUBLISHPRESS_STATUSES_URL . '/common/css/post-block-edit.css', [], PUBLISHPRESS_STATUSES_VERSION);
         }
+    
+    	do_action('publishpress_statuses_load_status_guidance', $post_id);
         
         $current_status = get_post_field('post_status', $post_id);
 
@@ -132,7 +134,8 @@ class PostEditGutenbergStatuses
         
         $args['isGutenbergLegacy'] = ! ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>=')));
 
+        $args['isStatusesPro'] = defined('PUBLISHPRESS_STATUSES_PRO_VERSION');
+
         wp_localize_script('publishpress-statuses-post-block-edit', 'ppObjEdit', $args);
     }
 }
-

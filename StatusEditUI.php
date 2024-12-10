@@ -20,7 +20,11 @@ class StatusEditUI
             $url_args['status_type'] = $status_type;
         }
 
-        $url = \PublishPress_Statuses::getLink($url_args);
+        $url = apply_filters(
+        	'publishpress_statuses_edit_status_url', 
+        	\PublishPress_Statuses::getLink($url_args),
+        	$status
+        );
         ?>
         <div class='pp-edit-status-back'>
             <a href="<?php echo esc_url($url); ?>"><?php esc_html_e('Back to Statuses', 'publishpress-statuses'); ?></a>
@@ -37,6 +41,8 @@ class StatusEditUI
         $class_unselected = "nav-tab";
 
         $tabs = ['name' => \PublishPress_Statuses::__wp('Name')];
+
+		$editable_taxonomies = apply_filters('publishpress_statuses_editable_taxonomies', ['post_status']);
 
         if (empty($status->publish) && !in_array($name, ['draft', 'future', 'publish', 'private'])) {
             if (empty($status->private)) {
@@ -66,6 +72,7 @@ class StatusEditUI
                                           // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
             if ((empty($status->private) /*|| (class_exists('\PublishPress\StatusCapabilities') && \PublishPress\StatusCapabilities::postStatusHasCustomCaps($status->name))*/)
             && (('pending' != $name) || \PublishPress_Statuses::instance()->options->pending_status_regulation)
+            && (!empty($status->taxonomy) && in_array ($status->taxonomy, $editable_taxonomies))
             ) {
                 $tabs['roles'] = __('Roles', 'publishpress-statuses');
             }
@@ -141,7 +148,7 @@ class StatusEditUI
         <form method="post" action="<?php
         echo esc_url($edit_status_link); ?>" id="editstatus">
             <input type="hidden" name="name" value="<?php
-            echo esc_attr($name); ?>"/>
+            echo esc_attr($name); ?>" />
             <?php
             wp_original_referer_field();
             wp_nonce_field('edit-status');
@@ -243,7 +250,7 @@ class StatusEditUI
                             echo esc_attr($name); ?>" <?php
 
                     $status_obj = get_post_status_object($name);
-                    if ($name && !empty($status_obj) && !empty($status_obj->_builtin)) : echo 'disabled="disabled"';
+                    if ($name && !empty($status_obj)) : echo 'disabled="disabled"';
                     endif; ?> />
                     <?php
                     \PublishPress_Statuses\StatusesUI::printErrorOrDescription(

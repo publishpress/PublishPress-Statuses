@@ -30,7 +30,14 @@ class StatusHandler {
 
         $taxonomy = (!empty($_POST['taxonomy'])) ? sanitize_key($_POST['taxonomy']) : \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
 
-        if ($taxonomy && !in_array($taxonomy, [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_PRIVACY])) {
+        if ($taxonomy 
+        && !in_array(
+            $taxonomy, 
+            apply_filters(
+                'publishpress_statuses_taxonomies', 
+                [\PublishPress_Statuses::TAXONOMY_PRE_PUBLISH, \PublishPress_Statuses::TAXONOMY_PRIVACY]
+            )
+        )) {
             $taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
         }
 
@@ -48,6 +55,8 @@ class StatusHandler {
 
         if (empty($status_name)) {
             $form_errors['label'] = __('Please enter a slug for the status', 'publishpress-statuses');
+        } else {
+        	$status_name = apply_filters('publishpress_statuses_add_status', sanitize_key($status_name), $taxonomy);
         }
 
         // Check that the name isn't numeric
@@ -233,7 +242,9 @@ class StatusHandler {
             $taxonomy = \PublishPress_Statuses::TAXONOMY_PRIVACY;
 
         } else {
-            $taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
+			if (!$taxonomy = apply_filters('publishpress_statuses_taxonomy', '', $status_obj)) {
+            	$taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
+        	}
         }
 
         if (!$term = get_term_by('slug', $name, $taxonomy)) {
@@ -405,6 +416,8 @@ class StatusHandler {
             }
         }
 
+        $name = apply_filters('publishpress_statuses_sanitize_status_name', sanitize_key($name), $taxonomy);
+
         $status_obj = get_post_status_object($name);
 
         if (!\PublishPress_Functions::empty_REQUEST('return_module')) {
@@ -489,7 +502,9 @@ class StatusHandler {
             $taxonomy = \PublishPress_Statuses::TAXONOMY_PRIVACY;
 
         } else {
-            $taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
+			if (!$taxonomy = apply_filters('publishpress_statuses_taxonomy', '', $status_obj)) {
+            	$taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
+        	}
         }
 
         // Also re-encode any existing properties, since the plugin that defined it may be temporarily deactivated.
@@ -647,6 +662,8 @@ class StatusHandler {
 
             if (!empty($status_obj->private)) {
                 $taxonomy = \PublishPress_Statuses::TAXONOMY_PRIVACY;
+            } elseif (!empty($status_obj->taxonomy)) {
+                $taxonomy = $status_obj->taxonomy;
             } else {
                 $taxonomy = \PublishPress_Statuses::TAXONOMY_PRE_PUBLISH;
             }

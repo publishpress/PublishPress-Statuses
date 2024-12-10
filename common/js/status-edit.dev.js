@@ -30,7 +30,7 @@ jQuery(document).ready(function ($) {
         var value, original_value;
         value = original_value = $(this).val();
         if (e.keyCode !== 9 && e.keyCode !== 37 && e.keyCode !== 38 && e.keyCode !== 39 && e.keyCode !== 40) {
-            value = value.replace(/ /g, "_");
+            value = value.replace(/ /g, "-");
             value = value.toLowerCase();
             value = replaceDiacritics(value);
             value = transliterate(value);
@@ -59,7 +59,7 @@ jQuery(document).ready(function ($) {
         return s;
     }
     function replaceSpecialCharacters(s) {
-        s = s.replace(/[^a-z0-9\s-]/gi, "_");
+        s = s.replace(/[^a-z0-9\s-]/gi, "-");
         return s;
     }
 

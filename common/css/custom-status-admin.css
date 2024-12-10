@@ -206,7 +206,6 @@ background-color: #f9f4e5;
 }
 
 
-
 /* Statuses Table: Visibility Statuses section */
 #the_status_list li.private-status div.tpl-default {
 background-color: #fcf0ea;
@@ -358,6 +357,12 @@ border-radius: 3px;
 -moz-border-radius: 3px;
 -webkit-border-radius: 3px;
 -o-border-radius: 3px;
+}
+
+table.status-row td.enabled div.row-actions {
+display: inline;
+padding-left: 20px;
+padding-top: 10px;
 }
 
 

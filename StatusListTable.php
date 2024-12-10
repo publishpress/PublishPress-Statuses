@@ -244,6 +244,7 @@ class StatusListTable extends \WP_List_Table
             </li>
         <?php endif;
 
+		do_action('publishpress_statuses_table_list', $key, $args);
         if (!$status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
             $status_type = 'moderation';
         }
@@ -310,6 +311,10 @@ do_action('publishpress_statuses_table_row', $key, []);
 
                 <?php
                 break;
+                
+			default:
+    			do_action('publishpress_statuses_table_alternate_list', $key, $args);
+        		
         }
     }
 
@@ -338,7 +343,11 @@ do_action('publishpress_statuses_table_row', $key, []);
         <?php 
         endif;?>
         <?php
-        
+
+        if (!$status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
+            $status_type = 'moderation';
+        }
+
         if ('future' == $item->name) {
             $this->display_section_row('_standard-publication', 
             [
@@ -372,13 +381,21 @@ do_action('publishpress_statuses_table_row', $key, []);
             ]);
 
             return;
-        }
-        
-        if (!$status_type = \PublishPress_Functions::REQUEST_key('status_type')) {
-            $status_type = 'moderation';
+
+        } elseif (isset($item->taxonomy) && (\PublishPress_Statuses::TAXONOMY_PSEUDO_STATUS == $item->taxonomy)) {
+            if (!empty($item->status_type) && ($item->status_type == $status_type)) {
+                $this->display_section_row($item->name, 
+                [
+                    'label' => $item->label,
+                    'class' => !empty($item->class) ? $item->class : '',
+                ]);
+            }
+
+            return;
         }
 
         $hidden = false;
+        $class = '';
 
         if (!empty($item->alternate) && ('future' != $item->name)) {
             $class = ' alternate-moderation-status';
@@ -412,9 +429,16 @@ do_action('publishpress_statuses_table_row', $key, []);
             $class .= ' disabled-status';
         }
 
-        if (in_array($item->name, ['_pre-publish-alternate', '_disabled'])) {
+        if (in_array($item->name, ['_pre-publish-alternate', '_disabled']) 
+        || (isset($item->taxonomy)  && (\PublishPress_Statuses::TAXONOMY_PSEUDO_STATUS == $item->taxonomy))
+        ) {
             $class .= ' section-row';
         }
+    
+    	$hidden = apply_filters('publishpress_statuses_table_alternate_row_hidden', $hidden, $item, $status_type);
+    	
+    	$class = apply_filters('publishpress_statuses_table_alternate_row_class', $class, $item, $status_type);
+
         ?>
         <li id="status_row_<?php echo esc_attr($item->name);?>" class="page-row<?php echo esc_attr($class);?>"<?php if ($hidden) echo ' style="display: none;"';?>>
 
@@ -557,53 +581,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                     echo '</div>';
                 }
 
-            } elseif ('enabled' == $column_name) {
-                echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
-
-                if (in_array($item->name, ['draft', 'future', 'publish', 'private'])) {
-                    esc_html_e('Standard', 'publishpress-statuses');
-                } else {
-                    $status_obj = $item;
-
-                    if (!empty($disabled_conditions[$item->name])) {
-                        $caption = esc_html('Disabled', 'publishpress-statuses');
-                
-                    } elseif (in_array($item->name, ['pending']) || ! empty($status_obj->moderation) || ! empty($status_obj->private)) {
-                        if (!empty($status_obj->private)
-                        && (class_exists('\PublishPress\StatusCapabilities') && defined('PublishPress\StatusCapabilities::VERSION'))  // verison < 1.0.2 did not have this constant
-                        ) {
-                            if (defined('PPS_CUSTOM_PRIVACY_EDIT_CAPS') && PPS_CUSTOM_PRIVACY_EDIT_CAPS) {
-                                $caption = esc_html('Custom', 'publishpress-statuses');
-                            } else {
-                                $caption = esc_html('Custom Read', 'publishpress-statuses');
-                            }
-
-                        } elseif (empty($status_obj->capability_status)) {
-                            $caption = esc_html('Standard', 'publishpress-statuses');
-                        
-                        } else {
-                            if (!empty($status_obj->capability_status) && ($status_obj->capability_status != $status_obj->name)) {
-                                if ($cap_status_obj = get_post_status_object($status_obj->capability_status)) {
-                                    // translators: %s is the name of the status that has the same capabilities
-                                    $caption = sprintf(esc_html__('(same as %s)', 'publishpress-statuses'), esc_html($cap_status_obj->label));
-                                } else {
-                                    $caption = esc_html('Custom', 'publishpress-statuses');
-                                }
-                            } else {
-                                $caption = esc_html('Custom', 'publishpress-statuses');
-                            }
-                        }
-                    } else {
-                        $caption = esc_html('Standard', 'publishpress-statuses');
-                    }
-
-                    $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses&pp_tab=post_access");
-                    
-                    echo '<a href="' . esc_url($url) . '">' . esc_html($caption) . '</a>';
-                }
-
-                echo '</div>';
-
 			} elseif ( method_exists( $this, 'column_' . $column_name ) ) {
                 echo "<div class='" . esc_attr($classes) . "' " . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
 
@@ -612,7 +589,8 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '</div>';
 			} else {
 				echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
-                echo esc_html(apply_filters('presspermit_manage_conditions_custom_column', '', $column_name, 'post_status', $item->name));
+                //echo esc_html(apply_filters('presspermit_manage_conditions_custom_column', '', $column_name, 'post_status', $item->name));
+                do_action('publishpress_statuses_custom_column', $column_name, $item, compact('column_display_name'));
                 echo '</div>';
             }
 

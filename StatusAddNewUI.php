@@ -21,8 +21,8 @@ method='post' id='addstatus' name='addstatus'>
         }
     }
     
-    if (\PublishPress_Statuses::TAXONOMY_PRIVACY === $_taxonomy) :?>
-    <input type="hidden" name="taxonomy" value="<?php echo esc_attr(\PublishPress_Statuses::TAXONOMY_PRIVACY);?>" />
+    if ('post_status' != $_taxonomy) :?>
+    <input type="hidden" name="taxonomy" value="<?php echo esc_attr($_taxonomy);?>" />
     <?php endif;?>
 
     <p class='submit'><?php

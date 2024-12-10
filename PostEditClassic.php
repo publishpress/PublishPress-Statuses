@@ -136,7 +136,17 @@ class PostEditClassic
         $stati = array_fill_keys(['public', 'private', 'moderation'], []);
         
         foreach (['public', 'private', 'moderation'] as $prop) {
-            foreach (\PublishPress_Statuses::getPostStati([$prop => true, 'post_type' => $typenow], 'object') as $status => $status_obj) {
+        	$status_args = [$prop => true, 'post_type' => $typenow];
+        	
+        	if ('moderation' == $prop) {
+        		$status_args = apply_filters(
+	        		'publishpress_statuses_moderation_status_args',
+	        		$status_args,
+	        		$post
+	        	);
+        	}
+
+            foreach (\PublishPress_Statuses::getPostStati($status_args, 'object') as $status => $status_obj) {
 	            // Safeguard: Fall back on native WP object if our copy was corrupted. 
 	            // @todo: confirm this is not needed once Class Editor status caption refresh issues are resolved.
 	            if (empty($status_obj->labels->name)) {
@@ -188,7 +198,6 @@ class PostEditClassic
             'pvtStati' => wp_json_encode($stati['private']),
             'modStati' => wp_json_encode($stati['moderation']),
             'draftSaveAs' => $draft_obj->labels->save_as,
-            'nowCaption' => esc_html__('Current Time', 'publishpress-statuses'),
             'update' => esc_html(\PublishPress_Statuses::__wp('Update')),
             'schedule' => esc_html(\PublishPress_Statuses::_x_wp('Schedule', 'post action/button label')),
             'published' => esc_html(\PublishPress_Statuses::__wp('Published')),
@@ -201,6 +210,10 @@ class PostEditClassic
             'publishedOn' => esc_html(\PublishPress_Statuses::__wp('Published on: %s'))
         ];
 
+        if (defined('PUBLISHPRESS_STATUSES_CURRENT_TIME_LINK')) {
+            $args['nowCaption'] = esc_html__('Current Time', 'publishpress-statuses');
+        }
+
         $post_status_obj = (!empty($post) && !empty($post->post_status)) ? get_post_status_object($post->post_status) : false;
 
         if (!empty($post_status_obj) && !empty($post_status_obj->private)) {
@@ -208,9 +221,15 @@ class PostEditClassic
             $args['maxPublish'] = $args['update'];
 
         } elseif (!empty($post)) {
+            $post_status = apply_filters(
+				'publishpress_statuses_post_status',
+				$post->post_status,
+				$post
+			);
+
             $next_status_obj = \PublishPress_Statuses::getNextStatusObject(
                 $post->ID, 
-                ['default_by_sequence' => $default_by_sequence, 'post_status' => $post->post_status]
+                ['default_by_sequence' => $default_by_sequence, 'post_status' => $post_status]
             );
 
             if ($next_status_obj && !in_array($next_status_obj->name, ['publish', 'private', 'future'])) {

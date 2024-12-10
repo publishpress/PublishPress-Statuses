@@ -19,7 +19,7 @@ class PostEditGutenberg
         }
 
         if ($post_id = \PublishPress_Functions::getPostID()) {
-            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && rvy_in_revision_workflow($post_id)) {
+            if (defined('PUBLISHPRESS_REVISIONS_VERSION') && !class_exists('PublishPress_Statuses\Revisions') && rvy_in_revision_workflow($post_id)) {
                 return;
             }
         }
@@ -30,7 +30,9 @@ class PostEditGutenberg
             return;
         }
 
-        if (!$statuses = $this->getStatuses()) {
+        $status_args = apply_filters('publishpress_statuses_edit_post_status_args', false, $post_id);
+
+        if (!$statuses = $this->getStatuses($status_args)) {
             return;
         }
 
@@ -40,7 +42,9 @@ class PostEditGutenberg
 
         $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 
-        $filename = ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>=')))
+        $filename = 
+        (version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) 
+        || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))
         ? 'custom-status-block' : 'custom-status-block-legacy';
 
         wp_enqueue_script(
@@ -77,24 +81,34 @@ class PostEditGutenberg
             'currentlyScheduled' => __('This post is currently scheduled', 'publishpress-statuses')
         ];
 
-        wp_localize_script(
-            'publishpress-custom-status-block',
-            'PPCustomStatuses',
-            [
-                'statuses' => $statuses, 
-                'publishedStatuses' => $published_statuses, 
-                'publishedStatusObjects' => $published_status_objects, 
-                'captions' => $captions,
-                'ajaxurl' => admin_url('admin-ajax.php'), 
-                'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')
-            ]
-        );
-
+        if (!empty($post)) {
+            wp_localize_script(
+                'publishpress-custom-status-block',
+                'PPCustomStatuses',
+                apply_filters(
+                    'pp_statuses_custom_status_block_args',
+                    [
+                        'statusRestProperty' => apply_filters('publishpress_statuses_rest_property', 'status', $post),
+                        'statuses' => $statuses, 
+                        'publishedStatuses' => $published_statuses, 
+                        'publishedStatusObjects' => $published_status_objects, 
+                        'captions' => apply_filters('publishpress_statuses_workflow_captions', $captions, $post),
+                        'ajaxurl' => admin_url('admin-ajax.php'), 
+                        'ppNonce' => wp_create_nonce('pp-custom-statuses-nonce')
+                    ],
+                    $post
+                )
+            );
+        }
+        
         add_action('admin_print_scripts', [$this, 'actPrintScripts']);
 
         global $wp_version;
 
-        if ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))) {
+        if (
+        	(version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) 
+        	|| (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))
+        ) {
             wp_enqueue_script(
                 'publishpress-post-edit-sidebar',
                 PUBLISHPRESS_STATUSES_URL . "common/js/post-block-edit-sidebar{$suffix}.js",
@@ -108,7 +122,10 @@ class PostEditGutenberg
     function actPrintScripts() {
         global $wp_version;
 
-        if ((version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))) :?>
+        if (
+        	(version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) 
+        	|| (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))
+        ) :?>
             <style type="text/css">
             div.publishpress-extended-post-status div.components-flex-item label {
                 text-transform: none !important;
@@ -132,24 +149,34 @@ class PostEditGutenberg
      *
      * @return array $statuses All of the statuses
      */
-    private function getStatuses($args = [], $only_basic_info = false)
+    private function getStatuses($args = false, $only_basic_info = false)
     {
         global $post;
         $post_type = \PublishPress_Functions::findPostType();
 
-        $draft_obj = get_post_status_object('draft');
+        if (!is_array($args)) {
+            $args = ['moderation' => true];
+        }
 
-        $ordered_statuses = array_merge(
-            ['draft' => (object)['name' => 'draft', 'label' => esc_html(\PublishPress_Statuses::__wp('Draft')), 'icon' => $draft_obj->icon, 'color' => $draft_obj->color]],
+        $args = array_merge($args, compact('post_type'));
 
-            array_diff_key(
-                \PublishPress_Statuses::getPostStati(['moderation' => true, 'post_type' => $post_type], 'object'),
-                ['future' => true]
-            ),
-
-            ['publish' => (object)['name' => 'publish', 'label' => esc_html(\PublishPress_Statuses::__wp('Published'))]],
-            ['future' => (object)['name' => 'future', 'label' => esc_html(\PublishPress_Statuses::__wp('Scheduled'))]]
-        );
+        if (!empty($args['moderation'])) {
+	        $draft_obj = get_post_status_object('draft');
+	
+	        $ordered_statuses = array_merge(
+	            ['draft' => (object)['name' => 'draft', 'label' => esc_html(\PublishPress_Statuses::__wp('Draft')), 'icon' => $draft_obj->icon, 'color' => $draft_obj->color]],
+	
+	            array_diff_key(
+	                    \PublishPress_Statuses::getPostStati($args, 'object'),
+	                ['future' => true]
+	            ),
+	
+	            ['publish' => (object)['name' => 'publish', 'label' => esc_html(\PublishPress_Statuses::__wp('Published'))]],
+	            ['future' => (object)['name' => 'future', 'label' => esc_html(\PublishPress_Statuses::__wp('Scheduled'))]]
+	        );
+        } else {
+            $ordered_statuses = \PublishPress_Statuses::getPostStati($args, 'object');
+        }
 
         $can_set_status = \PublishPress_Statuses::getUserStatusPermissions('set_status', $post_type, $ordered_statuses);
         

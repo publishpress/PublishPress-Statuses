@@ -3,7 +3,7 @@
  * Plugin Name: PublishPress Statuses
  * Plugin URI:  https://publishpress.com/statuses
  * Description: Manage and create post statuses to customize your editorial workflow
- * Version: 1.0.9
+ * Version: 1.1.0-rc
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
  * Text Domain: publishpress-statuses
@@ -37,8 +37,8 @@
  *
  **/
 
-use PublishPress_Statuses\LibInstanceProtection;
-use PublishPress_Statuses\LibWordPressReviews;
+//use PublishPress_Statuses\LibInstanceProtection;
+//use PublishPress_Statuses\LibWordPressReviews;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
@@ -88,8 +88,99 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
      return;
  }
 
- add_action('plugins_loaded', function() {
-    if (!defined('PUBLISHPRESS_STATUSES_VERSION')) {
+$pro_active = false;
+
+global $publishpress_statuses_loaded_by_pro;
+
+$publishpress_statuses_loaded_by_pro = strpos(str_replace('\\', '/', __FILE__), 'vendor/publishpress/');
+
+// Detect separate Pro plugin activation, but not self-activation (this file loaded in vendor library by Pro)
+if (false === $publishpress_statuses_loaded_by_pro) {
+    foreach ((array)get_option('active_plugins') as $plugin_file) {
+        if (false !== strpos($plugin_file, 'publishpress-statuses-pro.php')) {
+            $pro_active = true;
+            break;
+        }
+    }
+
+    if (!$pro_active && is_multisite()) {
+        foreach (array_keys((array)get_site_option('active_sitewide_plugins')) as $plugin_file) {
+            if (false !== strpos($plugin_file, 'publishpress-statuses-pro.php')) {
+                $pro_active = true;
+                break;
+            }
+        }
+    }
+
+    if ($pro_active) {
+        add_filter(
+            'plugin_row_meta',
+            function($links, $file)
+            {
+                if ($file == plugin_basename(__FILE__)) {
+                    $links[]= __('<strong>This plugin can be deleted.</strong>', 'revisionary');
+                }
+
+                return $links;
+            },
+            10, 2
+        );
+        return;
+    }
+}
+
+if (! defined('PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH')) {
+    define('PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH', __DIR__ . '/lib/vendor');
+}
+
+if (! $publishpress_statuses_loaded_by_pro) {
+    $includeFileRelativePath = '/publishpress/instance-protection/include.php';
+    if (file_exists(PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . $includeFileRelativePath)) {
+        require_once PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . $includeFileRelativePath;
+    }
+
+    if (class_exists('PublishPressInstanceProtection\\Config')) {
+        $pluginCheckerConfig = new PublishPressInstanceProtection\Config();
+        $pluginCheckerConfig->pluginSlug    = 'publishpress-statuses';
+        $pluginCheckerConfig->pluginFolder  = 'publishpress-statuses';
+        $pluginCheckerConfig->pluginName    = 'PublishPress Statuses';
+
+        $pluginChecker = new PublishPressInstanceProtection\InstanceChecker($pluginCheckerConfig);
+    }
+
+    if (! class_exists('ComposerAutoloaderInitPublishPressStatuses')
+        && file_exists(PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . '/autoload.php')
+    ) {
+        require_once PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . '/autoload.php';
+    }
+}
+
+if ((!defined('PUBLISHPRESS_STATUSES_FILE') && !$pro_active) || $publishpress_statuses_loaded_by_pro) {
+    define('PUBLISHPRESS_STATUSES_FILE', __FILE__);
+    define('PUBLISHPRESS_STATUSES_ABSPATH', __DIR__);
+    //define('PUBLISHPRESS_STATUSES_CLASSPATH', __DIR__ . '/classes/PublishPressStatuses');
+
+    if (!defined('PUBLISHPRESS_STATUSES_CLASSPATH_COMMON')) {
+        define('PUBLISHPRESS_STATUSES_CLASSPATH_COMMON', __DIR__ . '/classes/PressShack');
+    }
+
+    //define('PUBLISHPRESS_STATUSES_DB_VERSION', '1.0.1');
+
+    /*
+    if (!defined('PRESSPERMIT_DEBUG')) {
+        define('PRESSPERMIT_DEBUG', false);
+    }
+    */
+
+    function publishpress_statuses_load() {
+        global $publishpress_statuses_loaded_by_pro;
+
+        $publishpress_statuses_loaded_by_pro = strpos(str_replace('\\', '/', __FILE__), 'vendor/publishpress/');
+
+        if (defined('PUBLISHPRESS_STATUSES_VERSION')) {
+            return;
+        }
+
         if (defined('PUBLISHPRESS_VERSION') && version_compare(PUBLISHPRESS_VERSION, '4.0-beta4', '<')) {
             add_action('admin_notices', function() {
                 ?>
@@ -148,9 +239,10 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         }
         
         if (empty($interrupt_load)) {
-            define('PUBLISHPRESS_STATUSES_VERSION', '1.0.9');
+            define('PUBLISHPRESS_STATUSES_VERSION', '1.1.0-rc');
 
-            define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));
+            define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));    // @todo: vendor lib
+
             define('PUBLISHPRESS_STATUSES_DIR', __DIR__);
 
             require_once(__DIR__ . '/lib/PublishPress_Functions.php');
@@ -158,8 +250,8 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             require_once(__DIR__ . '/lib/publishpress-module/Module_Base.php');
             new \PublishPress\PPP_Module_Base();
 
-            require_once(__DIR__ . '/LibInstanceProtection.php');
-            new LibInstanceProtection();
+            //require_once(__DIR__ . '/LibInstanceProtection.php');
+            //new LibInstanceProtection();
             
             // Disable Reviews library until other plugins are updated to fix conflict
             // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
@@ -191,15 +283,17 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                     class_alias('\PublishPress\Permissions\Statuses', '\PublishPress_Statuses\PPS');
                 }
             }
+        
+        	do_action('publishpress_statuses_init');
 
             add_action(
                 'init', 
                 function() {
-            		@load_plugin_textdomain('publishpress-statuses', false, dirname(plugin_basename(__FILE__)) . '/languages');
+                    @load_plugin_textdomain('publishpress-statuses', false, dirname(plugin_basename(__FILE__)) . '/languages');
                 },
                 5
             );
-            
+
             if (!class_exists('PP_Custom_Status') 
             && (defined('PRESSPERMIT_VERSION') || (!defined('PUBLISHPRESS_VERSION') || version_compare(PUBLISHPRESS_VERSION, '4.0', '<')))
             ) {
@@ -207,80 +301,87 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             }
         }
     }
-}, -5);
 
-register_activation_hook(
-    __FILE__, 
-    function() {
-        update_option('publishpress_statuses_activate', true);
+    // negative priority to precede any default WP action handlers
+    if ($publishpress_statuses_loaded_by_pro) {
+        publishpress_statuses_load();	// Pro support
+    } else {
+        add_action('plugins_loaded', 'publishpress_statuses_load', -5);
     }
-);
 
-register_deactivation_hook(
-    __FILE__,
-    function()
-    {
-        delete_transient('publishpress_statuses_maintenance');
-        delete_option('publishpress_statuses_planner_import_gmt');
-
-        if (!get_option('publishpress_version') || defined('PUBLISHPRESS_STATUSES_NO_PLANNER_BACK_COMPAT')) {
-            return;
+    register_activation_hook(
+        __FILE__, 
+        function() {
+            update_option('publishpress_statuses_activate', true);
         }
-
-        // Restore archived PublishPress Planner 3.x term descriptions (with encoded status properties), in case it will be re-activated
-        if ($archived_term_descriptions = get_option('pp_statuses_archived_term_properties')) {
-
-            // Use hardcoded taxonomy string here because class PublishPress_Statuses is not loaded
-            $terms = get_terms('post_status', ['hide_empty' => false]);
-
-            if (is_array($terms)) {
-                foreach ($terms as $term) {
-                    if (!empty($archived_term_descriptions[$term->term_id])) {
-                        $description = $archived_term_descriptions[$term->term_id];
-
-                        if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $description) 
-                        && (strlen($description) > 80) && (false === strpos($description, ' '))
-                        ) {
-                            // Use hardcoded taxonomy string here because class PublishPress_Statuses is not loaded
-                            wp_update_term($term->term_id, 'post_status', ['description' => $description]);
+    );
+    
+    register_deactivation_hook(
+        __FILE__,
+        function()
+        {
+            delete_transient('publishpress_statuses_maintenance');
+            delete_option('publishpress_statuses_planner_import_gmt');
+    
+            if (!get_option('publishpress_version') || defined('PUBLISHPRESS_STATUSES_NO_PLANNER_BACK_COMPAT')) {
+                return;
+            }
+    
+            // Restore archived PublishPress Planner 3.x term descriptions (with encoded status properties), in case it will be re-activated
+            if ($archived_term_descriptions = get_option('pp_statuses_archived_term_properties')) {
+    
+                // Use hardcoded taxonomy string here because class PublishPress_Statuses is not loaded
+                $terms = get_terms('post_status', ['hide_empty' => false]);
+    
+                if (is_array($terms)) {
+                    foreach ($terms as $term) {
+                        if (!empty($archived_term_descriptions[$term->term_id])) {
+                            $description = $archived_term_descriptions[$term->term_id];
+    
+                            if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $description) 
+                            && (strlen($description) > 80) && (false === strpos($description, ' '))
+                            ) {
+                                // Use hardcoded taxonomy string here because class PublishPress_Statuses is not loaded
+                                wp_update_term($term->term_id, 'post_status', ['description' => $description]);
+                            }
                         }
                     }
                 }
             }
-        }
-
-        // Set post_types option storage value back to "on" / "off"
-        $options = get_option('publishpress_custom_status_options');
-
-        if (is_object($options) && isset($options->enabled)) {
-            if ($options->enabled) {
-                $options->enabled = 'on';
-                $do_option_update = true;
-            } else {
-                $options->enabled = 'off';
-                $do_option_update = true;
-            }
-        }
-
-        if (is_object($options) && !empty($options->post_types)) {
-            foreach ($options->post_types as $post_type => $val) {
-                if ($val) {
-                    $options->post_types[$post_type] = 'on';
+    
+            // Set post_types option storage value back to "on" / "off"
+            $options = get_option('publishpress_custom_status_options');
+    
+            if (is_object($options) && isset($options->enabled)) {
+                if ($options->enabled) {
+                    $options->enabled = 'on';
                     $do_option_update = true;
                 } else {
-                    $options->post_types[$post_type] = 'off';
+                    $options->enabled = 'off';
                     $do_option_update = true;
                 }
             }
+    
+            if (is_object($options) && !empty($options->post_types)) {
+                foreach ($options->post_types as $post_type => $val) {
+                    if ($val) {
+                        $options->post_types[$post_type] = 'on';
+                        $do_option_update = true;
+                    } else {
+                        $options->post_types[$post_type] = 'off';
+                        $do_option_update = true;
+                    }
+                }
+            }
+    
+            if (!empty($options->loaded_once)) {
+                unset($options->loaded_once);
+                $do_option_update = true;
+            }
+    
+            if (!empty($do_option_update)) {
+                update_option('publishpress_custom_status_options', $options);
+            }
         }
-
-        if (!empty($options->loaded_once)) {
-            unset($options->loaded_once);
-            $do_option_update = true;
-        }
-
-        if (!empty($do_option_update)) {
-            update_option('publishpress_custom_status_options', $options);
-        }
-    }
-);
+    );
+}
