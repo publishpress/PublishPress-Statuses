@@ -3134,7 +3134,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $type_obj = get_post_type_object($_post->post_type);
         }
 
-        if (!$is_revision && empty($save_as_pending) && ('pending' == $post_status) && !empty($type_obj) && current_user_can($type_obj->cap->publish_posts)) {
+        if (empty($save_as_pending) && ('pending' == $post_status) && !empty($type_obj) && current_user_can($type_obj->cap->publish_posts)) {
             $save_as_pending = true;
         }
 
@@ -3183,7 +3183,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
         $this->logLastMainSection($_post_status, $post_id);
 
-        if (\PublishPress_Functions::REQUEST_key('save') && !$doing_rest) {
+        if (\PublishPress_Functions::REQUEST_key('save') && !$doing_rest
+        || ($doing_rest && !empty($rest->params['pp_status_selection']))
+        ) {
             return $_post_status;
         }
 
@@ -3219,8 +3221,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         // Allow Publish / Submit button to trigger our desired workflow progression instead of Publish / Pending status.
         // Apply this change only if stored post is not already published or scheduled.
         // Also skip retain normal WP editor behavior if the newly posted status is privately published or future.
-        if ($is_revision || (
-            (in_array($selected_status, ['publish', 'pending', 'future']) && !in_array($stored_status, ['publish', 'private', 'future']) 
+        if ((in_array($selected_status, ['publish', 'pending', 'future']) && !in_array($stored_status, ['publish', 'private', 'future']) 
             && empty($classic_explicit_publish)
             && empty($stored_status_obj->public) && empty($stored_status_obj->private)))
         ) {
