@@ -850,10 +850,16 @@ class StatusesUI {
                 <?php elseif (!get_option('presspermit_privacy_statuses_enabled')) :?>
                     <div class="pp-statuses-config-notice">
                     <?php
+                    if (defined('PUBLISHPRESS_CAPS_PRO_VERSION')) {
+                        $url = admin_url('admin.php?page=pp-capabilities-settings&pp_tab=capabilities');
+                    } else {
+                        $url = admin_url('admin.php?page=presspermit-settings&pp_tab=statuses');
+                    }
+
                     printf(
                         // translators: %1$s and %2$s is link markup
                         esc_html__('Note: Custom Visibility Statuses are %1$sdisabled%2$s.', 'publishpress-permissions'),
-                        '<a href="' . esc_url(admin_url('admin.php?page=presspermit-settings&pp_tab=statuses')) . '">',
+                        '<a href="' . esc_url($url) . '">',
                         '</a>'
                     );
                     ?>
