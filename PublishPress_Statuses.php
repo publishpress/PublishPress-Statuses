@@ -3223,7 +3223,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         // Also skip retain normal WP editor behavior if the newly posted status is privately published or future.
         if ((in_array($selected_status, ['publish', 'pending', 'future']) && !in_array($stored_status, ['publish', 'private', 'future']) 
             && empty($classic_explicit_publish)
-            && empty($stored_status_obj->public) && empty($stored_status_obj->private)))
+            && empty($stored_status_obj->public) && empty($stored_status_obj->private))
         ) {
             // Gutenberg REST gives no way to distinguish between Publish and Save request. Treat as Publish (next workflow progression) if any of the following:
             //  * user cannot set pending status
