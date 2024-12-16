@@ -133,7 +133,7 @@ if (! defined('PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH')) {
     define('PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH', __DIR__ . '/lib/vendor');
 }
 
-if (! $publishpress_statuses_loaded_by_pro) {
+if (!defined('PUBLISHPRESS_STATUSES_FILE') && !$publishpress_statuses_loaded_by_pro) {
     $includeFileRelativePath = '/publishpress/instance-protection/include.php';
     if (file_exists(PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . $includeFileRelativePath)) {
         require_once PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . $includeFileRelativePath;
