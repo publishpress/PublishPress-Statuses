@@ -372,9 +372,13 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         new \PublishPress_Statuses\Workarounds();
 
         if (is_admin()) {
+            if ($activated = get_option('publishpress_statuses_activate')) {
+                delete_option('publishpress_statuses_activate');
+            }
+
             // WordPress Dashboard integration
             require_once(__DIR__ . '/Admin.php');
-            new \PublishPress_Statuses\Admin();
+            new \PublishPress_Statuses\Admin($activated);
 
             if (empty($disable_statuses)) {
                 // Implementation for Posts screen, Post Editor
@@ -394,6 +398,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $this->maybeGrantPendingStatusCap();
 
         do_action('pp_statuses_init');
+
+        if (is_admin() && $activated && (!defined('WP_DEBUG') || !WP_DEBUG)) {
+            wp_redirect(admin_url("admin.php?page=publishpress-statuses"));
+            exit;
+        }
     }
 
     function maybeGrantPendingStatusCap() {
@@ -2678,6 +2687,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             if (!$moderation_statuses) {
                 if ((!empty($post_status_obj->status_parent) || !empty($status_children)) && !$force_main_channel) {
                     $args['force_main_channel'] = true;
+
                     return self::getNextStatusObject($post_id, $args);
                 }
             } else {
@@ -3105,6 +3115,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         ) {
             return $post_status;
         }
+
 
         if (isset($args['post_id'])) {
             $post_id = $args['post_id'];
