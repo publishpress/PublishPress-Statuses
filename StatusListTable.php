@@ -188,7 +188,7 @@ class StatusListTable extends \WP_List_Table
 
 </div>
 
-<?php  
+<?php
     if (defined('PUBLISHPRESS_REVISIONS_VERSION') && !defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) {
         echo '<div class="pp-custom-status-hints">';
         printf(
@@ -209,7 +209,6 @@ class StatusListTable extends \WP_List_Table
         echo '</div>';
     }
 }
-    
 
     /**
 	 * Generates the tbody element for the list table.
