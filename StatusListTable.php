@@ -209,7 +209,6 @@ class StatusListTable extends \WP_List_Table
         echo '</div>';
     }
 }
-    
 
     /**
 	 * Generates the tbody element for the list table.
