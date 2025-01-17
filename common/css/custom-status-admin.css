@@ -365,6 +365,22 @@ padding-left: 20px;
 padding-top: 10px;
 }
 
+.pp-custom-status-hints {
+padding: 5px !important; 
+background-color: white;
+text-align: center;
+border: 1px solid #aaa;
+}
+
+.pp-custom-status-hints, .pp-custom-status-hints a {
+font-style: italic;
+font-size: 14px;
+}
+
+.pp-custom-status-hints a, .pp-custom-status-hints a:link, .pp-custom-status-hints a:visited {
+font-weight: bold;
+}
+
 
 /* Add Status Form */
 #addstatus .form-table th, #addstatus .form-table th label

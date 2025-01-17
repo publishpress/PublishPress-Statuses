@@ -3,7 +3,7 @@
  * Plugin Name: PublishPress Statuses
  * Plugin URI:  https://publishpress.com/statuses
  * Description: Manage and create post statuses to customize your editorial workflow
- * Version: 1.1.0-rc
+ * Version: 1.1.0-rc4
  * Author: PublishPress
  * Author URI:  https://publishpress.com/
  * Text Domain: publishpress-statuses
@@ -133,7 +133,7 @@ if (! defined('PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH')) {
     define('PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH', __DIR__ . '/lib/vendor');
 }
 
-if (! $publishpress_statuses_loaded_by_pro) {
+if (!defined('PUBLISHPRESS_STATUSES_FILE') && !$publishpress_statuses_loaded_by_pro) {
     $includeFileRelativePath = '/publishpress/instance-protection/include.php';
     if (file_exists(PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . $includeFileRelativePath)) {
         require_once PUBLISHPRESS_STATUSES_INTERNAL_VENDORPATH . $includeFileRelativePath;
@@ -239,7 +239,7 @@ if ((!defined('PUBLISHPRESS_STATUSES_FILE') && !$pro_active) || $publishpress_st
         }
         
         if (empty($interrupt_load)) {
-            define('PUBLISHPRESS_STATUSES_VERSION', '1.1.0-rc');
+            define('PUBLISHPRESS_STATUSES_VERSION', '1.1.0-rc4');
 
             define('PUBLISHPRESS_STATUSES_URL', trailingslashit(plugins_url('', __FILE__)));    // @todo: vendor lib
 

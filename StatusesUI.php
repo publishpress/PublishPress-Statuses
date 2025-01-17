@@ -822,18 +822,6 @@ class StatusesUI {
 
             if ('visibility' == $status_type) {
                 if (!defined('PRESSPERMIT_PRO_VERSION')) :?>
-                    <div class="pp-statuses-config-notice">
-                    <?php
-                    printf(
-                        // translators: %1$s, %2$s, %3$s and %4$s are link markup
-                        esc_html__('Note: The %1$sPublishPress Permissions Pro%2$s plugin is required for custom Visibility Statuses, but %3$sis not active%4$s.', 'publishpress-statuses'),
-                        '<a href="https://publishpress.com/permissions/" target="_blank">',
-                        '</a>',
-                        '<a href="' . esc_url(admin_url('plugins.php')) . '">',
-                        '</a>'
-                    );
-                    ?>
-                    </div>
 
                 <?php elseif (!defined('PRESSPERMIT_STATUSES_VERSION')) :?>
                     <div class="pp-statuses-config-notice">
@@ -850,10 +838,16 @@ class StatusesUI {
                 <?php elseif (!get_option('presspermit_privacy_statuses_enabled')) :?>
                     <div class="pp-statuses-config-notice">
                     <?php
+                    if (defined('PUBLISHPRESS_CAPS_PRO_VERSION')) {
+                        $url = admin_url('admin.php?page=pp-capabilities-settings&pp_tab=capabilities');
+                    } else {
+                        $url = admin_url('admin.php?page=presspermit-settings&pp_tab=statuses');
+                    }
+
                     printf(
                         // translators: %1$s and %2$s is link markup
                         esc_html__('Note: Custom Visibility Statuses are %1$sdisabled%2$s.', 'publishpress-permissions'),
-                        '<a href="' . esc_url(admin_url('admin.php?page=presspermit-settings&pp_tab=statuses')) . '">',
+                        '<a href="' . esc_url($url) . '">',
                         '</a>'
                     );
                     ?>

@@ -188,7 +188,26 @@ class StatusListTable extends \WP_List_Table
 
 </div>
 
-<?php  
+<?php
+    if (defined('PUBLISHPRESS_REVISIONS_VERSION') && !defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) {
+        echo '<div class="pp-custom-status-hints">';
+        printf(
+            esc_html__('To define and control Revision statuses, upgrade to the %1$sPublishPress Statuses Pro%2$s plugin.', 'publishpress-statuses'),
+            '<a href="https://publishpress.com/statuses/" target="_blank">',
+            '</a>'
+        );
+        echo '</div>';
+
+    } elseif (defined('PUBLISHPRESS_STATUSES_PRO_VERSION') && defined('PUBLISHPRESS_REVISIONS_VERSION') && version_compare(PUBLISHPRESS_REVISIONS_VERSION, '3.6.0-rc', '<')) {
+        echo '<div class="pp-custom-status-hints">';
+        printf(
+            esc_html__('To define and control Revision statuses, update the %1$sPublishPress Revisions%2$s plugin to version %3$s or higher.', 'publishpress-statuses'),
+            '<a href="https://publishpress.com/revisions/" target="_blank">',
+            '</a>',
+            '3.6.0'
+        );
+        echo '</div>';
+    }
 }
     
 
@@ -263,6 +282,10 @@ class StatusListTable extends \WP_List_Table
 <?php endif; ?>
 
 <td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
+<?php if (('_visibility-statuses' == $key) && !defined('PRESSPERMIT_PRO_VERSION')) {
+    echo ' <span style="font-style: italic"> ' . esc_html__('(customization requires Permissions Pro plugin)', 'publishpress-statuses') . '</span>';
+}
+?>
 
 <?php 
 do_action('publishpress_statuses_table_row', $key, []);
