@@ -596,8 +596,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             'pending' => (object) [
                 'default_label' => 'Pending Review',
-                'label' => !empty($wp_post_statuses['pending']) && !empty($wp_post_statuses['pending']->label) ? $wp_post_statuses['pending']->label : \PublishPress_Statuses::__wp('Pending Review'),
-                'label_friendly' => !empty($wp_post_statuses['pending']) && !empty($wp_post_statuses['pending']->label) ? $wp_post_statuses['pending']->label : \PublishPress_Statuses::__wp('Pending Review'),
+                'label' => !empty($wp_post_statuses['pending']) && !empty($wp_post_statuses['pending']->label) && ('Pending' != $wp_post_statuses['pending']->label) ? $wp_post_statuses['pending']->label : \PublishPress_Statuses::__wp('Pending Review'),
+                'label_friendly' => !empty($wp_post_statuses['pending']) && !empty($wp_post_statuses['pending']->label) && ('Pending' != $wp_post_statuses['pending']->label) ? $wp_post_statuses['pending']->label : \PublishPress_Statuses::__wp('Pending Review'),
                 'default_labels' => (object) [
                     'save_as' => 'Save as Pending',
                     'publish' => 'Submit for Review'
@@ -1537,7 +1537,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 // Map taxonomy schema columns to Post Status properties
 
                 // We need to avoid replacing a translation of "Pending Review" with the stored default English caption
-                $term->label = (!empty($core_statuses[$term->slug]) && (('pending' != $term->slug) || ('Pending Review' == $term->name))) 
+                
+                $term->label = (!empty($core_statuses[$term->slug]) && (('pending' != $term->slug) || ($core_statuses[$term->slug]->label == $term->name))) 
                 ? $core_statuses[$term->slug]->label 
                 : $term->name;
 
@@ -2104,6 +2105,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     // filter PublishPress Permissions Pro results
     function flt_get_post_statuses($statuses, $status_args, $return_args, $operator, $function_args) {
+        if (self::disable_custom_statuses_for_post_type()) {
+            return $statuses;
+        }
+        
         $function_args['operator'] = $operator;
 
         $context = (!empty($function_args['context'])) ? $function_args['context'] : '';
@@ -2140,6 +2145,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             if (!empty($obj->moderation) 
             && !in_array($status_name, ['draft', 'future']) 
             && (!$pp_status_capabilities_active || !\PublishPress\StatusCapabilities::postStatusHasCustomCaps($status_name))
+            && (('pending' != $status_name) || !\PublishPress_Statuses::instance()->options->pending_status_regulation)
             && empty($current_user->allcaps["status_change_{$_status}"])) {
                 unset($statuses[$k]);
             }

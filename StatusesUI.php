@@ -822,18 +822,6 @@ class StatusesUI {
 
             if ('visibility' == $status_type) {
                 if (!defined('PRESSPERMIT_PRO_VERSION')) :?>
-                    <div class="pp-statuses-config-notice">
-                    <?php
-                    printf(
-                        // translators: %1$s, %2$s, %3$s and %4$s are link markup
-                        esc_html__('Note: The %1$sPublishPress Permissions Pro%2$s plugin is required for custom Visibility Statuses, but %3$sis not active%4$s.', 'publishpress-statuses'),
-                        '<a href="https://publishpress.com/permissions/" target="_blank">',
-                        '</a>',
-                        '<a href="' . esc_url(admin_url('plugins.php')) . '">',
-                        '</a>'
-                    );
-                    ?>
-                    </div>
 
                 <?php elseif (!defined('PRESSPERMIT_STATUSES_VERSION')) :?>
                     <div class="pp-statuses-config-notice">

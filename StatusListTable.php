@@ -281,6 +281,10 @@ class StatusListTable extends \WP_List_Table
 <?php endif; ?>
 
 <td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
+<?php if (('_visibility-statuses' == $key) && !defined('PRESSPERMIT_PRO_VERSION')) {
+    echo ' <span style="font-style: italic"> ' . esc_html__('(customization requires Permissions Pro plugin)', 'publishpress-statuses') . '</span>';
+}
+?>
 
 <?php 
 do_action('publishpress_statuses_table_row', $key, []);
