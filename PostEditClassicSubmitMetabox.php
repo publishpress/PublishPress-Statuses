@@ -56,7 +56,7 @@ class PostEditClassicSubmitMetabox
 
                     <?php if ((!defined('PRESSPERMIT_STATUSES_VERSION') || !get_option('presspermit_privacy_statuses_enabled')) && apply_filters('pp_statuses_display_visibility_ui', true, $post)):?>
                     <div class="misc-pub-section misc-pub-visibility" id="visibility">
-                        <?php \PublishPress_Statuses::_e_wp( 'Visibility:' ); ?>
+                        <?php _e('Visibility:', 'publishpress-statuses'); ?>
                         <span id="post-visibility-display">
                             <?php
                             if ( 'private' === $post->post_status ) {
