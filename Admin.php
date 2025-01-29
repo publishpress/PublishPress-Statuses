@@ -1188,16 +1188,29 @@ class Admin
                 });
             });
 
-            $planner_colors = [
-                'pitch' => '#cc0000',
-                'assigned' => '#00bcc5',
-                'in-progress' => '#ccc500',
-                'draft' => '#f91d84',
-                'pending' => '#d87200',
-                'future' => '#655997',
-                'private' => '#000000',
-                'publish' => '#655997',
-            ];
+            if (defined('PUBLISHPRESS_STATUSES_LEGACY_PLANNER_COLORS')) {
+                $planner_colors = [
+                    'pitch' => '#cc0000',
+                    'assigned' => '#00bcc5',
+                    'in-progress' => '#ccc500',
+                    'draft' => '#f91d84',
+                    'pending' => '#d87200',
+                    'future' => '#655997',
+                    'private' => '#000000',
+                    'publish' => '#655997',
+                ];
+            } else {
+                $planner_colors = [
+                    'pitch' => '#887618',
+                    'assigned' => '#009ba0',
+                    'in-progress' => '#8c5400',
+                    'draft' => '#767676',
+                    'pending' => '#b95c00',
+                    'private' => '#b40000',
+                    'future' => '#8440f0',
+                    'publish' => '#207720'
+                ];
+            }
 
             // If a status exists only as a code-defined default, create a term so termmeta can be stored
             foreach (array_keys($planner_colors) as $status) {
