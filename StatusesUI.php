@@ -877,7 +877,7 @@ class StatusesUI {
                     if ('visibility' == $status_type) {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    \PublishPress_Statuses::_e_wp('Visibility', 'publishpress-statuses'); ?></a>
+                    _e('Visibility', 'publishpress-statuses'); ?></a>
                 
                 <?php 
                 do_action('publishpress_statuses_table_tabs', $status_type);
