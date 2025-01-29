@@ -2657,7 +2657,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $_args = ['min_order' => $status_order + 1, 'omit_status' => 'future', 'require_order' => true];
 
             if (!$force_main_channel) {
-                if (!empty($post_status_obj->status_parent)) {
+                if (empty($post_status_obj->name)) {    // @todo: review causes
+                    $_args['status_parent'] = ''; 
+
+                } elseif (!empty($post_status_obj->status_parent)) {
                     // If current status is a Workflow branch child, only offer other statuses in that branch
                     $_args['status_parent'] = $post_status_obj->status_parent;
 
@@ -2703,8 +2706,10 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     $moderation_statuses = array_reverse($moderation_statuses);
                 }
 
+                $_post_status_obj_name = (!empty($post_status_obj->name)) ? $post_status_obj->name : '';
+
                 foreach ($moderation_statuses as $_status_obj) {
-                    if (!empty($can_set_status[$_status_obj->name]) && ($_status_obj->name != $post_status_obj->name)) {
+                    if (!empty($can_set_status[$_status_obj->name]) && ($_status_obj->name != $_post_status_obj_name)) {
                         $post_status_obj = $_status_obj;
                         break;
                     }
