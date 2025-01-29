@@ -37,9 +37,6 @@
  *
  **/
 
-//use PublishPress_Statuses\LibInstanceProtection;
-//use PublishPress_Statuses\LibWordPressReviews;
-
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
  global $wp_version;
@@ -158,19 +155,10 @@ if (!defined('PUBLISHPRESS_STATUSES_FILE') && !$publishpress_statuses_loaded_by_
 if ((!defined('PUBLISHPRESS_STATUSES_FILE') && !$pro_active) || $publishpress_statuses_loaded_by_pro) {
     define('PUBLISHPRESS_STATUSES_FILE', __FILE__);
     define('PUBLISHPRESS_STATUSES_ABSPATH', __DIR__);
-    //define('PUBLISHPRESS_STATUSES_CLASSPATH', __DIR__ . '/classes/PublishPressStatuses');
 
     if (!defined('PUBLISHPRESS_STATUSES_CLASSPATH_COMMON')) {
         define('PUBLISHPRESS_STATUSES_CLASSPATH_COMMON', __DIR__ . '/classes/PressShack');
     }
-
-    //define('PUBLISHPRESS_STATUSES_DB_VERSION', '1.0.1');
-
-    /*
-    if (!defined('PRESSPERMIT_DEBUG')) {
-        define('PRESSPERMIT_DEBUG', false);
-    }
-    */
 
     function publishpress_statuses_load() {
         global $publishpress_statuses_loaded_by_pro;
@@ -249,29 +237,6 @@ if ((!defined('PUBLISHPRESS_STATUSES_FILE') && !$pro_active) || $publishpress_st
 
             require_once(__DIR__ . '/lib/publishpress-module/Module_Base.php');
             new \PublishPress\PPP_Module_Base();
-
-            //require_once(__DIR__ . '/LibInstanceProtection.php');
-            //new LibInstanceProtection();
-            
-            // Disable Reviews library until other plugins are updated to fix conflict
-            // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-            /*
-            if (!class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
-                include_once PUBLISHPRESS_STATUSES_DIR. '/lib/vendor/publishpress/wordpress-reviews/ReviewsController.php';
-            }
-
-            if (class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
-                $reviews = new \PublishPress\WordPressReviews\ReviewsController(
-                    'publishpress-statuses',
-                    'PublishPress Statuses',
-                    PUBLISHPRESS_STATUSES_URL . 'common/img/permissions-wp-logo.jpg'
-                );
-
-                add_filter('publishpress_wp_reviews_display_banner_publishpress-statuses', [$this, 'shouldDisplayBanner']);
-
-                $reviews->init();
-            }
-            */
 
             require_once(__DIR__ . '/PublishPress_Statuses.php');
             PublishPress_Statuses::instance();
