@@ -1,15 +1,15 @@
-# Copyright (C) 2024 PublishPress
+# Copyright (C) 2025 PublishPress
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.1.0-rc3\n"
+"Project-Id-Version: PublishPress Statuses 1.1.0-rc4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-12-20T02:32:45+00:00\n"
+"POT-Creation-Date: 2025-01-17T02:16:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -91,11 +91,6 @@ msgstr ""
 #: PostEditGutenbergStatuses.php:64
 #: PostEditGutenbergStatuses.php:72
 msgid "Advance Status"
-msgstr ""
-
-#. translators: %1$s is the plugin name, %2$s is the rating stars
-#: lib/publishpress-module/ModuleAdminUI_Base.php:100
-msgid "If you like %1$s, please leave us a %2$s rating. Thank you!"
 msgstr ""
 
 #: PostEditClassic.php:214
@@ -459,7 +454,7 @@ msgid "Add Status"
 msgstr ""
 
 #: StatusesUI.php:87
-#: StatusesUI.php:940
+#: StatusesUI.php:928
 msgid "PublishPress Statuses Settings"
 msgstr ""
 
@@ -703,25 +698,20 @@ msgid "Edit %1$s: %2$s"
 msgstr ""
 
 #: StatusesUI.php:814
-#: StatusesUI.php:926
+#: StatusesUI.php:914
 msgid "Add New Pre-Publication Status"
 msgstr ""
 
-#. translators: %1$s, %2$s, %3$s and %4$s are link markup
-#: StatusesUI.php:829
-msgid "Note: The %1$sPublishPress Permissions Pro%2$s plugin is required for custom Visibility Statuses, but %3$sis not active%4$s."
-msgstr ""
-
 #. translators: %1$s and %2$s is link markup
-#: StatusesUI.php:843
+#: StatusesUI.php:831
 msgid "For custom Visibility Statuses, please %1$senable the Status Control module%2$s of Permissions Pro."
 msgstr ""
 
-#: StatusesUI.php:884
+#: StatusesUI.php:872
 msgid "Pre-Publication"
 msgstr ""
 
-#: StatusesUI.php:930
+#: StatusesUI.php:918
 msgid "This status can be assigned to an unpublished post using the Post Status dropdown."
 msgstr ""
 
@@ -823,44 +813,48 @@ msgstr ""
 msgid "Drop any status here to include it in main workflow for new posts."
 msgstr ""
 
-#: StatusListTable.php:305
+#: StatusListTable.php:285
+msgid "(customization requires Permissions Pro plugin)"
+msgstr ""
+
+#: StatusListTable.php:309
 msgid "Drop any status here to make it manually selectable outside the main workflow."
 msgstr ""
 
-#: StatusListTable.php:324
+#: StatusListTable.php:328
 msgid "Drop any status here to disable."
 msgstr ""
 
-#: StatusListTable.php:372
+#: StatusListTable.php:376
 msgid "Standard Publication:"
 msgstr ""
 
-#: StatusListTable.php:379
+#: StatusListTable.php:383
 msgid "Visibility Statuses for Private Publication:"
 msgstr ""
 
-#: StatusListTable.php:386
+#: StatusListTable.php:390
 msgid "Alternate Workflows:"
 msgstr ""
 
 #. translators: %s is the opening and closing <span> tags
-#: StatusListTable.php:397
+#: StatusListTable.php:401
 msgid "Disabled Statuses (drag to re-enable):"
 msgstr ""
 
 #. translators: %s is the list of post types
-#: StatusListTable.php:571
+#: StatusListTable.php:575
 msgid "%s, more..."
 msgstr ""
 
-#: StatusListTable.php:654
+#: StatusListTable.php:658
 msgid "No custom statuses found."
 msgstr ""
 
-#: StatusListTable.php:723
+#: StatusListTable.php:727
 msgid "Default"
 msgstr ""
 
-#: StatusListTable.php:741
+#: StatusListTable.php:745
 msgid "X"
 msgstr ""
