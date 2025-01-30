@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.1.0-rc4\n"
+"Project-Id-Version: PublishPress Statuses 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-17T02:16:23+00:00\n"
+"POT-Creation-Date: 2025-01-30T10:18:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: publishpress-statuses\n"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: Admin.php:344
 #: Admin.php:345
-#: StatusesUI.php:815
+#: StatusesUI.php:817
 msgid "Add New"
 msgstr ""
 
@@ -108,6 +108,10 @@ msgstr ""
 msgid "%s, Sticky"
 msgstr ""
 
+#: PostEditClassicSubmitMetabox.php:59
+msgid "Visibility:"
+msgstr ""
+
 #: PostEditClassicSubmitMetabox.php:200
 msgid "Restore default behavior of publish button"
 msgstr ""
@@ -162,17 +166,17 @@ msgid "Submit Revision"
 msgstr ""
 
 #. translators: %s is a version number
-#: publishpress-statuses.php:190
+#: publishpress-statuses.php:178
 msgid "To use PublishPress Statuses, please upgrade PublishPress Planner to version %s or higher."
 msgstr ""
 
 #. translators: %s is a version number
-#: publishpress-statuses.php:207
+#: publishpress-statuses.php:195
 msgid "To use PublishPress Statuses, please upgrade PublishPress Permissions Pro to version %s or higher."
 msgstr ""
 
 #. translators: %s is a version number
-#: publishpress-statuses.php:224
+#: publishpress-statuses.php:212
 msgid "To use PublishPress Statuses, please upgrade PublishPress Capabilities Pro to version %s or higher."
 msgstr ""
 
@@ -454,7 +458,7 @@ msgid "Add Status"
 msgstr ""
 
 #: StatusesUI.php:87
-#: StatusesUI.php:928
+#: StatusesUI.php:930
 msgid "PublishPress Statuses Settings"
 msgstr ""
 
@@ -537,181 +541,185 @@ msgstr ""
 msgid "Backup / Restore:"
 msgstr ""
 
-#: StatusesUI.php:356
+#: StatusesUI.php:358
 msgid "Supplemental Role of Editor covers custom statuses"
 msgstr ""
 
-#: StatusesUI.php:383
+#: StatusesUI.php:385
 msgid "Sequence by default: Publish button defaults to next status in workflow"
 msgstr ""
 
-#: StatusesUI.php:397
+#: StatusesUI.php:399
 msgid "Bypass by default: Publish button defaults to maximum available status"
 msgstr ""
 
-#: StatusesUI.php:442
+#: StatusesUI.php:444
 msgid "Hide nested statuses (workflow branches) in the dropdown unless the post is set to the parent status or a sibling"
 msgstr ""
 
-#: StatusesUI.php:461
+#: StatusesUI.php:463
 msgid "Available to all users"
 msgstr ""
 
-#: StatusesUI.php:462
+#: StatusesUI.php:464
 msgid "Available to specified roles only"
 msgstr ""
 
-#: StatusesUI.php:468
+#: StatusesUI.php:470
 msgid "Users can only assign a custom status to a post if their role allows it. With the current setting, the same control is applied to the Pending Review status."
 msgstr ""
 
-#: StatusesUI.php:470
+#: StatusesUI.php:472
 msgid "Users can only assign a custom status to a post if their role allows it. With the current setting, those limitations will not be applied for the Pending Review status."
 msgstr ""
 
 #. translators: %1$s and %2$s are link markup
-#: StatusesUI.php:479
+#: StatusesUI.php:481
 msgid "View or set roles at %1$s Statuses > Statuses > Pending Review > Roles %2$s"
 msgstr ""
 
-#: StatusesUI.php:503
+#: StatusesUI.php:505
 msgid "Automatic Detection"
 msgstr ""
 
-#: StatusesUI.php:504
+#: StatusesUI.php:506
 msgid "Using Classic Editor"
 msgstr ""
 
-#: StatusesUI.php:505
+#: StatusesUI.php:507
 msgid "Using Gutenberg Editor"
 msgstr ""
 
-#: StatusesUI.php:510
+#: StatusesUI.php:512
 msgid "If custom statuses in the post editor are not loaded correctly, prevent incorrect detection of editor by specifying it here."
 msgstr ""
 
-#: StatusesUI.php:531
+#: StatusesUI.php:533
 msgid "For all plugin statuses"
 msgstr ""
 
-#: StatusesUI.php:532
+#: StatusesUI.php:534
 msgid "For user-created plugin statuses only"
 msgstr ""
 
-#: StatusesUI.php:537
+#: StatusesUI.php:539
 msgid "This controls which statuses can have their labels customized by editing Status properties. If a non-default entry is stored, it will override any language file strings."
 msgstr ""
 
-#: StatusesUI.php:600
+#: StatusesUI.php:602
 msgid "Note: Post types can also be specified for each individual status."
 msgstr ""
 
-#: StatusesUI.php:614
-#: StatusesUI.php:672
+#: StatusesUI.php:616
+#: StatusesUI.php:674
 msgid "Select..."
 msgstr ""
 
-#: StatusesUI.php:617
+#: StatusesUI.php:619
 msgid "Re-run Planner import (with Status Control properties, ordering)"
 msgstr ""
 
-#: StatusesUI.php:618
+#: StatusesUI.php:620
 msgid "Re-run Planner import (ignoring Status Control configuration)"
 msgstr ""
 
-#: StatusesUI.php:620
+#: StatusesUI.php:622
 msgid "Re-run Planner import"
 msgstr ""
 
-#: StatusesUI.php:626
+#: StatusesUI.php:628
 msgid "Status color, icon and position is automatically imported from PublishPress Planner. Select an option above to re-run the import, giving priority to Planner-defined status position."
 msgstr ""
 
-#: StatusesUI.php:674
+#: StatusesUI.php:676
 msgid "Back up current colors, icons, labels and post types"
 msgstr ""
 
-#: StatusesUI.php:679
+#: StatusesUI.php:681
 msgid "Restore backup of status colors"
 msgstr ""
 
-#: StatusesUI.php:683
+#: StatusesUI.php:685
 msgid "Restore backup of status icons"
 msgstr ""
 
-#: StatusesUI.php:687
+#: StatusesUI.php:689
 msgid "Restore backup of status labels"
 msgstr ""
 
-#: StatusesUI.php:691
+#: StatusesUI.php:693
 msgid "Restore backup of status post types"
 msgstr ""
 
-#: StatusesUI.php:697
+#: StatusesUI.php:699
 msgid "Restore auto-backup of status colors"
 msgstr ""
 
-#: StatusesUI.php:701
+#: StatusesUI.php:703
 msgid "Restore auto-backup of status icons"
 msgstr ""
 
-#: StatusesUI.php:705
+#: StatusesUI.php:707
 msgid "Restore auto-backup of status labels"
 msgstr ""
 
-#: StatusesUI.php:709
+#: StatusesUI.php:711
 msgid "Restore auto-backup of status post types"
 msgstr ""
 
-#: StatusesUI.php:716
+#: StatusesUI.php:718
 msgid "Use default status colors"
 msgstr ""
 
-#: StatusesUI.php:720
+#: StatusesUI.php:722
 msgid "Use default status icons"
 msgstr ""
 
-#: StatusesUI.php:724
+#: StatusesUI.php:726
 msgid "Use default status labels"
 msgstr ""
 
-#: StatusesUI.php:728
+#: StatusesUI.php:730
 msgid "Use default status post types"
 msgstr ""
 
-#: StatusesUI.php:732
+#: StatusesUI.php:734
 msgid "Use Planner plugin's default status colors"
 msgstr ""
 
-#: StatusesUI.php:736
+#: StatusesUI.php:738
 msgid "Use Planner plugin's default status icons"
 msgstr ""
 
 #. translators: %s is the status name
-#: StatusesUI.php:775
+#: StatusesUI.php:777
 msgid "Edit Status: %s"
 msgstr ""
 
 #. translators: %s is the status name
-#: StatusesUI.php:778
+#: StatusesUI.php:780
 msgid "Edit %1$s: %2$s"
 msgstr ""
 
-#: StatusesUI.php:814
-#: StatusesUI.php:914
+#: StatusesUI.php:816
+#: StatusesUI.php:916
 msgid "Add New Pre-Publication Status"
 msgstr ""
 
 #. translators: %1$s and %2$s is link markup
-#: StatusesUI.php:831
+#: StatusesUI.php:833
 msgid "For custom Visibility Statuses, please %1$senable the Status Control module%2$s of Permissions Pro."
 msgstr ""
 
-#: StatusesUI.php:872
+#: StatusesUI.php:874
 msgid "Pre-Publication"
 msgstr ""
 
-#: StatusesUI.php:918
+#: StatusesUI.php:882
+msgid "Visibility"
+msgstr ""
+
+#: StatusesUI.php:920
 msgid "This status can be assigned to an unpublished post using the Post Status dropdown."
 msgstr ""
 
