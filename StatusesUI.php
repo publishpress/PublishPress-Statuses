@@ -329,8 +329,10 @@ class StatusesUI {
                 [$this, 'settings_backup_operation_option'],
                 $group_name,
                 $group_name . '_general',
-                (!empty($show_import_setting)) ? [] : ['class' => 'pp-settings-separation-top']
+                (!empty($show_import_setting)) ? ['class' => 'pp-settings-separation-bottom'] : ['class' => 'pp-settings-separation-top pp-settings-separation-bottom']
             );
+
+            do_action('publishpress_statuses_add_settings_field', $group_name);
         }
     }
 
