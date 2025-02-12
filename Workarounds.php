@@ -107,8 +107,8 @@ class Workarounds {
             $post = get_post($post);
         }
 
-        if (! is_object($post)) {
-            //Should we be doing anything at all?
+        if (!is_object($post) || !isset($post->post_type)) {
+            return $permalink;
         }
 
         if (! in_array($post->post_type, \PublishPress_Statuses::getEnabledPostTypes())) {
