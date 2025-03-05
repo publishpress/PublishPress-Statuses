@@ -228,12 +228,19 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                 $data['post_status'] = 'pending';
             }
 
-            if ('_public' == $data['post_status']) {
-                $data['post_status'] = 'publish';
-            }
+            if (('_public' == $data['post_status']) || ('public' == $data['post_status']) && !defined('PP_STATUSES_ALLOW_PUBLIC_STATUS')) {
+                if (!empty($data['post_date_gmt'])) {
+                    $data['post_status'] = (time() < strtotime($data['post_date_gmt'] . ' +0000'))
+                    ? 'future'
+                    : 'publish';
 
-            if (('public' == $data['post_status']) && !defined('PP_STATUSES_ALLOW_PUBLIC_STATUS')) {
-                $data['post_status'] = 'publish';
+                } elseif (!empty($postarr['post_date_gmt'])) {
+                    $postarr['post_status'] = (time() < strtotime($postarr['post_date_gmt'] . ' +0000'))
+                    ? 'future'
+                    : 'publish';
+                } else {
+                    $postarr['post_status'] = 'publish';
+                }
             }
         }
 
@@ -2758,6 +2765,12 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     }
                 }
             }
+
+            if (!empty($post_status_obj) && ('publish' == $post_status_obj->name)) {
+                if (!empty($_post) && !empty($_post->post_date_gmt) && time() < strtotime($_post->post_date_gmt . ' +0000')) {
+                    $post_status_obj = get_post_status_object('future');
+                }
+            }
         }
 
         if (empty($post_status_obj) || ('auto-draft' == $post_status_obj->name)) {
@@ -3090,6 +3103,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $post_status = (empty($data['post_status'])) ? '' : $data['post_status'];
         $data['post_status'] = $this->fltPostStatus($post_status, ['post_id' => $postarr['ID']]);
 
+        if ('publish' == $data['post_status']) {
+            if (!empty($data['post_date_gmt'])) {
+                if (time() < strtotime($data['post_date_gmt'] . ' +0000')) {
+                    $data['post_status'] = 'future';
+                }
+            } elseif (!empty($postarr['post_date_gmt']) && time() < strtotime($postarr['post_date_gmt'] . ' +0000')) {
+                $data['post_status'] = 'future';
+            }
+        }
+
         return apply_filters('publishpress_statuses_insert_post_data', $data, $postarr);
     }
 
@@ -3145,7 +3168,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         if ($post_id && !$is_revision) {
             if (\PublishPress_Statuses::isPostBlacklisted($post_id)) {
                 if (in_array($post_status, ['public', '_public'])) {
-                    $post_status = 'publish';
+                    $post_date_gmt = get_post_field('post_date_gmt', $post_id);
+                    
+                    $post_status = (!empty($post_date_gmt) && time() < strtotime($post_date_gmt . ' +0000'))
+                    ? 'future'
+                    : 'publish';
                 }
 
                 return $post_status;
@@ -3214,7 +3241,9 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $selected_status = ($_post_status && ('publish' != $_post_status)) ? $_post_status : $post_status;
 
         if ('public' == $selected_status) {
-            $selected_status = 'publish';
+            $selected_status = (!empty($_post) && !empty($_post->post_date_gmt) && time() < strtotime($_post->post_date_gmt . ' +0000')) 
+			? 'future'
+			: 'publish';
         }
 
         $post_status_obj = $this->get_post_status_object($selected_status);
