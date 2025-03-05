@@ -1600,7 +1600,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                                 if (!$value || self::isDefaultLabel($all_statuses[$status_name], $value)) {
                                     continue;
                                 }
-
                             }
 
                             // Disregard the stored value if plugin is not configured to use stored labels with this status
