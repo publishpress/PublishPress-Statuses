@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.1.2-rc2\n"
+"Project-Id-Version: PublishPress Statuses 1.1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-04T22:09:34+00:00\n"
+"POT-Creation-Date: 2025-03-05T19:57:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: publishpress-statuses\n"
@@ -91,7 +91,7 @@ msgstr ""
 #: Admin.php:540
 #: PostEditClassic.php:179
 #: PostEditGutenberg.php:72
-#: PostEditGutenberg.php:261
+#: PostEditGutenberg.php:259
 #: PostEditGutenbergStatuses.php:44
 #: PostEditGutenbergStatuses.php:64
 #: PostEditGutenbergStatuses.php:72
@@ -566,7 +566,7 @@ msgid "Post status deleted."
 msgstr ""
 
 #: StatusesUI.php:221
-#: StatusHandler.php:786
+#: StatusHandler.php:785
 msgid "Status order updated."
 msgstr ""
 
@@ -789,12 +789,12 @@ msgid "This status can be assigned to an unpublished post using the Post Status 
 msgstr ""
 
 #: StatusHandler.php:17
-#: StatusHandler.php:187
+#: StatusHandler.php:186
 msgid "Sorry, you do not have permission to edit custom statuses."
 msgstr ""
 
 #: StatusHandler.php:53
-#: StatusHandler.php:273
+#: StatusHandler.php:272
 msgid "Please enter a name for the status"
 msgstr ""
 
@@ -803,12 +803,12 @@ msgid "Please enter a slug for the status"
 msgstr ""
 
 #: StatusHandler.php:64
-#: StatusHandler.php:278
+#: StatusHandler.php:277
 msgid "Please enter a valid, non-numeric name for the status."
 msgstr ""
 
 #: StatusHandler.php:81
-#: StatusHandler.php:297
+#: StatusHandler.php:296
 msgid "Status name cannot exceed 20 characters. Please try a shorter name."
 msgstr ""
 
@@ -824,41 +824,41 @@ msgstr ""
 msgid "Status name is restricted. Please choose another name."
 msgstr ""
 
-#: StatusHandler.php:142
+#: StatusHandler.php:141
 msgid "Could not add status: "
 msgstr ""
 
-#: StatusHandler.php:194
-#: StatusHandler.php:708
+#: StatusHandler.php:193
+#: StatusHandler.php:707
 msgid "Status does not exist."
 msgstr ""
 
-#: StatusHandler.php:199
-#: StatusHandler.php:703
+#: StatusHandler.php:198
+#: StatusHandler.php:702
 msgid "Could not delete the status: "
 msgstr ""
 
-#: StatusHandler.php:224
+#: StatusHandler.php:223
 msgid "Post status doesn't exist."
 msgstr ""
 
-#: StatusHandler.php:458
+#: StatusHandler.php:457
 msgid "Error updating post status."
 msgstr ""
 
-#: StatusHandler.php:631
+#: StatusHandler.php:630
 msgid "Cannot reassign to the status you want to delete"
 msgstr ""
 
-#: StatusHandler.php:678
+#: StatusHandler.php:677
 msgid "Restricted status "
 msgstr ""
 
-#: StatusHandler.php:705
+#: StatusHandler.php:704
 msgid "Status deleted"
 msgstr ""
 
-#: StatusHandler.php:727
+#: StatusHandler.php:726
 msgid "Status positions were not sent."
 msgstr ""
 
@@ -870,64 +870,64 @@ msgstr ""
 msgid "Status Name"
 msgstr ""
 
-#: StatusListTable.php:196
+#: StatusListTable.php:195
 msgid "To define and control Revision statuses, upgrade to the %1$sPublishPress Statuses Pro%2$s plugin."
 msgstr ""
 
-#: StatusListTable.php:208
+#: StatusListTable.php:204
 msgid "To define and control Revision statuses, update the %1$sPublishPress Revisions%2$s plugin to version %3$s or higher."
 msgstr ""
 
-#: StatusListTable.php:240
+#: StatusListTable.php:236
 msgid "Main Workflow:"
 msgstr ""
 
-#: StatusListTable.php:262
+#: StatusListTable.php:258
 msgid "Drop any status here to include it in main workflow for new posts."
 msgstr ""
 
-#: StatusListTable.php:289
+#: StatusListTable.php:285
 msgid "(customization requires Permissions Pro plugin)"
 msgstr ""
 
-#: StatusListTable.php:313
+#: StatusListTable.php:309
 msgid "Drop any status here to make it manually selectable outside the main workflow."
 msgstr ""
 
-#: StatusListTable.php:332
+#: StatusListTable.php:328
 msgid "Drop any status here to disable."
 msgstr ""
 
-#: StatusListTable.php:380
+#: StatusListTable.php:376
 msgid "Standard Publication:"
 msgstr ""
 
-#: StatusListTable.php:387
+#: StatusListTable.php:383
 msgid "Visibility Statuses for Private Publication:"
 msgstr ""
 
-#: StatusListTable.php:394
+#: StatusListTable.php:390
 msgid "Alternate Workflows:"
 msgstr ""
 
 #. translators: %s is the opening and closing <span> tags
-#: StatusListTable.php:405
+#: StatusListTable.php:401
 msgid "Disabled Statuses (drag to re-enable):"
 msgstr ""
 
 #. translators: %s is the list of post types
-#: StatusListTable.php:579
+#: StatusListTable.php:575
 msgid "%s, more..."
 msgstr ""
 
-#: StatusListTable.php:662
+#: StatusListTable.php:657
 msgid "No custom statuses found."
 msgstr ""
 
-#: StatusListTable.php:731
+#: StatusListTable.php:726
 msgid "Default"
 msgstr ""
 
-#: StatusListTable.php:749
+#: StatusListTable.php:744
 msgid "X"
 msgstr ""
