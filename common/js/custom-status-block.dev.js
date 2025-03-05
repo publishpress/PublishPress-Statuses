@@ -328,7 +328,10 @@ var sideEffectL10nManipulation = function sideEffectL10nManipulation(status) {
       }, 500);
     }
 
-    refreshSelectableStatuses(status);
+    if ('undefined' == typeof(sideEffectL10nManipulation.statusRefeshDone)) {
+      refreshSelectableStatuses(status);
+      sideEffectL10nManipulation.statusRefeshDone = true;
+    }
 
     var node = document.querySelector('.editor-post-save-draft');
 

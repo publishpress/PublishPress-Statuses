@@ -502,14 +502,16 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $args = [];
             $params = [];
 
-            if (!empty($_REQUEST['selected_status'])) {
+            if (!empty($_REQUEST['selected_status']) && ('auto-draft' != $_REQUEST['selected_status'])) {
                 $args['post_status'] = sanitize_key($_REQUEST['selected_status']);
 
                 // @todo: separate ajax call for setting status
                 if ($status_obj = get_post_status_object($args['post_status'])) {
                     if ($_post = get_post($post_id)) {
 
-                        if (\PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $status_obj->name)) {
+                        if (($_post->post_status != $args['post_status'])
+                        && \PublishPress_Statuses::haveStatusPermission('set_status', $_post->post_type, $status_obj->name)
+                        ) {
                             wp_update_post(
                             	['ID' => $post_id, 
                             	apply_filters('publishpress_statuses_status_field', 'post_status', $post_id) => $status_obj->name
