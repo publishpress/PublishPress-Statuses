@@ -1100,7 +1100,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     continue;
                 }
 
-                //$postStatusArgs = apply_filters('publishpress_new_custom_status_args', $this->moderation_status_properties($status), $status);
                 $postStatusArgs = $this->moderation_status_properties($status);
 
                 if (empty($postStatusArgs['taxonomy'])) {
@@ -1151,7 +1150,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $status->protected = true;
         }
 
-        //return apply_filters('publishpress_status_properties', $status);
         return $status;
     }
 
@@ -3384,13 +3382,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $status_section = self::getStatusSection($post_status);
 
             if ('main' == $status_section) {
-                //if ($post_status !== get_post_meta($post_id, '_pp_statuses_last_main_status', true)) {
-                    if ($post_status_obj = get_post_status_object($post_status)) {
-                        if (empty($post_status_object->public) && empty($post_status_object->private)) {
-                            update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
-                        }
+                if ($post_status_obj = get_post_status_object($post_status)) {
+                    if (empty($post_status_object->public) && empty($post_status_object->private)) {
+                        update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
                     }
-                //}
+                }
             }
         }
     }
