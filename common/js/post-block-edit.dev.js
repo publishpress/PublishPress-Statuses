@@ -154,6 +154,7 @@ jQuery(document).ready(function ($) {
 	        	)
 	        )
         )
+        || ((typeof window.PPCustomStatuses != 'undefined') && (typeof window.PPCustomStatuses['isRevision'] != 'undefined') && (window.PPCustomStatuses.isRevision))
         ) {
             clearInterval(initInterval);
             initInterval = null;
@@ -316,7 +317,7 @@ jQuery(document).ready(function ($) {
 
         ppcsEnablePostUpdate();
 
-        let status = wp.data.select('core/editor').getEditedPostAttribute('status');
+        let status = wp.data.select('core/editor').getEditedPostAttribute(PPCustomStatuses.statusRestProperty);
 
         var redirectProp = 'redirectURL' + status;
         if (typeof ppObjEdit[redirectProp] != undefined) {

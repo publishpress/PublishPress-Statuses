@@ -10,3 +10,7 @@ padding-top: 8px;
 #submitdiv .pp-postsubmit-add-moderation {
 float: right;
 }
+
+#minor-publishing-actions #save-post {
+max-width: 188px !important;
+}

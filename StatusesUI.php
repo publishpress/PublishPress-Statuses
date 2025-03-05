@@ -45,11 +45,15 @@ class StatusesUI {
         // @todo: REST
         if ((0 === strpos($plugin_page, 'publishpress-statuses'))
         && !\PublishPress_Functions::empty_POST('submit')
-        ) { 
-            $this->handle_add_custom_status();
-            $this->handle_edit_custom_status();
-            $this->handle_delete_custom_status();
+        ) {
+            add_action('init', function() {
+                $this->handle_add_custom_status();
+                $this->handle_edit_custom_status();
+                $this->handle_delete_custom_status();
+            }, 20);
         }
+
+        $title = '';
 
         if (('publishpress-statuses' === $plugin_page) 
         && ('edit-status' === \PublishPress_Functions::REQUEST_key('action'))) {
@@ -325,8 +329,10 @@ class StatusesUI {
                 [$this, 'settings_backup_operation_option'],
                 $group_name,
                 $group_name . '_general',
-                (!empty($show_import_setting)) ? [] : ['class' => 'pp-settings-separation-top']
+                (!empty($show_import_setting)) ? ['class' => 'pp-settings-separation-bottom'] : ['class' => 'pp-settings-separation-top pp-settings-separation-bottom']
             );
+
+            do_action('publishpress_statuses_add_settings_field', $group_name);
         }
     }
 
@@ -764,8 +770,17 @@ class StatusesUI {
 
             $status_label = ($status_obj && !empty($status_obj->label)) ? $status_obj->label : $status_name;
 
-            // translators: %s is the status name
-            \PublishPress\ModuleAdminUI_Base::instance()->module->title = sprintf(__('Edit Status: %s', 'publishpress-statuses'), $status_label);
+            $tx_obj = get_taxonomy($status_obj->taxonomy);
+
+            if (('post_status' == $status_obj->taxonomy) || !$tx_obj || empty($tx_obj->labels) || empty($tx_obj->labels->singular_name)) {
+                // translators: %s is the status name
+                $title = sprintf(__('Edit Status: %s', 'publishpress-statuses'), $status_label);
+            } else {
+                // translators: %s is the status name
+                $title = sprintf(__('Edit %1$s: %2$s', 'publishpress-statuses'), $tx_obj->labels->singular_name, $status_label);
+            }
+
+            \PublishPress\ModuleAdminUI_Base::instance()->module->title = $title;
             \PublishPress\ModuleAdminUI_Base::instance()->default_header('');
 
             require_once(__DIR__ . '/StatusEditUI.php');
@@ -781,10 +796,17 @@ class StatusesUI {
                     'status_type' => $status_type
                 ];
     
-                if ('visibility' == $status_type) {
-                    $args['taxonomy'] = 'post_visibility_pp';
+                switch ($status_type) {
+                    case 'visibility' :
+                        $args['taxonomy'] = 'post_visibility_pp';
+                        break;
+
+					default:
+						if ($_taxonomy = apply_filters('publishpress_statuses_status_type_to_taxonomy', '', $status_type)) {
+							$args['taxonomy'] = $_taxonomy;	
+						}
                 }
-                
+
                 $url = \PublishPress_Statuses::getLink(
                     $args
                 );
@@ -802,18 +824,6 @@ class StatusesUI {
 
             if ('visibility' == $status_type) {
                 if (!defined('PRESSPERMIT_PRO_VERSION')) :?>
-                    <div class="pp-statuses-config-notice">
-                    <?php
-                    printf(
-                        // translators: %1$s, %2$s, %3$s and %4$s are link markup
-                        esc_html__('Note: The %1$sPublishPress Permissions Pro%2$s plugin is required for custom Visibility Statuses, but %3$sis not active%4$s.', 'publishpress-statuses'),
-                        '<a href="https://publishpress.com/permissions/" target="_blank">',
-                        '</a>',
-                        '<a href="' . esc_url(admin_url('plugins.php')) . '">',
-                        '</a>'
-                    );
-                    ?>
-                    </div>
 
                 <?php elseif (!defined('PRESSPERMIT_STATUSES_VERSION')) :?>
                     <div class="pp-statuses-config-notice">
@@ -830,10 +840,16 @@ class StatusesUI {
                 <?php elseif (!get_option('presspermit_privacy_statuses_enabled')) :?>
                     <div class="pp-statuses-config-notice">
                     <?php
+                    if (defined('PUBLISHPRESS_CAPS_PRO_VERSION')) {
+                        $url = admin_url('admin.php?page=pp-capabilities-settings&pp_tab=capabilities');
+                    } else {
+                        $url = admin_url('admin.php?page=presspermit-settings&pp_tab=statuses');
+                    }
+
                     printf(
                         // translators: %1$s and %2$s is link markup
                         esc_html__('Note: Custom Visibility Statuses are %1$sdisabled%2$s.', 'publishpress-permissions'),
-                        '<a href="' . esc_url(admin_url('admin.php?page=presspermit-settings&pp_tab=statuses')) . '">',
+                        '<a href="' . esc_url($url) . '">',
                         '</a>'
                     );
                     ?>
@@ -863,23 +879,20 @@ class StatusesUI {
                     if ('visibility' == $status_type) {
                         echo ' nav-tab-active';
                     } ?>"><?php
-                    \PublishPress_Statuses::_e_wp('Visibility', 'publishpress-statuses'); ?></a>
+                    _e('Visibility', 'publishpress-statuses'); ?></a>
                 
-                <!--
-                <a href="<?php
-                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'revision'])); ?>"
-                    class="nav-tab<?php
-                    if ('revision' == $status_type) {
-                        echo ' nav-tab-active';
-                    } ?>"><?php
-                    \PublishPress_Statuses::_e_wp('Revision', 'publishpress-statuses'); ?></a>
-                -->
+                <?php 
+                do_action('publishpress_statuses_table_tabs', $status_type);
+                ?>
             </div>
             <?php
             
             require_once(__DIR__ . '/StatusListTable.php');
             $wp_list_table = new \PublishPress_Statuses\StatusListTable();
-            $wp_list_table->prepare_items(); ?>
+            $wp_list_table->prepare_items();
+
+            do_action('publishpress_statuses_list_table_init', $status_type, $wp_list_table);
+            ?>
 
             <div id='co-l-right' class='pp-statuses-co-l-right'>
                 <div class='col-wrap' style="overflow: auto;">
@@ -893,17 +906,19 @@ class StatusesUI {
         <?php 
         /** Add New Status **/
         } elseif (isset($plugin_page) && ('publishpress-statuses-add-new' === $plugin_page)) {
-            if (('post_visibility_pp'== \PublishPress_Functions::REQUEST_key('taxonomy')) && ! defined('PRESSPERMIT_STATUSES_VERSION')) {
+            $status_type = \PublishPress_Functions::REQUEST_key('status_type');
+
+			if (('visibility' == $status_type) && ! defined('PRESSPERMIT_STATUSES_VERSION')) {
                 return;
             }
 
-            $title = ('post_visibility_pp' == \PublishPress_Functions::REQUEST_key('taxonomy')) 
-            ?  __('Add New Visibility Status', 'publishpress-statuses')
-            :  __('Add New Pre-Publication Status', 'publishpress-statuses');
-
-            $descript = ('post_visibility_pp' == \PublishPress_Functions::REQUEST_key('taxonomy'))
-            ?  __('This status can be assigned to a post as a different form of Private Publication with its own capability requirements.', 'publishpress-statuses')
-            :  __('This status can be assigned to an unpublished post using the Post Status dropdown.', 'publishpress-statuses');
+        	if (!$title = apply_filters('publishpress_statuses_management_title', '', $status_type)) {
+        		$title = __('Add New Pre-Publication Status', 'publishpress-statuses');
+        	}
+        
+        	if (!$descript = apply_filters('publishpress_statuses_management_descript', '', $status_type)) {
+        		$descript = __('This status can be assigned to an unpublished post using the Post Status dropdown.', 'publishpress-statuses');
+        	}
 
             \PublishPress\ModuleAdminUI_Base::instance()->module->title = $title;
             \PublishPress\ModuleAdminUI_Base::instance()->default_header($descript);
@@ -919,7 +934,8 @@ class StatusesUI {
         }
 
         if (!empty($enable_left_col)) :?>
-            <div id='co-l-left' class='pp-statuses-co-l-left'>
+            <div class="pp-columns-wrapper pp-enable-sidebar">
+            <div class='pp-column-left pp-statuses-col-left'>
                 <div class='col-wrap'>
                     <div class='form-wrap'>
                         <?php
@@ -932,6 +948,12 @@ class StatusesUI {
                         ?>
                     </div>
                 </div>
+            </div>
+            
+            <?php if ('publishpress-statuses' != $plugin_page) :
+                do_action('publishpress_statuses_settings_sidebar'); 
+            endif; ?>
+
             </div>
         <?php endif;
 

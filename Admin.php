@@ -7,7 +7,7 @@ class Admin
     public $menu_slug;
     public $using_permissions_menu;
 
-    function __construct() {
+    function __construct($activated = false) {
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 
         // Load CSS and JS resources that we probably need
@@ -16,16 +16,12 @@ class Admin
 
         add_filter('display_post_states', [$this, 'fltDisplayPostStates'], 10, 2);
 
-        if ($activated = get_option('publishpress_statuses_activate')) {
-            delete_option('publishpress_statuses_activate');
-        }
-
         $last_statuses_version = get_option('publishpress_statuses_version');
 
         if (!$last_statuses_version || $activated) {
-            add_action('pp_statuses_init', [$this, 'assignDefaultRoleCapabilities']);
+            $this->assignDefaultRoleCapabilities();
         }
-        
+
         if (!$last_statuses_version || version_compare($last_statuses_version, '1.0.4.2', '<')) {
             if (!defined('PP_STATUSES_DISABLE_PENDING_STATUS_FIX')) {
                 global $wpdb;
@@ -37,13 +33,10 @@ class Admin
             }
         }
 
+        do_action('publishpress_statuses_version_check');
+
         if (get_option('publishpress_statuses_version') != PUBLISHPRESS_STATUSES_VERSION) {
             update_option('publishpress_statuses_version', PUBLISHPRESS_STATUSES_VERSION);
-        }
-
-        if ($activated) {
-            wp_redirect(admin_url("admin.php?page=publishpress-statuses"));
-            exit;
         }
     }
 
@@ -58,30 +51,40 @@ class Admin
         $changed_statuses = [];
 
         foreach($wp_roles->role_objects as $role_name => $role) {
-            if (isset($processed_roles[$role_name])) {
-                continue;
-            }
+            $status_taxonomies = apply_filters('publishpress_statuses_taxonomies', ['post_status']);
+            
+            foreach($status_taxonomies as $taxonomy) {
+                foreach (\PublishPress_Statuses::getPostStati(['taxonomy' => $taxonomy], 'names', ['show_disabled' => true]) as $status_name) {
 
-            foreach (\PublishPress_Statuses::getPostStati([], 'names', ['show_disabled' => true]) as $status_name) {
-                // Mirror Planner behavior of enabling standard WP roles to assign statuses, but also grant to other roles based on post / page capabilities
-                if (in_array($status_name, ['pitch', 'in-progress', 'assigned', 'pending'])) {
-                    if (!in_array($role_name, ['administrator', 'author', 'editor', 'contributor']) && !$role->has_cap('edit_posts') && !$role->has_cap('edit_pages')) {
+                    if (
+                        isset($processed_roles[$role_name]) 
+                        && (isset($processed_roles[$role_name][$status_name]) || in_array($status_name, ['pitch', 'in-progress', 'assigned', 'pending', 'approved', 'needs-work', 'rejected']))
+                    ) {
                         continue;
                     }
-    
-                } elseif (in_array($status_name, ['approved', 'needs-work', 'rejected'])) {
-                    if (!in_array($role_name, ['administrator', 'editor']) && !$role->has_cap('edit_others_posts') && !$role->has_cap('edit_others_pages')) {
+                    
+                    // Mirror Planner behavior of enabling standard WP roles to assign statuses, but also grant to other roles based on post / page capabilities
+                    if (in_array($status_name, ['pitch', 'in-progress', 'assigned', 'pending'])) {
+                        if (!in_array($role_name, ['administrator', 'author', 'editor', 'contributor']) && !$role->has_cap('edit_posts') && !$role->has_cap('edit_pages')) {
+                            continue;
+                        }
+        
+                    } elseif (in_array($status_name, ['approved', 'needs-work', 'rejected'])) {
+                        if (!in_array($role_name, ['administrator', 'editor']) && !$role->has_cap('edit_others_posts') && !$role->has_cap('edit_others_pages')) {
+                            continue;
+                        }
+                    } else {
                         continue;
                     }
-                } else {
-                    continue;
-                }
-                
-                $cap_name = 'status_change_' . str_replace('-', '_', $status_name);
+                    
+                    $cap_name = 'status_change_' . str_replace('-', '_', $status_name);
 
-                if (empty($role->capabilties[$cap_name])) {
-                    $role->add_cap($cap_name);
-                    $changed_statuses [$status_name] = true;
+                    if (empty($role->capabilties[$cap_name])) {
+                        $role->add_cap($cap_name);
+                        $changed_statuses [$status_name] = true;
+                    }
+
+                    $processed_roles[$role_name][$status_name] = true;
                 }
             }
 
@@ -92,7 +95,25 @@ class Admin
                 }
             }
 
-            $processed_roles[$role_name] = true;
+            if (in_array($role_name, ['administrator', 'editor']) || $role->has_cap('edit_posts') || $role->has_cap('edit_pages')) {
+                foreach (['draft-revision', 'pending-revision'] as $status_name) {
+                    $cap_name = 'status_change_' . str_replace('-', '_', $status_name);
+
+                    if (empty($role->capabilties[$cap_name])) {
+                        $role->add_cap($cap_name);
+                        $changed_statuses [$status_name] = true;
+                    }
+                }
+            }
+
+            if (in_array($role_name, ['administrator', 'editor']) || $role->has_cap('publish_posts') || $role->has_cap('publish_pages')) {
+                $cap_name = 'status_change_future-revision';
+
+                if (empty($role->capabilties[$cap_name])) {
+                    $role->add_cap($cap_name);
+                    $changed_statuses [$status_name] = true;
+                }
+            }
         }
 
         update_option('publishpress_statuses_processed_roles', $processed_roles);
@@ -145,7 +166,16 @@ class Admin
                 PUBLISHPRESS_STATUSES_VERSION
             );
 
-            wp_enqueue_style('presspermit-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/libs/publishpress/publishpress-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
+            wp_enqueue_style('publishpress-statuses-admin-common', PUBLISHPRESS_STATUSES_URL . '/common/libs/publishpress/publishpress-admin.css', [], PUBLISHPRESS_STATUSES_VERSION);
+
+            if (defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) {
+                wp_enqueue_style(
+                    'publishpress-status-admin-pro-css',
+                    PUBLISHPRESS_STATUSES_PRO_URL . 'common/css/custom-status-admin-pro.css',
+                    [],
+                    PUBLISHPRESS_STATUSES_PRO_VERSION
+                );
+            }
         }
     }
 
@@ -245,6 +275,16 @@ class Admin
                     ),
                 ]
             );
+
+            if (defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) {
+                wp_enqueue_script(
+                    'publishpress-custom-status-configure-pro',
+                    PUBLISHPRESS_STATUSES_PRO_URL . "common/js/custom-status-configure-pro{$suffix}.js",
+                    ['jquery', 'jquery-ui-sortable'],
+                    PUBLISHPRESS_STATUSES_PRO_VERSION,
+                    true
+                );
+            }
         }
 
         // Custom javascript to modify the post status dropdown where it shows up
@@ -379,7 +419,8 @@ class Admin
 
         if (empty($status->label_count) && empty($status->_builtin)) {
             // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingular,WordPress.WP.I18n.NonSingularStringLiteralPlural
-            $status->label_count = _n_noop($status->label, $status->label);
+            $label = (!empty($status->labels->short)) ? $status->labels->short : $status->label;
+            $status->label_count = _n_noop($label . ' <span class="count">(%s)</span>', $label . ' <span class="count">(%s)</span>');
         }
 
         if (empty($status->labels->publish)) {
@@ -443,7 +484,16 @@ class Admin
 
         $is_administrator = \PublishPress_Statuses::isContentAdministrator();
 
-        $post_status = (!empty($args['post_status'])) ? $args['post_status'] : $post->post_status;
+		if (!empty($args['post_status'])) {
+			$post_status = $args['post_status'];	
+		} else {
+			$post_status = apply_filters(
+				'publishpress_statuses_post_status',
+				$post->post_status,
+				$post
+			);
+		}
+
         $post_type = (!empty($args['post_type'])) ? $args['post_type'] : $post->post_type;
 
         if (!empty($post)) {
@@ -458,7 +508,25 @@ class Admin
             $post_status_obj = get_post_status_object('draft');
         }
 
-        $moderation_statuses = \PublishPress_Statuses::getPostStati(['moderation' => true, 'internal' => false, 'post_type' => $post_type], 'object');
+        $post_status_obj = apply_filters(
+            'publishpress_statuses_get_post_status_object',
+            $post_status_obj,
+            $post_status,
+            $post
+        );
+
+        $status_args = array_merge(['moderation' => true, 'internal' => false], compact('post_type'));
+
+        if ($post) {
+            $status_args = apply_filters(
+                'publishpress_statuses_edit_post_status_args',
+                $status_args,
+                $post->ID
+            );
+        }
+
+        $moderation_statuses = \PublishPress_Statuses::getPostStati($status_args, 'object');
+
         unset($moderation_statuses['future']);
 
         $default_by_sequence = \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence;
@@ -479,7 +547,11 @@ class Admin
 
         $moderation_statuses = apply_filters('presspermit_available_moderation_statuses', $moderation_statuses, $moderation_statuses, $post);
 
-        $moderation_statuses = array_merge(['draft' => get_post_status_object('draft')], $moderation_statuses);
+		$moderation_statuses = apply_filters(
+			'publishpress_statuses_available_moderation_statuses', 
+			array_merge(['draft' => get_post_status_object('draft')], $moderation_statuses), 
+			$post
+		);
 
         // Don't exclude the current status, regardless of other arguments
         $_args = ['include_status' => $post_status_obj->name];
@@ -1116,16 +1188,29 @@ class Admin
                 });
             });
 
-            $planner_colors = [
-                'pitch' => '#cc0000',
-                'assigned' => '#00bcc5',
-                'in-progress' => '#ccc500',
-                'draft' => '#f91d84',
-                'pending' => '#d87200',
-                'future' => '#655997',
-                'private' => '#000000',
-                'publish' => '#655997',
-            ];
+            if (defined('PUBLISHPRESS_STATUSES_LEGACY_PLANNER_COLORS')) {
+                $planner_colors = [
+                    'pitch' => '#cc0000',
+                    'assigned' => '#00bcc5',
+                    'in-progress' => '#ccc500',
+                    'draft' => '#f91d84',
+                    'pending' => '#d87200',
+                    'future' => '#655997',
+                    'private' => '#000000',
+                    'publish' => '#655997',
+                ];
+            } else {
+                $planner_colors = [
+                    'pitch' => '#887618',
+                    'assigned' => '#009ba0',
+                    'in-progress' => '#8c5400',
+                    'draft' => '#767676',
+                    'pending' => '#b95c00',
+                    'private' => '#b40000',
+                    'future' => '#8440f0',
+                    'publish' => '#207720'
+                ];
+            }
 
             // If a status exists only as a code-defined default, create a term so termmeta can be stored
             foreach (array_keys($planner_colors) as $status) {

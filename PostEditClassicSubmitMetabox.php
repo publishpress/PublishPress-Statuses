@@ -54,9 +54,9 @@ class PostEditClassicSubmitMetabox
                         <?php self::post_status_display($post, $_args); ?>
                     </div>
 
-                    <?php if (!defined('PRESSPERMIT_STATUSES_VERSION') || !get_option('presspermit_privacy_statuses_enabled')):?>
+                    <?php if ((!defined('PRESSPERMIT_STATUSES_VERSION') || !get_option('presspermit_privacy_statuses_enabled')) && apply_filters('pp_statuses_display_visibility_ui', true, $post)):?>
                     <div class="misc-pub-section misc-pub-visibility" id="visibility">
-                        <?php \PublishPress_Statuses::_e_wp( 'Visibility:' ); ?>
+                        <?php _e('Visibility:', 'publishpress-statuses'); ?>
                         <span id="post-visibility-display">
                             <?php
                             if ( 'private' === $post->post_status ) {
@@ -121,7 +121,7 @@ class PostEditClassicSubmitMetabox
                     ?>
 
                     <?php
-                    if (!empty($args['args']['revisions_count'])) :
+                    if (!empty($args['args']['revisions_count']) && apply_filters('pp_statuses_display_revisions_ui', true, $post)) :
                         $revisions_to_keep = wp_revisions_to_keep($post);
                         ?>
                         <div class="misc-pub-section num-revisions">
@@ -180,9 +180,16 @@ class PostEditClassicSubmitMetabox
                 <?php 
                 global $current_user;
 
-                if ((empty($post_status_obj) || (empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status)))
+				$disable_bypass = apply_filters(
+					'publishpress_statuses_disable_sequence_bypass',
+					false,
+					$post
+				);
+
+                if (!$disable_bypass
+                && (empty($post_status_obj) || (empty($post_status_obj->public) && empty($post_status_obj->private) && ('future' != $post_status)))
                 && \PublishPress_Statuses::instance()->options->moderation_statuses_default_by_sequence
-                && (current_user_can('administrator') 
+                && (current_user_can('administrator')
                 || (!empty($type_obj->cap->publish_posts) && current_user_can($type_obj->cap->publish_posts)) 
                 || current_user_can('pp_bypass_status_sequence'))
                 && (!isset($current_user->allcaps['pp_bypass_status_sequence']) || !empty($current_user->allcaps['pp_bypass_status_sequence'])) // allow explicit blockage
@@ -212,11 +219,20 @@ class PostEditClassicSubmitMetabox
      */
     public static function post_save_button($post, $args)
     {
-        $post_status_obj = $args['post_status_obj'];
-        ?>
-        <?php
+        $post_status_obj = apply_filters(
+        	'publishpress_statuses_post_status_object', 
+        	$args['post_status_obj'],
+        	$post,
+        	array_merge($args, ['require_labels' => true])
+        );
+        
+        $is_moderation = apply_filters(
+			'pp_statuses_is_moderation',
+			!empty($post_status_obj->moderation),
+			$args
+		);
         // @todo: confirm we don't need a hidden save button when current status is private */
-        if (!$post_status_obj->public && empty($post_status_obj->private) && empty($post_status_obj->moderation) && ('future' != $post_status_obj->name)) :
+        if (!$post_status_obj->public && empty($post_status_obj->private) && !$is_moderation && ('future' != $post_status_obj->name)) :
             if (!empty($post_status_obj->labels->update)) {
                 $save_as = $post_status_obj->labels->update;
             } else {
@@ -226,9 +242,8 @@ class PostEditClassicSubmitMetabox
             ?>
             <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($save_as) ?>"
                    tabindex="4" class="button button-highlighted"/>
-        <?php elseif (!empty($post_status_obj->moderation) && ('future' != $post_status_obj->name)) :
+        <?php elseif ($is_moderation && ('future' != $post_status_obj->name)) :
             if (apply_filters('presspermit_display_save_as_button', true, $post, $args)):
-
                 $save_caption = isset($post_status_obj->labels->save_as) ? $post_status_obj->labels->save_as : \PublishPress_Statuses::__wp('Save');
                 ?>
                 <input type="submit" name="save" id="save-post" value="<?php echo esc_attr($save_caption) ?>"
@@ -241,7 +256,7 @@ class PostEditClassicSubmitMetabox
                    class="button button-highlighted" style="display:none"/>
         <?php endif; ?>
 
-        <span class="spinner" style="margin:2px 2px 0"></span>
+        <span class="spinner" style="margin:2px 2px 0; display: none"></span>
         <?php
     }
 
@@ -293,11 +308,17 @@ class PostEditClassicSubmitMetabox
             $$var = $args[$var];
         }
 
+		$post_status_obj = apply_filters('publishpress_statuses_post_status_object', $post_status_obj, $post);
+
         if (!isset($moderation_statuses['draft'])) {
-            $moderation_statuses = array_merge(
-                ['draft' => get_post_status_object('draft')], 
-                $moderation_statuses
-            );
+            $moderation_statuses = apply_filters(
+            	'publishpress_statuses_dropdown_statuses',
+	            array_merge(
+	                ['draft' => get_post_status_object('draft')], 
+	                $moderation_statuses
+	            ),
+	            $post
+	    	);
         }
 
         ?>
@@ -322,7 +343,8 @@ class PostEditClassicSubmitMetabox
         // multiple moderation stati are selectable or a single non-current moderation stati is selectable
         $select_moderation = (count($moderation_statuses) > 1 || ($post_status != key($moderation_statuses)));
 
-        if (!empty($post_status_obj->public) || !empty($post_status_obj->private) || $can_publish || $select_moderation) { ?>
+        if (!empty($post_status_obj->public) || !empty($post_status_obj->private) || $can_publish || $select_moderation) { 
+            ?>
             <a href="#post_status"
             <?php if (!empty($post_status_obj->private) || (!empty($post_status_obj->public) && 'publish' != $post_status)) { ?>style="display:none;"
             <?php } ?>class="edit-post-status hide-if-no-js" tabindex='4'><?php echo esc_html(\PublishPress_Statuses::__wp('Edit')) ?></a>
@@ -339,8 +361,8 @@ class PostEditClassicSubmitMetabox
                     <?php endif; ?>
 
                     <?php
-                    foreach ($moderation_statuses as $_status => $_status_obj) : 
-                        if (!empty($_status_obj->public) || !empty($_status_obj->private) || ('future' == $_status)) {
+                    foreach ($moderation_statuses as $_status => $_status_obj) : 										// @todo: API
+                        if (!empty($_status_obj->public) || !empty($_status_obj->private) || ('future' == $_status) || ('future-revision' == $_status)) {
                             continue;
                         }
                     ?>
@@ -407,7 +429,7 @@ class PostEditClassicSubmitMetabox
                 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 printf(esc_html(\PublishPress_Statuses::__wp('Schedule for: %s')), '<b>' . esc_html($date) . '</b>');
 
-            } elseif (!function_exists('rvy_in_revision_workflow') || !rvy_in_revision_workflow($post->ID) || (strtotime($post->post_date_gmt) > agp_time_gmt())) { // draft, 1 or more saves, date specified
+            } elseif (!function_exists('rvy_in_revision_workflow') || !rvy_in_revision_workflow($post->ID) || (strtotime($post->post_date_gmt) > strtotime( gmdate("Y-m-d H:i:s") ))) { // draft, 1 or more saves, date specified
                 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 printf(\PublishPress_Statuses::__wp('Publish on: %s'), '<b>' . esc_html($date) . '</b>');
             } else {

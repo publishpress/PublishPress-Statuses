@@ -114,10 +114,6 @@ class ModuleAdminUI_Base {
         </a></li>
         <li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e('Contact the PublishPress team', 'publishpress-functions');?>"><?php esc_html_e('Contact', 'publishpress-functions');?>
         </a></li>
-        <li><a href="https://twitter.com/publishpresscom" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-twitter"></span>
-        </a></li>
-        <li><a href="https://facebook.com/publishpress" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-facebook"></span>
-        </a></li>
         </ul>
         </nav>
 

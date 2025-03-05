@@ -167,6 +167,9 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
+= [1.1.0] =
+* Plugin API to support Statuses Pro
+
 = [1.0.9] - 13 Nov 2024 =
 * Compat : WP 6.7 - On translated sites, error loading textdomain too early
 

@@ -18,7 +18,6 @@ services:
             - ../cache/.composer/cache:/root/.composer/cache
             - ../cache/.composer/auth.json:/root/.composer/auth.json
             - /var/run/docker.sock:/var/run/docker.sock
-            - html:/var/www/html
             - db:/var/lib/mysql
 
     web:
@@ -31,8 +30,6 @@ services:
             WORDPRESS_DB_USER: statuses_dev
             WORDPRESS_DB_PASSWORD: statuses_dev
             WORDPRESS_DB_NAME: wp_statuses_dev
-        volumes:
-            - html:/var/www/html
         depends_on:
             - db
 
@@ -50,10 +47,4 @@ services:
             - db:/var/lib/mysql
 
 volumes:
-    html:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: ../cache/html
     db:
