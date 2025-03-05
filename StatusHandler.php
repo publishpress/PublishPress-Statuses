@@ -131,7 +131,6 @@ class StatusHandler {
         $status_args = [
             'description' => $status_description,
             'slug' => $status_name,
-            //'name' => $status_name,
             'color' => $status_color,
             'icon' => $status_icon,
         ];

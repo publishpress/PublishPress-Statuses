@@ -103,8 +103,6 @@ class PostEditGutenberg
         
         add_action('admin_print_scripts', [$this, 'actPrintScripts']);
 
-        global $wp_version;
-
         if (
         	(version_compare($wp_version, '6.6', '>=') && !defined('GUTENBERG_VERSION')) 
         	|| (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '18.5', '>='))
