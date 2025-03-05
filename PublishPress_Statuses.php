@@ -1100,7 +1100,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     continue;
                 }
 
-                //$postStatusArgs = apply_filters('publishpress_new_custom_status_args', $this->moderation_status_properties($status), $status);
                 $postStatusArgs = $this->moderation_status_properties($status);
 
                 if (empty($postStatusArgs['taxonomy'])) {
@@ -1151,7 +1150,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $status->protected = true;
         }
 
-        //return apply_filters('publishpress_status_properties', $status);
         return $status;
     }
 
@@ -1530,7 +1528,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             // Under PublishPress / PublishPress Planner, post_status properties were encoded in the description column of the term_taxonomy table
             if (is_admin() && empty($function_args['skip_archive']) && in_array($taxonomy, [self::TAXONOMY_CORE_STATUS, self::TAXONOMY_PRE_PUBLISH]) 
-            && (did_action('pp_statuses_init') || (!empty($_REQUEST['message']) && ('settings-updated' == $_REQUEST['message'])))
+            && (did_action('pp_statuses_init') || (!empty($_REQUEST['message']) && ('settings-updated' == $_REQUEST['message'])))                       // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             ) {
                 require_once(__DIR__ . '/Admin.php');
 
@@ -1602,7 +1600,6 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                                 if (!$value || self::isDefaultLabel($all_statuses[$status_name], $value)) {
                                     continue;
                                 }
-
                             }
 
                             // Disregard the stored value if plugin is not configured to use stored labels with this status
@@ -3329,7 +3326,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     default:
                         if ((($doing_rest && !empty($rest->params['pp_statuses_selecting_workflow']))
                         || !\PublishPress_Functions::empty_POST('publish'))
-                        || ($is_revision && !empty($_POST) && !empty($_POST['originalaction']) && ('editpost' == $_POST['originalaction']))
+                        || ($is_revision && !empty($_POST) && !empty($_POST['originalaction']) && ('editpost' == $_POST['originalaction']))     // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                         ) {
                             if (empty($save_as_pending) 
                             && (($selected_status != $stored_status) || (('pending' == $selected_status) && !$can_publish) || $is_revision)
@@ -3384,13 +3381,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             $status_section = self::getStatusSection($post_status);
 
             if ('main' == $status_section) {
-                //if ($post_status !== get_post_meta($post_id, '_pp_statuses_last_main_status', true)) {
-                    if ($post_status_obj = get_post_status_object($post_status)) {
-                        if (empty($post_status_object->public) && empty($post_status_object->private)) {
-                            update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
-                        }
+                if ($post_status_obj = get_post_status_object($post_status)) {
+                    if (empty($post_status_object->public) && empty($post_status_object->private)) {
+                        update_post_meta($post_id, '_pp_statuses_last_main_status', $post_status);
                     }
-                //}
+                }
             }
         }
     }

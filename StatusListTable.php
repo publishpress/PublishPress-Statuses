@@ -611,7 +611,6 @@ do_action('publishpress_statuses_table_row', $key, []);
                 echo '</div>';
 			} else {
 				echo '<div class="' . esc_attr($classes) . '"' . 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '">';
-                //echo esc_html(apply_filters('presspermit_manage_conditions_custom_column', '', $column_name, 'post_status', $item->name));
                 do_action('publishpress_statuses_custom_column', $column_name, $item, compact('column_display_name'));
                 echo '</div>';
             }
