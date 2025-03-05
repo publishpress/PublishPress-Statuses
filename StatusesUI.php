@@ -950,7 +950,7 @@ class StatusesUI {
                 </div>
             </div>
             
-            <?php if ('publdishpress-statuses' != $plugin_page) :
+            <?php if ('publishpress-statuses' != $plugin_page) :
                 do_action('publishpress_statuses_settings_sidebar'); 
             endif; ?>
 

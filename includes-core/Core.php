@@ -8,7 +8,7 @@ class Core {
         if (! $publishpress_statuses_loaded_by_pro) {
             add_action('init', function() { // late execution avoids clash with autoloaders in other plugins
                 if (\PublishPress_Statuses::isPluginPage()
-                    || (defined('DOING_AJAX') && DOING_AJAX && !empty($_REQUEST['action']) && (false !== strpos($_REQUEST['action'], 'press-permit-core')))
+                    || (defined('DOING_AJAX') && DOING_AJAX && !empty($_REQUEST['action']) && (false !== strpos(sanitize_key($_REQUEST['action']), 'press-permit-core')))  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
                 ) {
                     if (!class_exists('\PublishPress\WordPressReviews\ReviewsController')) {
                         include_once PUBLISHPRESS_STATUSES_ABSPATH . '/lib/vendor/publishpress/wordpress-reviews/ReviewsController.php';

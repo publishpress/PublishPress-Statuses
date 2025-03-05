@@ -3529,8 +3529,8 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         static $pp_plugin_page = null;
 
         if (is_null($pp_plugin_page)) {
-            $pp_plugin_page = (is_admin() && !empty($_REQUEST['page']) && (false !== strpos($_REQUEST['page'], 'publishpress-statuses')))
-                ? $_REQUEST['page']
+            $pp_plugin_page = (is_admin() && !empty($_REQUEST['page']) && (false !== strpos(sanitize_key($_REQUEST['page']), 'publishpress-statuses')))   // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                ? sanitize_key($_REQUEST['page'])                                                                                                         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
                 : false;
         }
 
