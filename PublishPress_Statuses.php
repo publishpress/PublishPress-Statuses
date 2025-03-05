@@ -1528,7 +1528,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
             // Under PublishPress / PublishPress Planner, post_status properties were encoded in the description column of the term_taxonomy table
             if (is_admin() && empty($function_args['skip_archive']) && in_array($taxonomy, [self::TAXONOMY_CORE_STATUS, self::TAXONOMY_PRE_PUBLISH]) 
-            && (did_action('pp_statuses_init') || (!empty($_REQUEST['message']) && ('settings-updated' == $_REQUEST['message'])))
+            && (did_action('pp_statuses_init') || (!empty($_REQUEST['message']) && ('settings-updated' == $_REQUEST['message'])))                       // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             ) {
                 require_once(__DIR__ . '/Admin.php');
 
@@ -3327,7 +3327,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
                     default:
                         if ((($doing_rest && !empty($rest->params['pp_statuses_selecting_workflow']))
                         || !\PublishPress_Functions::empty_POST('publish'))
-                        || ($is_revision && !empty($_POST) && !empty($_POST['originalaction']) && ('editpost' == $_POST['originalaction']))
+                        || ($is_revision && !empty($_POST) && !empty($_POST['originalaction']) && ('editpost' == $_POST['originalaction']))     // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                         ) {
                             if (empty($save_as_pending) 
                             && (($selected_status != $stored_status) || (('pending' == $selected_status) && !$can_publish) || $is_revision)
