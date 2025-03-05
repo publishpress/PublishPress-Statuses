@@ -167,7 +167,12 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
-= [1.1.0] =
+= [1.1.2] - 5 Mar 2025 =
+* Fixed : Posts could not be scheduled (instead being published immediately)
+* Fixed : Post Editor - Redundant post status update on status dropdown selection, post save
+* Change : Statuses Pro promotional headers, sidebar and/or links on plugin screens, admin menu
+
+= [1.1.0] - unreleased =
 * Plugin API to support Statuses Pro
 
 = [1.0.9] - 13 Nov 2024 =
