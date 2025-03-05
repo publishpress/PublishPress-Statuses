@@ -934,7 +934,8 @@ class StatusesUI {
         }
 
         if (!empty($enable_left_col)) :?>
-            <div id='co-l-left' class='pp-statuses-co-l-left'>
+            <div class="pp-columns-wrapper pp-enable-sidebar">
+            <div class='pp-column-left pp-statuses-col-left'>
                 <div class='col-wrap'>
                     <div class='form-wrap'>
                         <?php
@@ -947,6 +948,12 @@ class StatusesUI {
                         ?>
                     </div>
                 </div>
+            </div>
+            
+            <?php if ('publdishpress-statuses' != $plugin_page) :
+                do_action('publishpress_statuses_settings_sidebar'); 
+            endif; ?>
+
             </div>
         <?php endif;
 

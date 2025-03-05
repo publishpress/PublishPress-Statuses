@@ -3524,5 +3524,17 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
     public static function updateStatusSelection( $value, $object ) {
         return false;
     }
+
+    public static function isPluginPage() {
+        static $pp_plugin_page = null;
+
+        if (is_null($pp_plugin_page)) {
+            $pp_plugin_page = (is_admin() && !empty($_REQUEST['page']) && (false !== strpos($_REQUEST['page'], 'publishpress-statuses')))
+                ? $_REQUEST['page']
+                : false;
+        }
+
+        return $pp_plugin_page;
+    }
 }
 }
