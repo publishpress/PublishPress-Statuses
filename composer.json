@@ -43,10 +43,6 @@
         "build": "ppbuild build",
         "build:dir": "ppbuild build-dir",
         "build:clean": "ppbuild clean",
-        "build:web": [
-            "@build:dir",
-            "rsync -av --delete /project/dist/publishpress-statuses/ /project/dev-workspace/cache/html/wp-content/plugins/publishpress-statuses/"
-        ],
         "get:version": "ppbuild version",
         "gen:mo": "wp i18n make-mo ./languages ./languages --allow-root",
         "gen:pot": "wp i18n make-pot . languages/publishpress-statuses.pot --domain=publishpress-statuses --exclude=dev-workspace,.wordpress-org,.github,dist,tests,lib,language,vendor --allow-root",
@@ -70,12 +66,6 @@
         "-pre-autoload-dump": "composer dumpautoload --working-dir=./lib",
         "-pre-update-cmd": "composer update --working-dir=./lib",
         "-pre-install-cmd": "composer install --working-dir=./lib",
-        "web:start": "cd dev-workspace && ./web",
-        "web:stop": "cd dev-workspace/docker && docker compose down web db",
-        "web:restart": [
-            "@web:stop",
-            "@web:start"
-        ],
         "term": "cd dev-workspace && ./run"
     },
     "extra": {
