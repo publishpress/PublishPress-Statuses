@@ -138,7 +138,10 @@ var querySelectableStatuses = function(status) {
   };
 
   if (!ppQueriedStatuses) {
-    $('div.publishpress-extended-post-status select option').hide();
+    jQuery(document).ready(function ($) {
+      $('div.publishpress-extended-post-status select option').hide();
+    });
+
     ppQueriedStatuses = true;
   }
 
