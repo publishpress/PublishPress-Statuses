@@ -1537,6 +1537,11 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
             }
 
             foreach ($_terms as $term) {
+                // Ignore any storage of terms to the wrong taxonomy
+                if (isset($all_statuses[$term->slug]) && ($all_statuses[$term->slug]->taxonomy != $taxonomy)) {
+                    continue;
+                }
+
                 if (isset($stored_status_terms[$taxonomy][$term->slug]) || ('pending-review' == $term->slug)) {
                     continue;
                 }
