@@ -22,8 +22,7 @@ var registerPlugin = wp.plugins.registerPlugin;
 var _wp$data = wp.data,
     withSelect = _wp$data.withSelect,
     withDispatch = _wp$data.withDispatch;
-var compose = wp.compose.compose;
-
+var wpcompose = wp.compose.compose;
 var SelectControl = wp.components.SelectControl;
 var RadioControl = wp.components.RadioControl;
 
@@ -641,8 +640,7 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
     })
   );
 };
-
-var plugin = compose(withSelect(function (select) {
+var plugin = wpcompose(withSelect(function (select) {
   var setStatus = '';
   var ret = new Object();
   
@@ -740,7 +738,7 @@ var PPWorkflowAction = function PPWorkflowAction(_ref) {
   }) );
 };
 
-var pluginWorkflow = compose(withSelect(function (select) {
+var pluginWorkflow = wpcompose(withSelect(function (select) {
   return {
     pp_workflow_action: select('core/editor').getEditedPostAttribute('pp_workflow_action')
   };
