@@ -150,6 +150,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         add_filter('wp_insert_post_data', [$this, 'fltEnsureValidStatus'], 1000, 2);
 
         add_filter('cme_plugin_capabilities', [$this, 'fltRegisterCapabilities']);
+        add_filter('cme_capability_descriptions', [$this, 'fltCapDescriptions']);
 
 		// ShortPixel Critical CSS plugin: https://wordpress.org/support/topic/conflict-with-taxonomies-that-have-same-name-as-a-wp_post-field/
         add_filter('shortpixel_critical_css_manual_term_css', function($val) {return false;}, 5);
@@ -288,6 +289,14 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
         $cme_caps['PublishPress Statuses'] = ['pp_manage_statuses', 'pp_bypass_status_sequence'];
 
         return $cme_caps;
+    }
+
+    function fltCapDescriptions($pp_caps)
+    {
+        $pp_caps['pp_bypass_status_sequence'] = esc_html__('Can bypass normal status progression (publishing or setting to max status).', 'publishpress-statuses');
+        $pp_caps['pp_manage_statuses'] = esc_html__('Manage Statuses plugin settings.', 'publishpress-statuses');
+
+        return $pp_caps;
     }
 
     /**
