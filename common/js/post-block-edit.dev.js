@@ -458,6 +458,11 @@ jQuery(document).ready(function ($) {
         }, 100);
     });
 
+    $(document).on('click', 'fieldset.editor-change-status__options div.components-radio-control__option input[value="publish"]', function() {
+        $('span.presspermit-editor-toggle').hide();
+        $('.presspermit-editor-hidden').show().css('z-index', 0);
+    });
+
     $(document).on('click', 'div.editor-post-publish-panel__header-cancel-button button', function() {
         setTimeout(function () {
             $('button.editor-post-publish-panel__toggle').removeClass('presspermit-editor-hidden').css('z-index', 1);
