@@ -312,6 +312,30 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    var ppcsDisablePostUpdate = function ppDisablePostUpdate() {
+    jQuery(document).ready(function ($) {
+        $('span.presspermit-editor-toggle button').attr('aria-disabled', true);
+        $('span.presspermit-editor-button button').attr('aria-disabled', true);
+        $('div.publishpress-extended-post-status select').attr('disabled', true);
+    });
+    }
+    
+    var ppcsEnablePostUpdate = function ppEnablePostUpdate() {
+    jQuery(document).ready(function ($) {
+        var intRestoreToggle = setInterval(function() {
+        if ($('span.presspermit-editor-toggle button:visible').length && $('span.presspermit-editor-toggle button').parent().prev('button').attr('aria-disabled') == 'false'
+        || ($('span.presspermit-editor-button button:visible').length && $('span.presspermit-editor-button button').parent().prev('button').attr('aria-disabled') == 'false')
+        ) {
+            $('span.presspermit-editor-toggle button').removeAttr('aria-disabled');
+            $('span.presspermit-editor-button button').removeAttr('aria-disabled');
+            clearInterval(intRestoreToggle);
+        }
+        }, 100);
+    
+        $('div.publishpress-extended-post-status select').removeAttr('disabled');
+    });
+    }
+
     let ppPostSavingDone = function() {
         $('div.publishpress-extended-post-status select').removeAttr('locked');
 
@@ -432,6 +456,11 @@ jQuery(document).ready(function ($) {
         setTimeout(function () {
             PP_SetPublishButtonCaption(ppObjEdit.saveAs, true);
         }, 100);
+    });
+
+    $(document).on('click', 'fieldset.editor-change-status__options div.components-radio-control__option input[value="publish"]', function() {
+        $('span.presspermit-editor-toggle').hide();
+        $('.presspermit-editor-hidden').show().css('z-index', 0);
     });
 
     $(document).on('click', 'div.editor-post-publish-panel__header-cancel-button button', function() {

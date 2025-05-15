@@ -22,8 +22,7 @@ var registerPlugin = wp.plugins.registerPlugin;
 var _wp$data = wp.data,
     withSelect = _wp$data.withSelect,
     withDispatch = _wp$data.withDispatch;
-var compose = wp.compose.compose;
-
+var wpcompose = wp.compose.compose;
 var SelectControl = wp.components.SelectControl;
 var RadioControl = wp.components.RadioControl;
 
@@ -138,7 +137,10 @@ var querySelectableStatuses = function(status) {
   };
 
   if (!ppQueriedStatuses) {
-    $('div.publishpress-extended-post-status select option').hide();
+    jQuery(document).ready(function ($) {
+      $('div.publishpress-extended-post-status select option').hide();
+    });
+
     ppQueriedStatuses = true;
   }
 
@@ -605,29 +607,6 @@ setInterval(function () {
   });
 });
 
-
-var ppcsDisablePostUpdate = function ppDisablePostUpdate() {
-  $('span.presspermit-editor-toggle button').attr('aria-disabled', true);
-  $('span.presspermit-editor-button button').attr('aria-disabled', true);
-  $('div.publishpress-extended-post-status select').attr('disabled', true);
-}
-
-var ppcsEnablePostUpdate = function ppEnablePostUpdate() {
-  jQuery(document).ready(function ($) {
-    var intRestoreToggle = setInterval(function() {
-      if ($('span.presspermit-editor-toggle button:visible').length && $('span.presspermit-editor-toggle button').parent().prev('button').attr('aria-disabled') == 'false'
-      || ($('span.presspermit-editor-button button:visible').length && $('span.presspermit-editor-button button').parent().prev('button').attr('aria-disabled') == 'false')
-      ) {
-        $('span.presspermit-editor-toggle button').removeAttr('aria-disabled');
-        $('span.presspermit-editor-button button').removeAttr('aria-disabled');
-        clearInterval(intRestoreToggle);
-      }
-    }, 100);
-
-    $('div.publishpress-extended-post-status select').removeAttr('disabled');
-  });
-}
-
 /**
  * Custom status component
  * @param object props
@@ -661,8 +640,7 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
     })
   );
 };
-
-var plugin = compose(withSelect(function (select) {
+var plugin = wpcompose(withSelect(function (select) {
   var setStatus = '';
   var ret = new Object();
   
@@ -760,7 +738,7 @@ var PPWorkflowAction = function PPWorkflowAction(_ref) {
   }) );
 };
 
-var pluginWorkflow = compose(withSelect(function (select) {
+var pluginWorkflow = wpcompose(withSelect(function (select) {
   return {
     pp_workflow_action: select('core/editor').getEditedPostAttribute('pp_workflow_action')
   };

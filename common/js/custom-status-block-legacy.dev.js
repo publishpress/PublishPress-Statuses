@@ -492,29 +492,6 @@ setInterval(function () {
   });
 });
 
-
-var ppcsDisablePostUpdate = function ppDisablePostUpdate() {
-  $('span.presspermit-editor-toggle button').attr('aria-disabled', true);
-  $('span.presspermit-editor-button button').attr('aria-disabled', true);
-  $('div.publishpress-extended-post-status select').attr('disabled', true);
-}
-
-var ppcsEnablePostUpdate = function ppEnablePostUpdate() {
-  jQuery(document).ready(function ($) {
-    var intRestoreToggle = setInterval(function() {
-      if ($('span.presspermit-editor-toggle button:visible').length && $('span.presspermit-editor-toggle button').parent().prev('button').attr('aria-disabled') == 'false'
-      || ($('span.presspermit-editor-button button:visible').length && $('span.presspermit-editor-button button').parent().prev('button').attr('aria-disabled') == 'false')
-      ) {
-        $('span.presspermit-editor-toggle button').removeAttr('aria-disabled');
-        $('span.presspermit-editor-button button').removeAttr('aria-disabled');
-        clearInterval(intRestoreToggle);
-      }
-    }, 100);
-
-    $('div.publishpress-extended-post-status select').removeAttr('disabled');
-  });
-}
-
 /**
  * Custom status component
  * @param object props
