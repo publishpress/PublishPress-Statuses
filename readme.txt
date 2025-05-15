@@ -167,7 +167,7 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
-= [1.1.3] - 14 May 2025 =
+= [1.1.3] - 15 May 2025 =
 * Fixed : Setting Status to Published causes Publish button to be hidden
 * Fixed : Edit Status - Post Access tab not displayed under some conditions
 * Fixed : Post Editor - Javascript errors on some sites
