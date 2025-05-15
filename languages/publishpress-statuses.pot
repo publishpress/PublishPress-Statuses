@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.1.2\n"
+"Project-Id-Version: PublishPress Statuses 1.1.3-rc5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-05T19:57:53+00:00\n"
+"POT-Creation-Date: 2025-05-15T15:44:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: publishpress-statuses\n"
@@ -45,8 +45,8 @@ msgstr ""
 
 #: Admin.php:333
 #: Admin.php:334
-#: PublishPress_Statuses.php:319
-#: PublishPress_Statuses.php:320
+#: PublishPress_Statuses.php:328
+#: PublishPress_Statuses.php:329
 #: StatusesUI.php:92
 msgid "Statuses"
 msgstr ""
@@ -58,17 +58,17 @@ msgid "Add New"
 msgstr ""
 
 #: Admin.php:431
-#: PublishPress_Statuses.php:776
+#: PublishPress_Statuses.php:785
 msgid "Approve"
 msgstr ""
 
 #: Admin.php:433
-#: PublishPress_Statuses.php:748
+#: PublishPress_Statuses.php:757
 msgid "Assign"
 msgstr ""
 
 #: Admin.php:435
-#: PublishPress_Statuses.php:762
+#: PublishPress_Statuses.php:771
 msgid "Mark In Progress"
 msgstr ""
 
@@ -245,160 +245,168 @@ msgstr ""
 msgid "To use PublishPress Statuses, please upgrade PublishPress Capabilities Pro to version %s or higher."
 msgstr ""
 
-#: PublishPress_Statuses.php:320
+#: PublishPress_Statuses.php:296
+msgid "Can bypass normal status progression (publishing or setting to max status)."
+msgstr ""
+
+#: PublishPress_Statuses.php:297
+msgid "Manage Statuses plugin settings."
+msgstr ""
+
+#: PublishPress_Statuses.php:329
 msgid "Status"
 msgstr ""
 
-#: PublishPress_Statuses.php:334
+#: PublishPress_Statuses.php:343
 msgid "Core Post Statuses"
 msgstr ""
 
-#: PublishPress_Statuses.php:597
+#: PublishPress_Statuses.php:606
 msgid "New post, not yet submitted."
 msgstr ""
 
-#: PublishPress_Statuses.php:618
+#: PublishPress_Statuses.php:627
 msgid "Post is awaiting review."
 msgstr ""
 
-#: PublishPress_Statuses.php:637
+#: PublishPress_Statuses.php:646
 msgid "Post is scheduled for publication."
 msgstr ""
 
-#: PublishPress_Statuses.php:655
+#: PublishPress_Statuses.php:664
 msgid "Post is published, publicly visible."
 msgstr ""
 
-#: PublishPress_Statuses.php:673
+#: PublishPress_Statuses.php:682
 msgid "Post is published with private visibility."
 msgstr ""
 
-#: PublishPress_Statuses.php:732
+#: PublishPress_Statuses.php:741
 msgid "Pitch"
 msgstr ""
 
-#: PublishPress_Statuses.php:734
+#: PublishPress_Statuses.php:743
 msgctxt "post action/button label"
 msgid "Pitch"
 msgstr ""
 
-#: PublishPress_Statuses.php:735
+#: PublishPress_Statuses.php:744
 msgid "Idea proposed; waiting for acceptance."
 msgstr ""
 
-#: PublishPress_Statuses.php:746
+#: PublishPress_Statuses.php:755
 msgid "Assigned"
 msgstr ""
 
-#: PublishPress_Statuses.php:749
+#: PublishPress_Statuses.php:758
 msgid "Post idea assigned to writer."
 msgstr ""
 
-#: PublishPress_Statuses.php:760
+#: PublishPress_Statuses.php:769
 msgid "In Progress"
 msgstr ""
 
-#: PublishPress_Statuses.php:763
+#: PublishPress_Statuses.php:772
 msgid "Writer is working on the post."
 msgstr ""
 
-#: PublishPress_Statuses.php:774
+#: PublishPress_Statuses.php:783
 msgid "Approved"
 msgstr ""
 
-#: PublishPress_Statuses.php:777
+#: PublishPress_Statuses.php:786
 msgid "Post has been approved for publication."
 msgstr ""
 
-#: PublishPress_Statuses.php:788
+#: PublishPress_Statuses.php:797
 msgid "Deferred"
 msgstr ""
 
-#: PublishPress_Statuses.php:790
+#: PublishPress_Statuses.php:799
 msgid "Defer"
 msgstr ""
 
-#: PublishPress_Statuses.php:791
+#: PublishPress_Statuses.php:800
 msgid "Post has been deferred for future consideration."
 msgstr ""
 
-#: PublishPress_Statuses.php:802
+#: PublishPress_Statuses.php:811
 msgid "Needs Work"
 msgstr ""
 
-#: PublishPress_Statuses.php:804
+#: PublishPress_Statuses.php:813
 msgid "Set to Needs Work"
 msgstr ""
 
-#: PublishPress_Statuses.php:805
+#: PublishPress_Statuses.php:814
 msgid "Post needs work before further review."
 msgstr ""
 
-#: PublishPress_Statuses.php:816
+#: PublishPress_Statuses.php:825
 msgid "Rejected"
 msgstr ""
 
-#: PublishPress_Statuses.php:818
+#: PublishPress_Statuses.php:827
 msgid "Reject"
 msgstr ""
 
-#: PublishPress_Statuses.php:819
+#: PublishPress_Statuses.php:828
 msgid "Post has been rejected."
 msgstr ""
 
-#: PublishPress_Statuses.php:852
+#: PublishPress_Statuses.php:861
 msgid "Alternate Pre-Publication Workflow:"
 msgstr ""
 
-#: PublishPress_Statuses.php:919
+#: PublishPress_Statuses.php:928
 msgid "Disabled Statuses:"
 msgstr ""
 
-#: PublishPress_Statuses.php:935
+#: PublishPress_Statuses.php:944
 msgid "Committee"
 msgstr ""
 
-#: PublishPress_Statuses.php:937
+#: PublishPress_Statuses.php:946
 msgid "Refer to Committee"
 msgstr ""
 
-#: PublishPress_Statuses.php:938
+#: PublishPress_Statuses.php:947
 msgid "Post has been referred to committee."
 msgstr ""
 
-#: PublishPress_Statuses.php:950
+#: PublishPress_Statuses.php:959
 msgid "Committee Review"
 msgstr ""
 
-#: PublishPress_Statuses.php:952
+#: PublishPress_Statuses.php:961
 msgid "Set to Committee Review"
 msgstr ""
 
-#: PublishPress_Statuses.php:953
+#: PublishPress_Statuses.php:962
 msgid "Committee is reviewing the post."
 msgstr ""
 
-#: PublishPress_Statuses.php:965
+#: PublishPress_Statuses.php:974
 msgid "Committee Progress"
 msgstr ""
 
-#: PublishPress_Statuses.php:967
+#: PublishPress_Statuses.php:976
 msgid "Set to Committee Progress"
 msgstr ""
 
-#: PublishPress_Statuses.php:968
+#: PublishPress_Statuses.php:977
 msgid "Committee is editing the post."
 msgstr ""
 
-#: PublishPress_Statuses.php:980
+#: PublishPress_Statuses.php:989
 msgid "Committee Approved"
 msgstr ""
 
-#: PublishPress_Statuses.php:982
+#: PublishPress_Statuses.php:991
 msgid "Set Committee Approval"
 msgstr ""
 
-#: PublishPress_Statuses.php:983
+#: PublishPress_Statuses.php:992
 msgid "Committee has approved the post."
 msgstr ""
 
