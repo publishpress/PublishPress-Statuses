@@ -116,11 +116,15 @@ var ppcsSaveDraftLinkColor = false;
 var ppLastPostStatus = '';
 var ppQueriedStatuses = false;
 
-var querySelectableStatuses = function(status) {
+var querySelectableStatuses = function(status, post_id) {
+  if (typeof post_id == "undefined") {
+    post_id = wp.data.select('core/editor').getCurrentPostId();
+  }
+
   // Update status selectability
   var params = {
       action: 'pp_get_selectable_statuses',
-      post_id: wp.data.select('core/editor').getCurrentPostId(),
+      post_id: post_id,
       selected_status: status,
       pp_nonce: PPCustomStatuses.ppNonce
   };
@@ -167,11 +171,23 @@ var querySelectableStatuses = function(status) {
   });
 }
 
+var tmrQuerySelectableStatuses;
+
 var refreshSelectableStatuses = function (status) {
   if (status != ppLastPostStatus) {
+    
+    tmrQuerySelectableStatuses = setInterval(
+      function() {
+        var post_id = wp.data.select('core/editor').getCurrentPostId();
+
+        if (post_id) {
+          clearInterval(tmrQuerySelectableStatuses, post_id);
     ppLastPostStatus = status;
 
     querySelectableStatuses(status);
+  }
+      }, 100
+    )
   }
 }
 
