@@ -10,6 +10,23 @@ class Admin
     function __construct($activated = false) {
         add_action('admin_menu', [$this, 'act_admin_menu'], 21);
 
+        add_filter('plugin_row_meta', 
+            function ($links, $file) {
+                if (defined('PUBLISHPRESS_STATUSES_FILE') && ($file == plugin_basename(PUBLISHPRESS_STATUSES_FILE))
+                || defined('PUBLISHPRESS_STATUSES_PRO_FILE') && ($file == plugin_basename(PUBLISHPRESS_STATUSES_PRO_FILE))
+                ) {
+                    $links[] = '<a href="'. esc_url(admin_url('admin.php?page=publishpress-statuses')) .'">' . esc_html__('Statuses', 'publishpress-statuses') . '</a>';
+                    $links[] = '<a href="'. esc_url(admin_url('admin.php?page=publishpress-statuses-settings')) .'">' . esc_html__('Settings', 'publishpress-statuses') . '</a>';
+
+                    if (!defined('PUBLISHPRESS_STATUSES_PRO_FILE')) {
+                        $links[] = '<a href="'. esc_url('https://publishpress.com/links/statuses-plugin-row') .'" class="pp-upgrade">' . esc_html__('Upgrade to Pro', 'publishpress-statuses') . '</a>';
+                    }
+                }
+
+                return $links;
+            }, 10, 2
+        );
+
         // Load CSS and JS resources that we probably need
         add_action('admin_print_styles', [$this, 'add_admin_styles']);
         add_action('admin_enqueue_scripts', [$this, 'action_admin_enqueue_scripts']);
