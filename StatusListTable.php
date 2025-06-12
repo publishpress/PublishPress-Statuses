@@ -722,8 +722,18 @@ do_action('publishpress_statuses_table_row', $key, []);
             echo '</a>';
         }
 
+        $suffixes = [];
+
+        if (!empty($status_obj->_builtin)) {
+            $suffixes []= esc_html__('Core', 'publishpress-statuses');
+         }
+
         if ($item->name == $this->default_status) {
-            echo ' - ' . esc_html__('Default', 'publishpress-statuses');
+            $suffixes []= esc_html__('Default', 'publishpress-statuses');
+        }
+
+        if ($suffixes) {
+            echo ' - ' . implode(', ', $suffixes);
         }
 
         if (empty($item->_builtin)) {
