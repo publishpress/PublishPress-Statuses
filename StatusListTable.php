@@ -757,7 +757,7 @@ do_action('publishpress_statuses_table_row', $key, []);
         }
 
         if ($suffixes) {
-            echo ' - ' . implode(', ', $suffixes);
+            echo ' - ' . esc_html(implode(', ', $suffixes));
         }
 
         if (empty($item->_builtin)) {
