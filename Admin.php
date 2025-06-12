@@ -176,6 +176,8 @@ class Admin
         $plugin_page = \PublishPress_Functions::getPluginPage();
 
         if (0 === strpos($plugin_page, 'publishpress-statuses')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+            wp_enqueue_style('publishpress-statuses-tooltips', PUBLISHPRESS_STATUSES_URL . '/common/css/_tooltip.css', [], PUBLISHPRESS_STATUSES_VERSION);
+            
             wp_enqueue_style(
                 'publishpress-status-admin-css',
                 PUBLISHPRESS_STATUSES_URL . 'common/css/custom-status-admin.css',
