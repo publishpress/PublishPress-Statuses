@@ -53,6 +53,10 @@ user-select: none;
 margin-bottom: 50px;
 }
 
+#the_status_list [data-toggle="tooltip"] .tooltip-text {
+min-width: 200px;
+}
+
 .pp-nested-list ol{
 list-style-type:none;
 clear:both;
