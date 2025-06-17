@@ -312,6 +312,10 @@ width: 15%;
 content: '\2014\00a0';
 }
 
+#the_status_list td.enabled a.pp-statuses-edit-post-access {
+display: none;
+}
+
 /* Statuses Table: Row content inside indentation structure */ 
 #the_status_list li.section-row div.row-inner {
 padding-top: 15px;
