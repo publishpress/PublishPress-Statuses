@@ -15,17 +15,6 @@
  * ------------------------------------------------------------------------------
  */
 
-var PluginPostStatusInfo = wp.editPost.PluginPostStatusInfo;
-var PluginPrePublishPanel = wp.editPost.PluginPrePublishPanel;
-
-var registerPlugin = wp.plugins.registerPlugin;
-var _wp$data = wp.data,
-    withSelect = _wp$data.withSelect,
-    withDispatch = _wp$data.withDispatch;
-var wpcompose = wp.compose.compose;
-var SelectControl = wp.components.SelectControl;
-var RadioControl = wp.components.RadioControl;
-
 /**
  * Map Custom Statuses as options for SelectControl
  */
@@ -34,7 +23,7 @@ if (!jQuery.isFunction('$')) {
   var $ = window.jQuery = jQuery;
 }
 
-var statuses = window.PPCustomStatuses.statuses.map(function (s) {
+var ppStatuses = window.PPCustomStatuses.statuses.map(function (s) {
   var ret = {
     label: s.label,
     save_as: s.save_as,
@@ -61,12 +50,12 @@ var publishedStatuses = window.PPCustomStatuses.publishedStatusObjects.map(funct
 var ppsCaptions = window.PPCustomStatuses.captions;
 
 // Remove the "Published" item from statuses array
-statuses = statuses.filter(function (item) {
+ppStatuses = ppStatuses.filter(function (item) {
   return item.value !== 'publish';
 });
 
 var ppGetStatusLabel = function ppGetStatusLabel(slug) {
-  var item = statuses.find(function (s) {
+  var item = ppStatuses.find(function (s) {
     return s.value === slug;
   });
 
@@ -74,7 +63,7 @@ var ppGetStatusLabel = function ppGetStatusLabel(slug) {
 };
 
 var ppGetStatusSaveAs = function ppGetStatusSaveAs(slug) {
-  var item = statuses.find(function (s) {
+  var item = ppStatuses.find(function (s) {
     return s.value === slug;
   });
 
@@ -98,7 +87,7 @@ var ppGetStatusSaveAs = function ppGetStatusSaveAs(slug) {
 };
 
 var ppGetStatusSubmit = function ppGetStatusSubmit(slug) {
-  var item = statuses.find(function (s) {
+  var item = ppStatuses.find(function (s) {
     return s.value === slug;
   });
 
@@ -106,7 +95,7 @@ var ppGetStatusSubmit = function ppGetStatusSubmit(slug) {
 };
 
 var ppGetStatusObject = function ppGetStatusObject(slug) {
-  var item = statuses.find(function (s) {
+  var item = ppStatuses.find(function (s) {
     return s.value === slug;
   });
 
@@ -127,11 +116,15 @@ var ppcsSaveDraftLinkColor = false;
 var ppLastPostStatus = '';
 var ppQueriedStatuses = false;
 
-var querySelectableStatuses = function(status) {
+var querySelectableStatuses = function(status, post_id) {
+  if (typeof post_id == "undefined") {
+    post_id = wp.data.select('core/editor').getCurrentPostId();
+  }
+
   // Update status selectability
   var params = {
       action: 'pp_get_selectable_statuses',
-      post_id: wp.data.select('core/editor').getCurrentPostId(),
+      post_id: post_id,
       selected_status: status,
       pp_nonce: PPCustomStatuses.ppNonce
   };
@@ -178,11 +171,22 @@ var querySelectableStatuses = function(status) {
   });
 }
 
+var tmrQuerySelectableStatuses;
+
 var refreshSelectableStatuses = function (status) {
   if (status != ppLastPostStatus) {
-    ppLastPostStatus = status;
+    
+    tmrQuerySelectableStatuses = setInterval(
+      function() {
+        var post_id = wp.data.select('core/editor').getCurrentPostId();
 
-    querySelectableStatuses(status);
+        if (post_id) {
+          clearInterval(tmrQuerySelectableStatuses, post_id);
+          ppLastPostStatus = status;
+          querySelectableStatuses(status);
+        }
+      }, 100
+    )
   }
 }
 
@@ -615,7 +619,7 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
   var onUpdate = _ref.onUpdate,
       status = _ref[PPCustomStatuses.statusRestProperty];
 
-  var statusOptions = statuses.slice();
+  var statusOptions = ppStatuses.slice();
 
   var publishStatusObj = ppGetPublishedStatusObject('publish');
   var futureStatusObj = ppGetPublishedStatusObject('future');
@@ -626,13 +630,13 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
   var __ = wp.i18n.__;
 
   return React.createElement(
-    PluginPostStatusInfo, 
+    wp.editPost.PluginPostStatusInfo, 
     
     {
     className: "publishpress-extended-post-status publishpress-extended-post-status-".concat(status)
     }, 
 
-    React.createElement(SelectControl, {
+    React.createElement(wp.components.SelectControl, {
       label: '',
       value: status,
       options: statusOptions,
@@ -640,7 +644,8 @@ var PPCustomPostStatusInfo = function PPCustomPostStatusInfo(_ref) {
     })
   );
 };
-var plugin = wpcompose(withSelect(function (select) {
+
+var ppPlugin = wp.compose.compose(wp.data.withSelect(function (select) {
   var setStatus = '';
   var ret = new Object();
   
@@ -655,7 +660,7 @@ var plugin = wpcompose(withSelect(function (select) {
   ret[PPCustomStatuses.statusRestProperty] = setStatus;
 
   return ret;
-}), withDispatch(function (dispatch) {
+}), wp.data.withDispatch(function (dispatch) {
   return {
     onUpdate: function onUpdate(status) {
 	  if ('status' == PPCustomStatuses.statusRestProperty) {
@@ -674,9 +679,9 @@ var plugin = wpcompose(withSelect(function (select) {
     }
   };
 }))(PPCustomPostStatusInfo);
-registerPlugin('publishpress-custom-status-block', {
+wp.plugins.registerPlugin('publishpress-custom-status-block', {
   icon: 'admin-site',
-  render: plugin
+  render: ppPlugin
 });
 
 var PPWorkflowAction = function PPWorkflowAction(_ref) {
@@ -727,9 +732,9 @@ var PPWorkflowAction = function PPWorkflowAction(_ref) {
     { label: maxStatusCaption, value: 'max' }
   ];
 
-  return React.createElement(PluginPrePublishPanel, {
+  return React.createElement(wp.editPost.PluginPrePublishPanel, {
     className: "pp-statuses-workflow publishpress-statuses-workflow-".concat(pp_workflow_action)
-  }, React.createElement("h3", null, ppsCaptions.publicationWorkflow), React.createElement(RadioControl, {
+  }, React.createElement("h3", null, ppsCaptions.publicationWorkflow), React.createElement(wp.components.RadioControl, {
     label: "",
     name: "pp_statuses_workflow_selection",
     options: radioOptions,
@@ -738,11 +743,11 @@ var PPWorkflowAction = function PPWorkflowAction(_ref) {
   }) );
 };
 
-var pluginWorkflow = wpcompose(withSelect(function (select) {
+var pluginWorkflow = wp.compose.compose(wp.data.withSelect(function (select) {
   return {
     pp_workflow_action: select('core/editor').getEditedPostAttribute('pp_workflow_action')
   };
-}), withDispatch(function (dispatch) {
+}), wp.data.withDispatch(function (dispatch) {
   return {
     onUpdate: function onUpdate(pp_workflow_action) {
       dispatch('core/editor').editPost({
@@ -751,7 +756,7 @@ var pluginWorkflow = wpcompose(withSelect(function (select) {
     }
   };
 }))(PPWorkflowAction);
-registerPlugin('publishpress-statuses-workflow-action', {
+wp.plugins.registerPlugin('publishpress-statuses-workflow-action', {
   icon: 'admin-site',
   render: pluginWorkflow
 });

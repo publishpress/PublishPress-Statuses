@@ -53,6 +53,10 @@ user-select: none;
 margin-bottom: 50px;
 }
 
+#the_status_list [data-toggle="tooltip"] .tooltip-text {
+min-width: 200px;
+}
+
 .pp-nested-list ol{
 list-style-type:none;
 clear:both;
@@ -306,6 +310,10 @@ width: 15%;
 #the_status_list ol.pp-nested-list table.status-row td.description div:before
 {
 content: '\2014\00a0';
+}
+
+#the_status_list td.enabled a.pp-statuses-edit-post-access {
+display: none;
 }
 
 /* Statuses Table: Row content inside indentation structure */ 

@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: PublishPress Statuses 1.1.3\n"
+"Project-Id-Version: PublishPress Statuses 1.1.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-15T17:29:51+00:00\n"
+"POT-Creation-Date: 2025-06-17T17:35:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: publishpress-statuses\n"
@@ -39,56 +39,66 @@ msgstr ""
 msgid "https://publishpress.com/"
 msgstr ""
 
-#: Admin.php:272
-msgid "Are you sure you want to delete the post status? All posts with this status will be assigned to the default status."
-msgstr ""
-
-#: Admin.php:333
-#: Admin.php:334
+#: Admin.php:18
+#: Admin.php:352
+#: Admin.php:353
 #: PublishPress_Statuses.php:328
 #: PublishPress_Statuses.php:329
 #: StatusesUI.php:92
 msgid "Statuses"
 msgstr ""
 
-#: Admin.php:344
-#: Admin.php:345
+#: Admin.php:19
+msgid "Settings"
+msgstr ""
+
+#: Admin.php:22
+#: includes-core/CoreAdmin.php:108
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: Admin.php:291
+msgid "Are you sure you want to delete the post status? All posts with this status will be assigned to the default status."
+msgstr ""
+
+#: Admin.php:363
+#: Admin.php:364
 #: StatusesUI.php:817
 msgid "Add New"
 msgstr ""
 
-#: Admin.php:431
+#: Admin.php:450
 #: PublishPress_Statuses.php:785
 msgid "Approve"
 msgstr ""
 
-#: Admin.php:433
+#: Admin.php:452
 #: PublishPress_Statuses.php:757
 msgid "Assign"
 msgstr ""
 
-#: Admin.php:435
+#: Admin.php:454
 #: PublishPress_Statuses.php:771
 msgid "Mark In Progress"
 msgstr ""
 
 #. translators: %s is the status label
-#: Admin.php:448
+#: Admin.php:467
 msgid "Set to %s"
 msgstr ""
 
 #. translators: %s is the status label
-#: Admin.php:457
+#: Admin.php:476
 #: PostEditGutenberg.php:75
 msgid "Save as %s"
 msgstr ""
 
 #. translators: %s is the name of a custom public status
-#: Admin.php:469
+#: Admin.php:488
 msgid "Public (%s)"
 msgstr ""
 
-#: Admin.php:540
+#: Admin.php:559
 #: PostEditClassic.php:179
 #: PostEditGutenberg.php:72
 #: PostEditGutenberg.php:259
@@ -132,10 +142,6 @@ msgstr ""
 
 #: includes-core/CoreAdmin.php:104
 msgid "Prompt, professional support"
-msgstr ""
-
-#: includes-core/CoreAdmin.php:108
-msgid "Upgrade to Pro"
 msgstr ""
 
 #: includes-core/CoreAdmin.php:115
@@ -894,48 +900,60 @@ msgstr ""
 msgid "Drop any status here to include it in main workflow for new posts."
 msgstr ""
 
-#: StatusListTable.php:285
-msgid "(customization requires Permissions Pro plugin)"
+#: StatusListTable.php:293
+msgid "Statuses in the main workflow are presented for convenient default selection when updating an unpublished post."
+msgstr ""
+
+#: StatusListTable.php:300
+msgid "Statuses in the main workflow are manually selectable when editing an unpublished post."
 msgstr ""
 
 #: StatusListTable.php:309
+msgid "(customization requires Permissions Pro plugin)"
+msgstr ""
+
+#: StatusListTable.php:333
 msgid "Drop any status here to make it manually selectable outside the main workflow."
 msgstr ""
 
-#: StatusListTable.php:328
+#: StatusListTable.php:352
 msgid "Drop any status here to disable."
 msgstr ""
 
-#: StatusListTable.php:376
+#: StatusListTable.php:400
 msgid "Standard Publication:"
 msgstr ""
 
-#: StatusListTable.php:383
+#: StatusListTable.php:407
 msgid "Visibility Statuses for Private Publication:"
 msgstr ""
 
-#: StatusListTable.php:390
+#: StatusListTable.php:414
 msgid "Alternate Workflows:"
 msgstr ""
 
 #. translators: %s is the opening and closing <span> tags
-#: StatusListTable.php:401
+#: StatusListTable.php:425
 msgid "Disabled Statuses (drag to re-enable):"
 msgstr ""
 
 #. translators: %s is the list of post types
-#: StatusListTable.php:575
+#: StatusListTable.php:599
 msgid "%s, more..."
 msgstr ""
 
-#: StatusListTable.php:657
+#: StatusListTable.php:681
 msgid "No custom statuses found."
 msgstr ""
 
-#: StatusListTable.php:726
+#: StatusListTable.php:752
+msgid "Core"
+msgstr ""
+
+#: StatusListTable.php:756
 msgid "Default"
 msgstr ""
 
-#: StatusListTable.php:744
+#: StatusListTable.php:781
 msgid "X"
 msgstr ""

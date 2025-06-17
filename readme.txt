@@ -6,7 +6,7 @@ Tags: custom statuses, workflow, pending review, status manager, archived status
 Requires at least: 5.5
 Requires PHP: 7.2.5
 Tested up to: 6.8
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -166,6 +166,16 @@ A post in the Future status is not published yet, but is scheduled to be publish
 Extended Post Status is a very useful plugin. With PublshPress Statuses we're aiming to provide more advanced features such as custom capabilities, workflow branching, icons, colors, and much more.
 
 == Changelog ==
+
+= [1.1.4] - 17 June 2025 =
+* Fixed : Customization of Pending Review properties were not applied #301
+* Fixed : Javascript error in post editor on some sites #309
+* Fixed : Status dropdown in Post Editor is empty under some conditions #308
+* Change : Statuses table row action Edit link in Name column #317
+* Change : Statuses, Settings links on Plugins screen row #305
+* Change : Visual indicator that Draft, Pending Review statuses can't be disabled #98
+* Change : Visual indicator for core Visibility statuses #114
+* Change : Tool tips for Statuses table section headings (Main Workflow, Alternate Workflows) #129
 
 = [1.1.3] - 15 May 2025 =
 * Fixed : Setting Status to Published causes Publish button to be hidden

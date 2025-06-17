@@ -280,7 +280,31 @@ class StatusListTable extends \WP_List_Table
 <td class="status_name" style="width:0"><div class="status_name <?php echo esc_attr($key);?> column-<?php echo esc_attr($key);?> hidden"><?php echo esc_html($key);?></div></td>
 <?php endif; ?>
 
-<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name"><strong><?php echo esc_html($label);?></strong>
+<td class="name"><div class="name column-name has-row-actions column-primary" data-colname="Name">
+<strong>
+<?php echo esc_html($label);?>
+</strong>
+
+<?php 
+if (in_array($key, ['_pre-publish', '_pre-publish-alternate'])):?>
+<?php 
+if ('_pre-publish' == $key) {
+    $this->generateTooltip(
+        esc_html__('Statuses in the main workflow are presented for convenient default selection when updating an unpublished post.', 'publishpress-statuses'),
+        '',
+        'bottom'
+    );
+
+} elseif ('_pre-publish-alternate' == $key) {
+    $this->generateTooltip(
+        esc_html__('Statuses in the main workflow are manually selectable when editing an unpublished post.', 'publishpress-statuses'),
+        '',
+        'bottom'
+    );
+}
+?>
+<?php endif;?>
+
 <?php if (('_visibility-statuses' == $key) && !defined('PRESSPERMIT_PRO_VERSION')) {
     echo ' <span style="font-style: italic"> ' . esc_html__('(customization requires Permissions Pro plugin)', 'publishpress-statuses') . '</span>';
 }
@@ -722,8 +746,18 @@ do_action('publishpress_statuses_table_row', $key, []);
             echo '</a>';
         }
 
+        $suffixes = [];
+
+        if (!empty($status_obj->_builtin)) {
+            $suffixes []= esc_html__('Core', 'publishpress-statuses');
+         }
+
         if ($item->name == $this->default_status) {
-            echo ' - ' . esc_html__('Default', 'publishpress-statuses');
+            $suffixes []= esc_html__('Default', 'publishpress-statuses');
+        }
+
+        if ($suffixes) {
+            echo ' - ' . esc_html(implode(', ', $suffixes));
         }
 
         if (empty($item->_builtin)) {
@@ -735,6 +769,9 @@ do_action('publishpress_statuses_table_row', $key, []);
         $actions = [];
  
         $status_obj = $item;
+
+        $url = admin_url("admin.php?action=edit-status&name={$status_obj->name}&page=publishpress-statuses");
+        $actions['edit'] =  ['url' => esc_url($url), 'label' => esc_html__('Edit')];
 
         if (empty($status_obj) || (empty($status_obj->_builtin))) {
             $actions['disable'] = ['url' => '#', 'label' => \PublishPress_Statuses::__wp('Disable', 'publishpress-statuses')];
@@ -813,5 +850,22 @@ do_action('publishpress_statuses_table_row', $key, []);
         $url = admin_url("admin.php?action=edit-status&name={$item->name}&page=publishpress-statuses");
 
         echo '<a href="' . esc_url($url) . '"><span class="dashicons ' . esc_html($item->icon) . '"></span></a>';
+    }
+
+    private function generateTooltip($tooltip, $text = '', $position = 'top', $useIcon = true)
+    {
+        ?>
+        <span data-toggle="tooltip" data-placement="<?php esc_attr_e($position); ?>">
+        <?php esc_html_e($text);?>
+        <span class="tooltip-text"><span><?php esc_html_e($tooltip);?></span><i></i></span>
+        <?php 
+        if ($useIcon) : ?>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 50 50" style="margin-left: 4px; vertical-align: text-bottom;">
+                <path d="M 25 2 C 12.264481 2 2 12.264481 2 25 C 2 37.735519 12.264481 48 25 48 C 37.735519 48 48 37.735519 48 25 C 48 12.264481 37.735519 2 25 2 z M 25 4 C 36.664481 4 46 13.335519 46 25 C 46 36.664481 36.664481 46 25 46 C 13.335519 46 4 36.664481 4 25 C 4 13.335519 13.335519 4 25 4 z M 25 11 A 3 3 0 0 0 25 17 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 23 23 L 23 36 L 21 36 L 21 38 L 29 38 L 29 36 L 27 36 L 27 21 L 21 21 z"></path>
+            </svg>
+        <?php
+        endif; ?>
+        </span>
+        <?php
     }
 }
