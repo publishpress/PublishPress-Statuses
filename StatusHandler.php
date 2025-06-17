@@ -491,7 +491,7 @@ class StatusHandler {
         // We're encoding metadata that isn't supported by default in the term's description field
         $args_to_encode = [];
 
-        if (!empty($status_obj->_builtin) && !in_array($status_obj->name, ['pending'])) {
+        if (!empty($status_obj->_builtin)) {
             $taxonomy = \PublishPress_Statuses::TAXONOMY_CORE_STATUS;
 
         } elseif (in_array($name, ['_pre-publish-alternate', '_disabled'])) {
