@@ -182,10 +182,9 @@ var refreshSelectableStatuses = function (status) {
 
         if (post_id) {
           clearInterval(tmrQuerySelectableStatuses, post_id);
-    ppLastPostStatus = status;
-
-    querySelectableStatuses(status);
-  }
+          ppLastPostStatus = status;
+          querySelectableStatuses(status);
+        }
       }, 100
     )
   }
