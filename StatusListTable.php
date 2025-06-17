@@ -770,6 +770,9 @@ do_action('publishpress_statuses_table_row', $key, []);
  
         $status_obj = $item;
 
+        $url = admin_url("admin.php?action=edit-status&name={$status_obj->name}&page=publishpress-statuses");
+        $actions['edit'] =  ['url' => esc_url($url), 'label' => esc_html__('Edit')];
+
         if (empty($status_obj) || (empty($status_obj->_builtin))) {
             $actions['disable'] = ['url' => '#', 'label' => \PublishPress_Statuses::__wp('Disable', 'publishpress-statuses')];
         }
