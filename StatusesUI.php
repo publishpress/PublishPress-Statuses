@@ -812,9 +812,11 @@ class StatusesUI {
                 );
 
                 if (('visibility' != $status_type) || (defined('PRESSPERMIT_STATUSES_VERSION') && get_option('presspermit_privacy_statuses_enabled') )) {
-                    echo '<a class="button primary add-new" title="' 
-                        . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
-                        . '" href="' . esc_url($url) . '">' . esc_html__('Add New', 'publishpress-statuses') . '</a>';
+                    if (('revision' != $status_type) || defined('PUBLISPRESS_STATUSES_PRO_VERSION')) {
+                        echo '<a class="button primary add-new" title="' 
+                            . esc_attr__("Add New Pre-Publication Status", 'publishpress-statuses')
+                            . '" href="' . esc_url($url) . '">' . esc_html__('Add New', 'publishpress-statuses') . '</a>';
+                    }
                 }
             });
 
@@ -882,6 +884,39 @@ class StatusesUI {
                     _e('Visibility', 'publishpress-statuses'); ?></a>
                 
                 <?php 
+
+                if (!defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) :?>
+                <a href="<?php
+                echo esc_url(\PublishPress_Statuses::getLink(['action' => 'statuses', 'status_type' => 'revision'])); ?>"
+                    class="nav-tab<?php
+                    if ('revision' == $status_type) {
+                        echo ' nav-tab-active';
+                    } ?>"><?php
+                    _e('Revision', 'publishpress-statuses'); ?>
+                    
+                    <?php
+                    $badge =
+                    [
+                        'text' => 'PRO',
+                        'bg_color' => '#8B5CF6',
+                        'class' => 'pp-pro-badge'
+                    ];
+                    $badge_text = isset($badge['text']) ? esc_html($badge['text']) : 'PRO';
+                    $badge_color = isset($badge['color']) ? esc_attr($badge['color']) : '#8B5CF6';
+                    $badge_bg_color = isset($badge['bg_color']) ? esc_attr($badge['bg_color']) : '#8B5CF6';
+                    $badge_class = isset($badge['class']) ? esc_attr($badge['class']) : '';
+                    
+                    printf(
+                        '<span class="pp-tab-badge %s" style="background: %s; color: white; font-size: 10px; font-weight: 600; padding: 2px 4px; border-radius: 10px; margin-left: 0; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">%s</span>',
+                        $badge_class,
+                        $badge_bg_color,
+                        $badge_text
+                    );
+                    ?>
+                
+                    </a>
+                <?php endif;
+
                 do_action('publishpress_statuses_table_tabs', $status_type);
                 ?>
             </div>
