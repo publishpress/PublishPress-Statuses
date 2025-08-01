@@ -167,7 +167,7 @@ Extended Post Status is a very useful plugin. With PublshPress Statuses we're ai
 
 == Changelog ==
 
-= [1.1.5] - 17 June 2025 =
+= [1.1.5] - 31 Jul 2025 =
 * Change : Add contextual promo for Revision Statuses (Pro)
 
 = [1.1.4] - 17 June 2025 =
