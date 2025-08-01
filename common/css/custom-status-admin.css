@@ -1,3 +1,7 @@
+.publishpress-admin h1 {
+margin-top: 0;
+}
+
 div.publishpress-admin-wrapper h2 {
 font-size: 1.1em;
 font-weight: normal;
@@ -8,7 +12,8 @@ padding-top: 5px;
 }
 
 body.toplevel_page_publishpress-statuses div.nav-tab-wrapper {
-margin-top: 10px;
+margin-top: 0;
+padding-top: 0;
 }
 
 body.toplevel_page_publishpress-statuses div.tablenav {
@@ -644,6 +649,222 @@ user-select: none;
     background: #fcca46;
     color: #000 !important;
 }
+
+.pp-pro-badge {
+    background: #6950bd;
+}
+
+#pp-statuses-promo .pp-pro-banner {
+    /*background: linear-gradient(135deg, #68589b 0%, #7b1fa2 100%);*/
+    background: #68589b;
+    border-radius: 8px;
+    padding: 0.7rem 1rem !important;
+    margin: 10px 0 10px 0 !important;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+#pp-statuses-promo .pp-pro-banner h2 {
+    font-size: 1.4rem;
+    font-style: normal;
+    margin: 0;
+    color: white !important;
+    margin-bottom: 0.3rem;
+    padding: 0;
+    text-align: left;
+  }
+#pp-statuses-promo .pp-pro-banner p {
+    opacity: 0.9;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+
+  .pp-pro-badge-banner {
+    font-size: 0.9rem;
+    background: #FEB123;
+    color: #000000 !important;
+    font-weight: normal;
+    text-decoration: none;
+    padding: 6px 10px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid #fca871;
+    break-inside: avoid;
+    white-space: nowrap;
+    max-width: 170px;
+  }
+  .pp-pro-badge-banner a {
+    color: #000000 !important;
+  }
+  .pp-pro-badge-banner:hover {
+    background-color: #F3AC04 !important;
+    border-color: #C58C07;
+    color: #333;
+    text-decoration: none !important;
+    text-shadow: none;
+  }
+
+  .pp-integration-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1.1rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 4px solid #68589b;
+  }
+
+  .pp-integration-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  .pp-integration-card:hover .pp-upgrade-overlay
+  {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .pp-upgrade-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    backdrop-filter: blur(2px);
+  }
+  .pp-upgrade-overlay h4 {
+    color: #ff5722;
+    font-weight: 600;
+    margin: 0 auto 10px auto;
+    font-size: 16px;
+  }
+  .pp-upgrade-overlay p {
+    color: #333;
+    margin-bottom: 10px !important;
+    max-width: 300px;
+    line-height: 1.4;
+  }
+  .pp-upgrade-overlay .pp-upgrade-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .pp-upgrade-btn-secondary {
+    background: transparent;
+    border: 1px solid #68589b;
+    color: #68589b;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+  .pp-upgrade-btn-secondary:hover {
+    background: #f3e5f5;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  .pp-upgrade-btn-primary {
+    background: #FEB123;
+    color: #000000 !important;
+    padding: 10px 16px;
+    margin-top: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+  .pp-upgrade-btn-primary:hover {
+    background: #fcca46;
+    color:#181818 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+  }
+
+    #pp-statuses-promo .pp-integration-card
+    {
+    border-left: initial;
+    padding: 0;
+    }
+    #pp-statuses-promo  .pp-upgrade-overlay
+    {
+    vertical-align: top;
+    padding-top: 50px;
+    }
+    #pp-statuses-promo  .pp-upgrade-overlay p
+    {
+    margin-top: 5px;
+    margin-bottom: 10px !important;
+    max-width: 550px;
+    }
+    #pp-statuses-promo  .pp-upgrade-overlay h4
+    {
+    font-size: 18px;
+    }
+    #pp-statuses-promo  .pp-upgrade-overlay p,
+    #pp-statuses-promo  .pp-upgrade-overlay a
+    {
+    font-size: 16px;
+    }
+    #pp-statuses-promo  .pp-upgrade-overlay a
+    {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    }
+
+
+  @media (max-width: 540px) {
+    .pp-pro-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+    .pp-pro-badge-banner {
+        margin-top: 1rem;
+    }
+    .pp-pro-banner {
+        padding: 0.2rem;
+    }
+    .pp-pro-banner div p {
+        text-align: left;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+    }
+    .pp-integrations-upgrade-cta {
+        padding: 5px;
+    }
+    .pp-integrations-upgrade-cta h3 {
+        font-size: 20px;
+    }
+  }
+
+  @media (max-width: 455px) {
+    .pp-integration-card {
+      flex-direction: column;
+    }
+  }
+
+
 
 @media only screen and (min-width: 1075px) {
     .pp-statuses-sidebar .ppc-advertisement-promo .upgrade-btn {
