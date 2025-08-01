@@ -71,7 +71,7 @@ class ModuleAdminUI_Base {
                     }
                 }
                 ?>
-                <?php // We keep the H2 tag to keep notices tied to the header?>
+                <?php if (!empty($this->module->short_description) || !empty($custom_text)):?>
                 <h2>
                     <?php if ($this->module->short_description && empty($custom_text)): ?>
                         <?php echo esc_html($this->module->short_description); ?>
@@ -81,7 +81,8 @@ class ModuleAdminUI_Base {
                         <?php echo esc_html($custom_text); ?>
                     <?php endif; ?>
                 </h2>
-                
+                <?php endif;?>
+
                 <?php 
                 do_action('publishpress_default_header');
                 ?>
