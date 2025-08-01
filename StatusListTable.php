@@ -145,6 +145,48 @@ class StatusListTable extends \WP_List_Table
 
 <div class="is-dismissible notice notice-success pp-float-notice" style="clear:both;display:none;"><p></p></div>
 
+<?php if (!defined('PUBLISHPRESS_STATUSES_PRO_VERSION') && ('revision' == \PublishPress_Functions::REQUEST_key('status_type'))):?>
+    <div id="pp-statuses-promo">
+    
+    <div class="pp-pro-banner" style="margin-bottom: 20px">
+		<div>
+			<h2><?php _e('Unlock Revision Statuses', 'publishpress-statuses');?></h2>
+			<p><?php _e('Install Statuses Pro to enhance your workflow with custom revision statuses.', 'publishpress-statuses');?></p>
+		</div>
+
+        <!--
+		<div class="pp-pro-badge-banner">
+			<a href="https://publishpress.com/statuses/" target="_blank" class="pp-upgrade-btn">
+				<?php esc_html_e('Upgrade to Pro', 'publishpress-statuses');?>
+			</a>
+		</div>
+        -->
+	</div>
+
+	<div class="pp-integration-card">
+	<div>
+	<img src="<?php echo esc_url(trailingslashit(PUBLISHPRESS_STATUSES_URL) . 'revision-statuses.png');?>" style="width: 100%; min-width: 797px; max-width: 860px;" />
+	</div>
+
+	<div class="pp-upgrade-overlay">
+		<h4><?php esc_html_e('Premium Feature', 'publishpress-statuses'); ?></h4>
+		<p><?php esc_html_e('Install Statuses Pro to unlock custom revision statuses.', 'publishpress-statuses');?></p>
+		<p><?php esc_html_e('Configure for any post type and role to match your editing workflow.', 'publishpress-statuses');?></p>
+		<div class="pp-upgrade-buttons">
+			<a href="<?php echo esc_url('https://publishpress.com/knowledge-base/revisions-statuses/'); ?>" target="_blank" class="pp-upgrade-btn-secondary">
+				<?php esc_html_e('Learn More', 'publishpress-statuses'); ?>
+			</a>
+
+			<a href="https://publishpress.com/statuses/" target="_blank" class="pp-upgrade-btn-primary">
+			<?php esc_html_e('Upgrade to Pro', 'publishpress-statuses');?>
+			</a>
+		</div>
+	</div>
+	</div>
+
+    </div>
+
+<?php else:?>
 <div class="pp-nested-list">
 	<div id="status_list_header" class="status-list-header">
 
@@ -181,24 +223,16 @@ class StatusListTable extends \WP_List_Table
     </div>
 </div>
 
-
 <ol class="sortable visible ui-sortable pp-nested-list <?php echo esc_attr(implode( ' ', $this->get_table_classes() )); ?>" id="the_status_list">
 	<?php $this->display_rows_or_placeholder(); ?>
 </ol>
 
+<?php endif;?>
+
 </div>
 
 <?php
-    if (defined('PUBLISHPRESS_REVISIONS_VERSION') && !defined('PUBLISHPRESS_STATUSES_PRO_VERSION')) {
-        echo '<div class="pp-custom-status-hints">';
-        printf(
-            esc_html__('To define and control Revision statuses, upgrade to the %1$sPublishPress Statuses Pro%2$s plugin.', 'publishpress-statuses'),
-            '<a href="https://publishpress.com/statuses/" target="_blank">',
-            '</a>'
-        );
-        echo '</div>';
-
-    } elseif (defined('PUBLISHPRESS_STATUSES_PRO_VERSION') && defined('PUBLISHPRESS_REVISIONS_VERSION') && version_compare(PUBLISHPRESS_REVISIONS_VERSION, '3.6.0-rc', '<')) {
+    if (defined('PUBLISHPRESS_STATUSES_PRO_VERSION') && defined('PUBLISHPRESS_REVISIONS_VERSION') && version_compare(PUBLISHPRESS_REVISIONS_VERSION, '3.6.0-rc', '<')) {
         echo '<div class="pp-custom-status-hints">';
         printf(
             esc_html__('To define and control Revision statuses, update the %1$sPublishPress Revisions%2$s plugin to version %3$s or higher.', 'publishpress-statuses'),
