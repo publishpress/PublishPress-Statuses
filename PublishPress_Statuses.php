@@ -293,7 +293,7 @@ class PublishPress_Statuses extends \PublishPress\PPP_Module_Base
 
     function fltCapDescriptions($pp_caps)
     {
-        $pp_caps['pp_bypass_status_sequence'] = esc_html__('Can bypass normal status progression (publishing or setting to max status).', 'publishpress-statuses');
+        $pp_caps['pp_bypass_status_sequence'] = esc_html__('Can bypass normal status progression. User can publish immediately or move post to the furthest possible status.', 'publishpress-statuses');
         $pp_caps['pp_manage_statuses'] = esc_html__('Manage Statuses plugin settings.', 'publishpress-statuses');
 
         return $pp_caps;
